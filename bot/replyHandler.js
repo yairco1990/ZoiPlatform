@@ -25,3 +25,5 @@ function handleReply(message){
 
     return result;
 }
+
+module.exports = handleReply;
