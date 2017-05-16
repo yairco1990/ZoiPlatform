@@ -36,7 +36,7 @@ bot.on('message', (payload, reply) => {
 
 //var server = http.createServer(bot.middleware());
 var server = https.createServer({
-    pfx: fs.readFileSync('C:\zoiSiteServer.pfx'),
+    pfx: fs.readFileSync('zoiSiteServer.pfx'),
     passphrase: 'ig180688'
 }, bot.middleware());
 server.listen(PORT);
