@@ -8,7 +8,7 @@ const Bot = require('./bot_framework');
 
 let bot = new Bot({
     // page token
-    token: 'EAATS43ZAMkJQBABZAgDpO6nzFWp3cnWDXWJtZCVNB7l84HsZCniFrJyLHyIauDZBkZA5O4YWQsZC6UZCoS3e2Amwi45G5LklNm3NqgwAMImf7ZAPgAWrlwA5LjyMlockyuJgipU1hvZAsIqEFu33vZAZBZBHUmElYw4c7BztZAX5WrwifhMQZDZD',
+    token: 'EAATS43ZAMkJQBAJBYqHuDcbO3YezZAtK0ekf82lZAZB4ll1BshhtzkFZCDJu7N0EAT0ciav3MZC9FTeKD1ebiWvceTbxbuuAMGtcuLUNhA5D1JoZCyBvcK65ZCZBBXuZBZBFKbDHzkckq67YVf8hIbnCyZAZASEcddUMbeZB2ZCikLMmtgJ1AZDZD',
 
     // verify token
     verify: 'testtoken',
