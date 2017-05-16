@@ -1,3 +1,5 @@
 * Step by step - creating a Facebook bot:
 https://blog.hartleybrody.com/fb-messenger-bot/
 
+* Quick replies ( +initiate communication with use by user_id?)
+https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies

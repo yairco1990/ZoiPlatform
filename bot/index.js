@@ -27,7 +27,30 @@ bot.on('message', (payload, reply) => {
     bot.getProfile(payload.sender.id, (err, profile) => {
         if (err) throw err;
 
-        reply({text}, (err) => {
+        var rep;
+
+        if (text == "testme"){
+            rep = {
+                "text":"Pick a color:",
+                "quick_replies":[
+                    {
+                        "content_type":"text",
+                        "title":"Red",
+                        "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
+                    },
+                    {
+                        "content_type":"text",
+                        "title":"Green",
+                        "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
+                    }
+                ]
+            };
+        } else {
+            rep = {text};
+        }
+
+        //reply({text}, (err) => {
+        reply(rep, (err) => {
             if (err) throw err;
             console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`);
         });
