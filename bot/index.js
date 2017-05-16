@@ -52,7 +52,7 @@ bot.on('message', (payload, reply) => {
         //reply({text}, (err) => {
         reply(rep, (err) => {
             if (err) throw err;
-            console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`);
+            console.log(`Echoed back to ${profile.first_name} ${profile.last_name}[id: ${payload.sender.id}]: ${text}`);
         });
     });
 });
