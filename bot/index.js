@@ -1,7 +1,7 @@
 'use strict';
-const http = require('http');
-// const https = require('https');
-// const fs = require('fs');
+//const http = require('http');
+const https = require('https');
+const fs = require('fs');
 
 const PORT = 4488;
 const Bot = require('./bot_framework');
@@ -34,10 +34,10 @@ bot.on('message', (payload, reply) => {
     });
 });
 
-var server = http.createServer(bot.middleware());
-// var server = https.createServer({
-//     pfx: fs.readFileSync('../cert.pfx'),
-//     passphrase: '123456'
-// }, bot.middleware());
+//var server = http.createServer(bot.middleware());
+var server = https.createServer({
+    pfx: fs.readFileSync('C:\zoiSiteServer.pfx'),
+    passphrase: 'ig180688'
+}, bot.middleware());
 server.listen(PORT);
 console.log('Echo bot server running at port ' + PORT + '.');
