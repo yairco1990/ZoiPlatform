@@ -1,5 +1,35 @@
+*to start bot (workdir=mybot/):
+node bot
+    or
+node bot\index.js
+
 * Step by step - creating a Facebook bot:
 https://blog.hartleybrody.com/fb-messenger-bot/
 
-* Quick replies ( +initiate communication with use by user_id?)
+* Core for this bot: https://github.com/remixz/messenger-bot
+
+* Quick replies ( +initiate communication with use by user_id !)
 https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
+
+* Example initiating communication with user: (from: https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies)
+curl -X POST -H "Content-Type: application/json" -d '{
+  "recipient":{
+    "id":"USER_ID"
+  },
+  "message":{
+    "text":"Pick a color:",
+    "quick_replies":[
+      {
+        "content_type":"text",
+        "title":"Red",
+        "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
+      },
+      {
+        "content_type":"text",
+        "title":"Green",
+        "payload":"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
+      }
+    ]
+  }
+}' "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_ACCESS_TOKEN"
+
