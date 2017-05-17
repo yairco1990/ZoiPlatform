@@ -2,14 +2,13 @@
 const https = require('https');
 const fs = require('fs');
 
+const Bot = require('./bot_framework');
+const repHandler = require('./replyHandler');
+
 // Webhook port (facebook will access to https://myserver.com:4488)
 // Facebook doesn't work with http, only https allowed
 const PORT = 4488;
 
-// bot class
-const Bot = require('./bot_framework');
-// import reply handler functions
-const repHandler = require('./replyHandler');
 
 // initialize bot
 let bot = new Bot({
@@ -37,11 +36,17 @@ bot.on('message', (payload, reply) => {
     bot.getProfile(payload.sender.id, (err, profile) => {
         if (err) throw err;
 
-        var rep = handleReply(text);
+        // user information
+        let display_name = profile.first_name + ' ' + profile.last_name;
+        let sender_id = payload.sender.id;
 
+        // build reply
+        let rep = repHandler.buildReply(text);
+
+        // send reply
         reply(rep, (err) => {
             if (err) throw err;
-            console.log(`Echoed back to ${profile.first_name} ${profile.last_name}[id: ${payload.sender.id}]: ${text}`);
+            console.log(`Echoed back to ${display_name} [id: ${sender_id}]: ${rep.text}`);
         });
     });
 });
@@ -49,7 +54,7 @@ bot.on('message', (payload, reply) => {
 
 // create and start webhook server
 var server = https.createServer({
-	ca: fs.readFileSync('bundle.crt'),
+    ca: fs.readFileSync('bundle.crt'),
     pfx: fs.readFileSync('zoiSiteServer.pfx'),
     passphrase: 'ig180688'
 }, bot.middleware());

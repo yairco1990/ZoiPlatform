@@ -1,5 +1,5 @@
-function handleReply(message){
-    let result = {};
+function buildReply(message){
+    var result = {};
 
     if (message == "testme"){
         result = {
@@ -26,4 +26,4 @@ function handleReply(message){
     return result;
 }
 
-module.exports = handleReply;
+module.exports = {buildReply,};
