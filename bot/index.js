@@ -29,8 +29,11 @@ bot.on('error', (err) => {
 
 // bot message handler
 bot.on('message', (payload, reply) => {
-    // get message text
-    let text = payload.message.text;
+	//console.log(payload);
+	
+	// get message text
+	// if message has no text (e.g. location response) - stringify it.
+    let text = !!payload.message.text ? payload.message.text : JSON.stringify(payload.message);
 
     // get profile info
     bot.getProfile(payload.sender.id, (err, profile) => {
