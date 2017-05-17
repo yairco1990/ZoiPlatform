@@ -33,8 +33,8 @@ bot.on('message', (payload, reply) => {
 	
 	// get message text
 	// if message has no text (e.g. location response) - stringify it.
-    let text = !!payload.message.text ? payload.message.text : JSON.stringify(payload.message);
-	let msg_payload = !!payload.message.quick_reply && !!payload.message.quick_reply.payload ? payload.message.quick_reply.payload : null;
+    // let text = !!payload.message.text ? payload.message.text : JSON.stringify(payload.message);
+	// let msg_payload = !!payload.message.quick_reply && !!payload.message.quick_reply.payload ? payload.message.quick_reply.payload : null;
 
     // get profile info
     bot.getProfile(payload.sender.id, (err, profile) => {
@@ -45,7 +45,7 @@ bot.on('message', (payload, reply) => {
         let sender_id = payload.sender.id;
 
         // build reply
-        let rep = repHandler.buildReply(text, msg_payload);
+        let rep = repHandler.buildReply(payload);
 
         // send reply
         reply(rep, (err) => {

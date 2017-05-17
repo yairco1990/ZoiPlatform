@@ -1,18 +1,26 @@
-function buildReply(message, payload) {
-    var result = {};
+function buildReply(payload) {
+    var text = !!payload.message.text ? payload.message.text : JSON.stringify(payload.message);
+    var msg_payload = !!payload.message.quick_reply && !!payload.message.quick_reply.payload ? payload.message.quick_reply.payload : null;
 
-	if (payload){
+    var result = {};
+    var _continue = true;
+
+    if (msg_payload){
 		if (payload == "LILI"){
 			result = {
 				"text": "Good choice!",
 			};
+			_continue = false;
 		} else if (payload == "JUSTIN"){
 			result = {
 				"text": "You are gay!",
 			};
+			_continue = false;
 		}
-	} else {	
-		if (message.toLowerCase() == "qr_text") {
+	}
+
+	if (_continue){
+		if (text.toLowerCase() == "qr_text") {
 			result = {
 				"text": "Pick a color:",
 				"quick_replies": [
@@ -28,7 +36,7 @@ function buildReply(message, payload) {
 					}
 				]
 			};
-		} else if (message.toLowerCase() == "qr_pics") {
+		} else if (text.toLowerCase() == "qr_pics") {
 			result = {
 				"text": "Choose your favorite:",
 				"quick_replies": [
@@ -46,7 +54,7 @@ function buildReply(message, payload) {
 					}
 				]
 			};
-		} else if (message.toLowerCase() == "qr_location") {
+		} else if (text.toLowerCase() == "qr_location") {
 			result = {
 				"text": "Please share your location:",
 				"quick_replies": [
@@ -57,7 +65,7 @@ function buildReply(message, payload) {
 			};
 		} else {
 			result = {
-				"text": message,
+				"text": text,
 			};
 		}
 	}
