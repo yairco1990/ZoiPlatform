@@ -1,26 +1,59 @@
 function buildReply(payload) {
-    var text = !!payload.message.text ? payload.message.text : JSON.stringify(payload.message);
-    var msg_payload = !!payload.message.quick_reply && !!payload.message.quick_reply.payload ? payload.message.quick_reply.payload : null;
+	console.log(payload);
+	
+	var msg = {};
+	
+    msg.text = !!payload.message.text ? payload.message.text : '';
+	msg.type = "text";
+	
+	if (!!payload.message.quick_reply){
+		msg.type = "quick_reply";
+		msg.payload = payload.message.quick_reply.payload;
+	}
+	
+	if (!!payload.message. attachments){
+		msg. attachments = [];
+		payload.message. attachments.forEach((att)=>{
+			msg. attachments.push({
+				type: att.type,
+				url: att.url || '',
+				title: att.title || '',
+				payload: att.payload || null
+			});
+			
+			if (att.type == "location"){
+				msg.type = "location";
+			}
+		});
+	}
+	
+	console.log(msg);
 
     var result = {};
     var _continue = true;
 
-    if (msg_payload){
-		if (payload == "LILI"){
+	
+    if (msg.type == "quick_reply"){
+		if (msg.payload == "LILI"){
 			result = {
 				"text": "Good choice!",
 			};
 			_continue = false;
-		} else if (payload == "JUSTIN"){
+		} else if (msg.payload == "JUSTIN"){
 			result = {
 				"text": "You are gay!",
 			};
 			_continue = false;
 		}
+	} else if (msg.type == "location"){
+		result = {
+			"text": 'You are in ' + msg.attachments[0].payload.coordinates.lat + ' ' + msg.attachments[0].payload.coordinates.long + '.'
+		};
+		_continue = false;
 	}
 
 	if (_continue){
-		if (text.toLowerCase() == "qr_text") {
+		if (msg.text.toLowerCase() == "qr_text") {
 			result = {
 				"text": "Pick a color:",
 				"quick_replies": [
@@ -36,7 +69,7 @@ function buildReply(payload) {
 					}
 				]
 			};
-		} else if (text.toLowerCase() == "qr_pics") {
+		} else if (msg.text.toLowerCase() == "qr_pics") {
 			result = {
 				"text": "Choose your favorite:",
 				"quick_replies": [
@@ -54,7 +87,7 @@ function buildReply(payload) {
 					}
 				]
 			};
-		} else if (text.toLowerCase() == "qr_location") {
+		} else if (msg.text.toLowerCase() == "qr_location") {
 			result = {
 				"text": "Please share your location:",
 				"quick_replies": [
@@ -65,7 +98,7 @@ function buildReply(payload) {
 			};
 		} else {
 			result = {
-				"text": text,
+				"text": msg.text,
 			};
 		}
 	}

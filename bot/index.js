@@ -29,7 +29,7 @@ bot.on('error', (err) => {
 
 // bot message handler
 bot.on('message', (payload, reply) => {
-	console.log(payload);
+	//console.log(payload);
 	
 	// get message text
 	// if message has no text (e.g. location response) - stringify it.
