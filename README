@@ -8,7 +8,7 @@ https://blog.hartleybrody.com/fb-messenger-bot/
 
 * Core for this bot: https://github.com/remixz/messenger-bot
 
-* Quick replies ( +initiate communication with use by user_id !)
+* Quick replies ( +initiate communication with use by user_id)
 https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
 
 * Example initiating communication with user: (from: https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies)
