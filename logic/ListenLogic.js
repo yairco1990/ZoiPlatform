@@ -49,12 +49,10 @@ ListenLogic.prototype.generateFacebookResponse = function (data, type) {
         if (data.data[type].row instanceof Array) {
             var rowData = data.data[type].row;
             var result = "No data";
-            if(rowData) {
+            if (rowData) {
                 result = "";
                 rowData.forEach(function (row) {
-                    row.FL.forEach(function (item) {
-                        result += item.val + ": " + item.content;
-                    });
+                    result += row.FL[3].content + " " + row.FL[4].content + "\n";
                 });
             }
             return {"text": result};
@@ -63,9 +61,7 @@ ListenLogic.prototype.generateFacebookResponse = function (data, type) {
             var result = "No data";
             if (rowData) {
                 result = "";
-                rowData.forEach(function (item) {
-                    result += item.val + ": " + item.content;
-                });
+                result += rowData[3].content + " - " + rowData[4].content;
             }
             return {"text": result};
         }
