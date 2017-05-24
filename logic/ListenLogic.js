@@ -20,20 +20,37 @@ ListenLogic.prototype.processInput = function (input, callback) {
 
     if (input.includes('get leads')) {
 
-        self.zohoLogic.getRecords('leads', callback);
+        self.zohoLogic.getRecords('leads', function (status, data) {
+            callback(status, self.generateFacebookResponse(data, 'Leads'));
+        });
 
     } else if (input.includes('get contacts')) {
 
-        self.zohoLogic.getRecords('contacts', callback);
+        self.zohoLogic.getRecords('contacts', function (status, data) {
+            callback(status, self.generateFacebookResponse(data, 'Contacts'));
+        });
 
     } else if (input.includes('get tasks')) {
 
-        self.zohoLogic.getRecords('tasks', callback);
+        self.zohoLogic.getRecords('tasks', function (status, data) {
+            callback(status, self.generateFacebookResponse(data, 'Tasks'));
+        });
 
     } else {
-        callback(200, "NO_DATA");
+        callback(200, {"text": 'No data found'});
     }
 };
 
+/**
+ * generate the data we got from zoho to text response
+ */
+ListenLogic.prototype.generateFacebookResponse = function (data, type) {
+    var rowData = data.data[type].row.FL;
+    var result = "";
+    rowData.forEach(function (item) {
+        result += item.val + ": " + item.content;
+    });
+    return {"text": result};
+};
 
 module.exports = ListenLogic;

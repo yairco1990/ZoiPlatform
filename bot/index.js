@@ -46,7 +46,7 @@ bot.on('message', (payload, reply) => {
         let sender_id = payload.sender.id;
 
         // build reply
-        //let rep = repHandler.buildReply(payload);
+        // let rep = repHandler.buildReply(payload);
 
         //MY RESPONSE LOGIC
         let listenLogic = new ListenLogic();
