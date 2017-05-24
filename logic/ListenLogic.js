@@ -52,7 +52,7 @@ ListenLogic.prototype.generateFacebookResponse = function (data, type) {
             if(rowData) {
                 result = "";
                 rowData.forEach(function (row) {
-                    row.forEach(function (fl) {
+                    row.fl.forEach(function (item) {
                         result += item.val + ": " + item.content;
                     });
                 });
