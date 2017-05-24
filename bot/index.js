@@ -4,6 +4,7 @@ const fs = require('fs');
 const ListenLogic = require('../logic/ListenLogic');
 const Bot = require('./bot_framework');
 const repHandler = require('./replyHandler');
+const Util = require('util');
 
 // Webhook port (facebook will access to https://myserver.com:4488)
 // Facebook doesn't work with http, only https allowed
@@ -50,6 +51,7 @@ bot.on('message', (payload, reply) => {
         //MY RESPONSE LOGIC
         let listenLogic = new ListenLogic();
         listenLogic.processInput(payload.message.text, function (status, rep) {
+            Util.log(rep);
             // send reply
             reply(rep, (err) => {
                 if (err) throw err;
