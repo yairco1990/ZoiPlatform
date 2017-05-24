@@ -45,7 +45,7 @@ ListenLogic.prototype.processInput = function (input, callback) {
  * generate the data we got from zoho to text response
  */
 ListenLogic.prototype.generateFacebookResponse = function (data, type) {
-    if (data && data[type]) {
+    if (data && data.data && data.data[type]) {
         if (data[type] instanceof Array) {
             var rowData = data.data[type];
             var result = "";
