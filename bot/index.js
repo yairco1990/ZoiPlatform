@@ -1,7 +1,7 @@
 'use strict';
 const https = require('https');
 const fs = require('fs');
-
+const ListenLogic = require('../logic/ListenLogic');
 const Bot = require('./bot_framework');
 const repHandler = require('./replyHandler');
 
@@ -29,12 +29,12 @@ bot.on('error', (err) => {
 
 // bot message handler
 bot.on('message', (payload, reply) => {
-	//console.log(payload);
-	
-	// get message text
-	// if message has no text (e.g. location response) - stringify it.
+    //console.log(payload);
+
+    // get message text
+    // if message has no text (e.g. location response) - stringify it.
     // let text = !!payload.message.text ? payload.message.text : JSON.stringify(payload.message);
-	// let msg_payload = !!payload.message.quick_reply && !!payload.message.quick_reply.payload ? payload.message.quick_reply.payload : null;
+    // let msg_payload = !!payload.message.quick_reply && !!payload.message.quick_reply.payload ? payload.message.quick_reply.payload : null;
 
     // get profile info
     bot.getProfile(payload.sender.id, (err, profile) => {
@@ -45,12 +45,16 @@ bot.on('message', (payload, reply) => {
         let sender_id = payload.sender.id;
 
         // build reply
-        let rep = repHandler.buildReply(payload);
+        //let rep = repHandler.buildReply(payload);
 
-        // send reply
-        reply(rep, (err) => {
-            if (err) throw err;
-            console.log(`Echoed back to ${display_name} [id: ${sender_id}]: ${rep.text}`);
+        //MY RESPONSE LOGIC
+        let listenLogic = new ListenLogic();
+        listenLogic.processInput(payload.message.text, function (status, rep) {
+            // send reply
+            reply(rep, (err) => {
+                if (err) throw err;
+                console.log(`Echoed back to ${display_name} [id: ${sender_id}]: ${rep.text}`);
+            });
         });
     });
 });

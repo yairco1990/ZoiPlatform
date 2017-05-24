@@ -1,22 +1,22 @@
 'use strict'
-const url = require('url')
-const qs = require('querystring')
-const EventEmitter = require('events').EventEmitter
-const request = require('request-promise')
-const crypto = require('crypto')
+const url = require('url');
+const qs = require('querystring');
+const EventEmitter = require('events').EventEmitter;
+const request = require('request-promise');
+const crypto = require('crypto');
 
 class Bot extends EventEmitter {
   constructor (opts) {
-    super()
+    super();
 
-    opts = opts || {}
+    opts = opts || {};
     if (!opts.token) {
       throw new Error('Missing page token. See FB documentation for details: https://developers.facebook.com/docs/messenger-platform/quickstart')
     }
-    this.token = opts.token
-    this.app_secret = opts.app_secret || false
-    this.verify_token = opts.verify || false
-    this.debug = opts.debug || false
+    this.token = opts.token;
+    this.app_secret = opts.app_secret || false;
+    this.verify_token = opts.verify || false;
+    this.debug = opts.debug || false;
   }
 
   getProfile (id, cb) {
@@ -27,12 +27,12 @@ class Bot extends EventEmitter {
       json: true
     })
     .then(body => {
-      if (body.error) return Promise.reject(body.error)
-      if (!cb) return body
+      if (body.error) return Promise.reject(body.error);
+      if (!cb) return body;
       cb(null, body)
     })
     .catch(err => {
-      if (!cb) return Promise.reject(err)
+      if (!cb) return Promise.reject(err);
       cb(err)
     })
   }
@@ -48,12 +48,12 @@ class Bot extends EventEmitter {
       }
     })
     .then(body => {
-      if (body.error) return Promise.reject(body.error)
-      if (!cb) return body
+      if (body.error) return Promise.reject(body.error);
+      if (!cb) return body;
       cb(null, body)
     })
     .catch(err => {
-      if (!cb) return Promise.reject(err)
+      if (!cb) return Promise.reject(err);
       cb(err)
     })
   }
@@ -71,12 +71,12 @@ class Bot extends EventEmitter {
       }
     })
     .then(body => {
-      if (body.error) return Promise.reject(body.error)
-      if (!cb) return body
+      if (body.error) return Promise.reject(body.error);
+      if (!cb) return body;
       cb(null, body)
     })
     .catch(err => {
-      if (!cb) return Promise.reject(err)
+      if (!cb) return Promise.reject(err);
       cb(err)
     })
   }
@@ -93,12 +93,12 @@ class Bot extends EventEmitter {
       }
     })
     .then(body => {
-      if (body.error) return Promise.reject(body.error)
-      if (!cb) return body
+      if (body.error) return Promise.reject(body.error);
+      if (!cb) return body;
       cb(null, body)
     })
     .catch(err => {
-      if (!cb) return Promise.reject(err)
+      if (!cb) return Promise.reject(err);
       cb(err)
     })
   }
@@ -114,12 +114,12 @@ class Bot extends EventEmitter {
       }
     })
     .then(body => {
-      if (body.error) return Promise.reject(body.error)
-      if (!cb) return body
+      if (body.error) return Promise.reject(body.error);
+      if (!cb) return body;
       cb(null, body)
     })
     .catch(err => {
-      if (!cb) return Promise.reject(err)
+      if (!cb) return Promise.reject(err);
       cb(err)
     })
   }
@@ -143,33 +143,33 @@ class Bot extends EventEmitter {
   middleware () {
     return (req, res) => {
       // we always write 200, otherwise facebook will keep retrying the request
-      res.writeHead(200, { 'Content-Type': 'application/json' })
-      if (req.url === '/_status') return res.end(JSON.stringify({status: 'ok'}))
-      if (this.verify_token && req.method === 'GET') return this._verify(req, res)
-      if (req.method !== 'POST') return res.end()
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      if (req.url === '/_status') return res.end(JSON.stringify({status: 'ok'}));
+      if (this.verify_token && req.method === 'GET') return this._verify(req, res);
+      if (req.method !== 'POST') return res.end();
 
-      let body = ''
+      let body = '';
 
       req.on('data', (chunk) => {
         body += chunk
-      })
+      });
 
       req.on('end', () => {
         // check message integrity
         if (this.app_secret) {
-          let hmac = crypto.createHmac('sha1', this.app_secret)
-          hmac.update(body)
+          let hmac = crypto.createHmac('sha1', this.app_secret);
+          hmac.update(body);
 
           if (req.headers['x-hub-signature'] !== `sha1=${hmac.digest('hex')}`) {
-            this.emit('error', new Error('Message integrity check failed'))
-            return res.end(JSON.stringify({status: 'not ok', error: 'Message integrity check failed'}))
+            this.emit('error', new Error('Message integrity check failed'));
+            return res.end(JSON.stringify({status: 'not ok', error: 'Message integrity check failed'}));
           }
         }
 
-        let parsed = JSON.parse(body)
-        this._handleMessage(parsed)
+        let parsed = JSON.parse(body);
+        this._handleMessage(parsed);
 
-        res.end(JSON.stringify({status: 'ok'}))
+        res.end(JSON.stringify({status: 'ok'}));
       })
     }
   }
@@ -178,7 +178,7 @@ class Bot extends EventEmitter {
     if (typeof qs === 'undefined') {
       qs = {}
     }
-    qs['access_token'] = this.token
+    qs['access_token'] = this.token;
 
     if (this.debug) {
       qs['debug'] = this.debug
@@ -188,10 +188,10 @@ class Bot extends EventEmitter {
   }
 
   _handleMessage (json) {
-    let entries = json.entry
+    let entries = json.entry;
 
     entries.forEach((entry) => {
-      let events = entry.messaging
+      let events = entry.messaging;
 
       events.forEach((event) => {
         // handle inbound messages and echos
@@ -243,7 +243,7 @@ class Bot extends EventEmitter {
   _getActionsObject (event) {
     return {
       setTyping: (typingState, cb) => {
-        let senderTypingAction = typingState ? 'typing_on' : 'typing_off'
+        let senderTypingAction = typingState ? 'typing_on' : 'typing_off';
         this.sendSenderAction(event.sender.id, senderTypingAction, cb)
       },
       markRead: this.sendSenderAction.bind(this, event.sender.id, 'mark_seen')
@@ -251,7 +251,7 @@ class Bot extends EventEmitter {
   }
 
   _verify (req, res) {
-    let query = qs.parse(url.parse(req.url).query)
+    let query = qs.parse(url.parse(req.url).query);
 
     if (query['hub.verify_token'] === this.verify_token) {
       return res.end(query['hub.challenge'])
@@ -265,4 +265,4 @@ class Bot extends EventEmitter {
   }
 }
 
-module.exports = Bot
+module.exports = Bot;
