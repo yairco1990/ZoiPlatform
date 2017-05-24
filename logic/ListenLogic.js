@@ -46,7 +46,7 @@ ListenLogic.prototype.processInput = function (input, callback) {
  */
 ListenLogic.prototype.generateFacebookResponse = function (data, type) {
     if (data && data.data && data.data[type]) {
-        if (data[type] instanceof Array) {
+        if (data.data[type] instanceof Array) {
             var rowData = data.data[type];
             var result = "";
             rowData.forEach(function (row) {
