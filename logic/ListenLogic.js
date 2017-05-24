@@ -48,19 +48,25 @@ ListenLogic.prototype.generateFacebookResponse = function (data, type) {
     if (data && data.data && data.data[type]) {
         if (data.data[type] instanceof Array) {
             var rowData = data.data[type];
-            var result = "";
-            rowData.forEach(function (row) {
-                row.forEach(function (fl) {
-                    result += item.val + ": " + item.content;
+            var result = "No data";
+            if(rowData) {
+                result = "";
+                rowData.forEach(function (row) {
+                    row.forEach(function (fl) {
+                        result += item.val + ": " + item.content;
+                    });
                 });
-            });
+            }
             return {"text": result};
         } else {
             var rowData = data.data[type].row.FL;
-            var result = "";
-            rowData.forEach(function (item) {
-                result += item.val + ": " + item.content;
-            });
+            var result = "No data";
+            if (rowData) {
+                result = "";
+                rowData.forEach(function (item) {
+                    result += item.val + ": " + item.content;
+                });
+            }
             return {"text": result};
         }
     } else {
