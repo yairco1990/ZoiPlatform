@@ -45,12 +45,28 @@ ListenLogic.prototype.processInput = function (input, callback) {
  * generate the data we got from zoho to text response
  */
 ListenLogic.prototype.generateFacebookResponse = function (data, type) {
-    var rowData = data.data[type].row.FL;
-    var result = "";
-    rowData.forEach(function (item) {
-        result += item.val + ": " + item.content;
-    });
-    return {"text": result};
+    if (data && data[type]) {
+        if (data[type] instanceof Array) {
+            var rowData = data.data[type];
+            var result = "";
+            rowData.forEach(function (row) {
+                row.forEach(function (fl) {
+                    result += item.val + ": " + item.content;
+                });
+            });
+            return {"text": result};
+        } else {
+            var rowData = data.data[type].row.FL;
+            var result = "";
+            rowData.forEach(function (item) {
+                result += item.val + ": " + item.content;
+            });
+            return {"text": result};
+        }
+    } else {
+        //no data
+        return {"text": "No data founded"};
+    }
 };
 
 module.exports = ListenLogic;
