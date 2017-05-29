@@ -1,4 +1,6 @@
 var ZohoLogic = require('./ZohoLogic');
+var requestify = require('requestify');
+var Util = require('util');
 
 /**
  * listen constructor
@@ -18,27 +20,39 @@ ListenLogic.prototype.processInput = function (input, callback) {
 
     var self = this;
 
-    if (input.includes('get leads')) {
+    requestify.request('https://52.174.244.154:8080/zoi/getIntent?text=' + input, {
+        method: 'GET'
+    }).then(function (response) {
 
-        self.zohoLogic.getRecords('leads', function (status, data) {
-            callback(status, self.generateFacebookResponse(data, 'Leads'));
-        });
+        var nlpResponse = response.getBody();
 
-    } else if (input.includes('get contacts')) {
+        if (nlpResponse.includes('leads')) {
 
-        self.zohoLogic.getRecords('contacts', function (status, data) {
-            callback(status, self.generateFacebookResponse(data, 'Contacts'));
-        });
+            self.zohoLogic.getRecords('leads', function (status, data) {
+                callback(status, self.generateFacebookResponse(data, 'Leads'));
+            });
 
-    } else if (input.includes('get tasks')) {
+        } else if (nlpResponse.includes('contacts')) {
 
-        self.zohoLogic.getRecords('tasks', function (status, data) {
-            callback(status, self.generateFacebookResponse(data, 'Tasks'));
-        });
+            self.zohoLogic.getRecords('contacts', function (status, data) {
+                callback(status, self.generateFacebookResponse(data, 'Contacts'));
+            });
 
-    } else {
-        callback(200, {"text": 'No data found'});
-    }
+        } else if (nlpResponse.includes('tasks')) {
+
+            self.zohoLogic.getRecords('tasks', function (status, data) {
+                callback(status, self.generateFacebookResponse(data, 'Tasks'));
+            });
+
+        } else if (nlpResponse.includes('free slot')) {
+
+            callback(200, {"text": "It's zoho..there are no slots here.."});
+
+        } else {
+            callback(200, {"text": 'No data found'});
+        }
+
+    });
 };
 
 /**

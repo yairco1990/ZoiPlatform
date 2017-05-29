@@ -141,8 +141,8 @@ class Bot extends EventEmitter {
     }
 
     middleware() {
-        console.log("Get middleware request");
         return (req, res) => {
+            console.log("Get request");
             // we always write 200, otherwise facebook will keep retrying the request
             res.writeHead(200, {'Content-Type': 'application/json'});
             if (req.url === '/_status') return res.end(JSON.stringify({status: 'ok'}));
