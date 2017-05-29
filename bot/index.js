@@ -64,8 +64,8 @@ bot.on('message', (payload, reply) => {
 
 // create and start webhook server
 var server = https.createServer({
-    ca: fs.readFileSync('bundle.crt'),
-    pfx: fs.readFileSync('zoiSiteServer.pfx'),
+    ca: fs.readFileSync('../bundle.crt'),
+    pfx: fs.readFileSync('../zoiSiteServer.pfx'),
     passphrase: 'ig180688'
 }, bot.middleware());
 server.listen(PORT);
