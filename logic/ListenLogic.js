@@ -20,78 +20,40 @@ ListenLogic.prototype.processInput = function (input, callback) {
 
     var self = this;
 
+    requestify.request('https://52.174.244.154:8080/zoi/getIntent?text=' + input, {
+        method: 'GET'
+    }).then(function (response) {
 
-    if (input.includes('leads')) {
+        var nlpResponse = response.getBody();
 
-        self.zohoLogic.getRecords('leads', function (status, data) {
-            callback(status, self.generateFacebookResponse(data, 'Leads'));
-        });
+        if (nlpResponse.includes('leads')) {
 
-    } else if (input.includes('contacts')) {
+            self.zohoLogic.getRecords('leads', function (status, data) {
+                callback(status, self.generateFacebookResponse(data, 'Leads'));
+            });
 
-        self.zohoLogic.getRecords('contacts', function (status, data) {
-            callback(status, self.generateFacebookResponse(data, 'Contacts'));
-        });
+        } else if (nlpResponse.includes('contacts')) {
 
-    } else if (input.includes('tasks')) {
+            self.zohoLogic.getRecords('contacts', function (status, data) {
+                callback(status, self.generateFacebookResponse(data, 'Contacts'));
+            });
 
-        self.zohoLogic.getRecords('tasks', function (status, data) {
-            callback(status, self.generateFacebookResponse(data, 'Tasks'));
-        });
+        } else if (nlpResponse.includes('tasks')) {
 
-    } else if (input.includes('free slot')) {
+            self.zohoLogic.getRecords('tasks', function (status, data) {
+                callback(status, self.generateFacebookResponse(data, 'Tasks'));
+            });
 
-        callback(200, {"text": "It's zoho..there are no slots here.."});
+        } else if (nlpResponse.includes('free slot')) {
 
-    } else {
-        callback(200, {"text": 'No data found'});
-    }
+            callback(200, {"text": "It's zoho..there are no slots here.."});
 
+        } else {
+            callback(200, {"text": 'No data found'});
+        }
+
+    });
 };
-
-/**
- * process the user input
- * @param input
- * @param callback
- */
-// ListenLogic.prototype.processInput = function (input, callback) {
-//
-//     var self = this;
-//
-//     requestify.request('https://52.174.244.154:8080/zoi/getIntent?text=' + input, {
-//         method: 'GET'
-//     }).then(function (response) {
-//
-//         var nlpResponse = response.getBody();
-//
-//         if (nlpResponse.includes('leads')) {
-//
-//             self.zohoLogic.getRecords('leads', function (status, data) {
-//                 callback(status, self.generateFacebookResponse(data, 'Leads'));
-//             });
-//
-//         } else if (nlpResponse.includes('contacts')) {
-//
-//             self.zohoLogic.getRecords('contacts', function (status, data) {
-//                 callback(status, self.generateFacebookResponse(data, 'Contacts'));
-//             });
-//
-//         } else if (nlpResponse.includes('tasks')) {
-//
-//             self.zohoLogic.getRecords('tasks', function (status, data) {
-//                 callback(status, self.generateFacebookResponse(data, 'Tasks'));
-//             });
-//
-//         } else if (nlpResponse.includes('free slot')) {
-//
-//             callback(200, {"text": "It's zoho..there are no slots here.."});
-//
-//         } else {
-//             callback(200, {"text": 'No data found'});
-//         }
-//
-//     });
-// };
 
 /**
  * generate the data we got from zoho to text response

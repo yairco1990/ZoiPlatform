@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bot/index.js" afterPath="$PROJECT_DIR$/bot/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/ListenLogic.js" afterPath="$PROJECT_DIR$/logic/ListenLogic.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -21,21 +21,21 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="index.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bot/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="402">
-              <caret line="66" column="28" lean-forward="false" selection-start-line="66" selection-start-column="28" selection-end-line="66" selection-end-column="28" />
+            <state relative-caret-position="504">
+              <caret line="71" column="0" lean-forward="false" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="61" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ListenLogic.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ListenLogic.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/logic/ListenLogic.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="41" column="20" lean-forward="false" selection-start-line="41" selection-start-column="20" selection-end-line="41" selection-end-column="20" />
+            <state relative-caret-position="164">
+              <caret line="22" column="83" lean-forward="true" selection-start-line="22" selection-start-column="83" selection-end-line="22" selection-end-column="83" />
               <folding />
             </state>
           </provider>
@@ -44,11 +44,9 @@
       <file leaf-file-name="bot_framework.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bot/bot_framework.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="16" lean-forward="false" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="16" />
-              <folding>
-                <marker date="1496054100376" expanded="true" signature="239:8447" ph="{...}" />
-              </folding>
+            <state relative-caret-position="220">
+              <caret line="144" column="28" lean-forward="false" selection-start-line="144" selection-start-column="28" selection-end-line="144" selection-end-column="28" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -76,8 +74,8 @@
       <list>
         <option value="$PROJECT_DIR$/logic/ZohoLogic.js" />
         <option value="$PROJECT_DIR$/bot/bot_framework.js" />
-        <option value="$PROJECT_DIR$/logic/ListenLogic.js" />
         <option value="$PROJECT_DIR$/bot/index.js" />
+        <option value="$PROJECT_DIR$/logic/ListenLogic.js" />
       </list>
     </option>
   </component>
@@ -230,7 +228,7 @@
       <updated>1495453420553</updated>
       <workItem from="1495453421768" duration="5057000" />
       <workItem from="1495627117944" duration="8073000" />
-      <workItem from="1496050278871" duration="6193000" />
+      <workItem from="1496050278871" duration="6351000" />
     </task>
     <task id="LOCAL-00001" summary="yair control">
       <created>1495634412319</created>
@@ -330,11 +328,18 @@
       <option name="project" value="LOCAL" />
       <updated>1496067663510</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="ssl">
+      <created>1496067919928</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1496067919928</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="19323000" />
+    <option name="totallyTimeSpent" value="19481000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -388,7 +393,8 @@
     <MESSAGE value="yair control" />
     <MESSAGE value="add facebook response" />
     <MESSAGE value="connect to tomcat server" />
-    <option name="LAST_COMMIT_MESSAGE" value="connect to tomcat server" />
+    <MESSAGE value="ssl" />
+    <option name="LAST_COMMIT_MESSAGE" value="ssl" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -441,9 +447,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4267">
           <caret line="251" column="0" lean-forward="false" selection-start-line="251" selection-start-column="0" selection-end-line="251" selection-end-column="0" />
-          <folding>
-            <marker date="1496054100376" expanded="true" signature="239:8447" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -467,9 +471,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
           <caret line="13" column="81" lean-forward="false" selection-start-line="13" selection-start-column="77" selection-end-line="13" selection-end-column="81" />
-          <folding>
-            <marker date="1496054100376" expanded="true" signature="239:8447" ph="{...}" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -521,26 +523,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/bot/bot_framework.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="16" lean-forward="false" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="16" />
-          <folding>
-            <marker date="1496054100376" expanded="true" signature="239:8447" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/logic/ListenLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="41" column="20" lean-forward="false" selection-start-line="41" selection-start-column="20" selection-end-line="41" selection-end-column="20" />
+        <state relative-caret-position="220">
+          <caret line="144" column="28" lean-forward="false" selection-start-line="144" selection-start-column="28" selection-end-line="144" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bot/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="402">
-          <caret line="66" column="28" lean-forward="false" selection-start-line="66" selection-start-column="28" selection-end-line="66" selection-end-column="28" />
+        <state relative-caret-position="504">
+          <caret line="71" column="0" lean-forward="false" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/ListenLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="22" column="83" lean-forward="true" selection-start-line="22" selection-start-column="83" selection-end-line="22" selection-end-column="83" />
           <folding />
         </state>
       </provider>
