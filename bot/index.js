@@ -8,7 +8,7 @@ const Util = require('util');
 
 // Webhook port (facebook will access to https://myserver.com:4488)
 // Facebook doesn't work with http, only https allowed
-const PORT = 4488;
+const PORT = 3000;
 
 
 // initialize bot
@@ -64,8 +64,8 @@ bot.on('message', (payload, reply) => {
 
 // create and start webhook server
 var server = https.createServer({
-    ca: fs.readFileSync('../bundle.crt'),
-    pfx: fs.readFileSync('../zoiSiteServer.pfx'),
+    ca: fs.readFileSync('bundle.crt'),
+    pfx: fs.readFileSync('zoiSiteServer.pfx'),
     passphrase: 'ig180688'
 }, bot.middleware());
 server.listen(PORT);
