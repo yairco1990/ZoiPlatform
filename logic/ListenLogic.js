@@ -55,6 +55,9 @@ ListenLogic.prototype.processInput = function (input, callback) {
             callback(200, {"text": 'No data found'});
         }
 
+    }).catch(function (err) {
+        callback(200, {"text": 'server error'});
+        Util.error(err);
     });
 };
 
