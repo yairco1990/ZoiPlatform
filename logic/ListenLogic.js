@@ -26,6 +26,9 @@ ListenLogic.prototype.processInput = function (input, callback) {
 
         var nlpResponse = response.getBody();
 
+        Util.log("Zoi got input: " + input);
+        Util.log("Zoi understood: " + nlpResponse);
+
         if (nlpResponse.includes('leads')) {
 
             self.zohoLogic.getRecords('leads', function (status, data) {
