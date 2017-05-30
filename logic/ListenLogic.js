@@ -20,7 +20,7 @@ ListenLogic.prototype.processInput = function (input, callback) {
 
     var self = this;
 
-    requestify.request('https://52.174.244.154:8080/zoi/getIntent?text=' + input, {
+    requestify.request('http://52.174.244.154:8080/zoi/getIntent?text=' + input, {
         method: 'GET'
     }).then(function (response) {
 
@@ -57,7 +57,7 @@ ListenLogic.prototype.processInput = function (input, callback) {
 
     }).catch(function (err) {
         callback(200, {"text": 'server error'});
-        Util.error(err);
+        Util.log(err);
     });
 };
 
