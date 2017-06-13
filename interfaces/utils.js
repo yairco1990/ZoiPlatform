@@ -2,58 +2,11 @@
  * Created by Yair on 2/20/2017.
  */
 
-var Utils = {
+let Utils = {
+
     serverResponse: {
         SUCCESS: "success",
         ERROR: "error"
-    },
-
-    pushCase: {
-        SESSION_ENDED: "sessionEnded",
-        PLAYER_GAMBLED: "playerGambled",
-        GAME_OVER: "gameOver",
-        GAME_RESTARTED: "gameRestarted",
-        UPDATE_GAME: "updateGame",
-        NEW_MESSAGE: "newMessage",
-        NEW_ROOM_CREATED: "newRoomCreated"
-    },
-
-    /**
-     * remove from array
-     * @param array
-     * @param value
-     * @returns {*}
-     */
-    removeFromArray: function (array, value) {
-        for (var i = 0; i < array.length; i++) {
-            if (array[i].id == value.id) {
-                array.splice(i, 1);
-                break;
-            }
-        }
-        return array;
-    },
-
-    generateArrayOfUsersIds: function (users, onlyLoggedIn) {
-        var array = [];
-
-        users.forEach(function (user) {
-            if (!onlyLoggedIn || (onlyLoggedIn && user.isLoggedIn)) {
-                array.push(user.id);
-            }
-        });
-
-        return array;
-    },
-
-    getUserById: function (users, id) {
-        var selectedUser = null;
-        users.forEach(function (user) {
-            if (user.id == id) {
-                selectedUser = user;
-            }
-        });
-        return selectedUser;
     },
 
     /**
@@ -63,9 +16,9 @@ var Utils = {
      */
     restRequest: function (options, asString, onResult) {
 
-        var protocol = options.port == 443 ? https : http;
-        var req = protocol.request(options, function (res) {
-            var output = '';
+        let protocol = options.port == 443 ? https : http;
+        let req = protocol.request(options, function (res) {
+            let output = '';
 
             res.setEncoding('utf8');
 
@@ -74,7 +27,7 @@ var Utils = {
             });
 
             res.on('end', function () {
-                var obj = output;
+                let obj = output;
                 if (!asString) {
                     obj = JSON.parse(output);
                 }
@@ -99,7 +52,7 @@ var Utils = {
 
         path += "?";
 
-        for (var property in params) {
+        for (let property in params) {
 
             if (params.hasOwnProperty(property)) {
 
@@ -110,6 +63,11 @@ var Utils = {
         }
 
         return path;
+    },
+    
+    logicType:{
+        MOCK: "Mock",
+        REAL_WORLD: "Real world"
     }
 };
 
