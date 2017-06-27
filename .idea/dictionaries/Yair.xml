@@ -2,8 +2,12 @@
   <dictionary name="Yair">
     <words>
       <w>bookerplus</w>
+      <w>dont</w>
+      <w>fullname</w>
       <w>postback</w>
       <w>requestify</w>
+      <w>screenshot</w>
+      <w>webshot</w>
     </words>
   </dictionary>
 </component>

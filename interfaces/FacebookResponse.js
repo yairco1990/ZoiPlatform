@@ -4,7 +4,7 @@ module.exports = {
      * @param text
      * @returns {{text: *}}
      */
-    getRegularMessage: function (text) {
+    getTextMessage: function (text) {
         return {"text": text};
     },
 
@@ -66,6 +66,9 @@ module.exports = {
 	  response["webview_height_ratio"] = webviewHeightRatio;
         }
 
+        if (!payload && !url) {
+	  response.payload = title;
+        }
 
         return response;
     },
@@ -73,8 +76,8 @@ module.exports = {
     getGenericElement: function (title, imageUrl, subtitle, buttons) {
         let response = {
 	  "title": title,
-	  "image_url": imageUrl,
 	  "subtitle": subtitle,
+	  "buttons": buttons
 	  // "default_action": {
 	  //     "type": "web_url",
 	  //     "url": "https://peterssendreceiveapp.ngrok.io/view?item=103",
@@ -82,13 +85,16 @@ module.exports = {
 	  //     "webview_height_ratio": "tall",
 	  //     "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
 	  // },
-	  "buttons": buttons
         };
+
+        if (imageUrl) {
+	  response["image_url"] = imageUrl;
+        }
 
         return response;
     },
 
-    getGenericTemplate: function (title, imageUrl, elements) {
+    getGenericTemplate: function (elements) {
 
         if (!elements) {
 	  throw new Error("No elements");
@@ -99,35 +105,58 @@ module.exports = {
 	      "type": "template",
 	      "payload": {
 		"template_type": "generic",
-		"elements": [
-		    {
-		        "title": "Welcome to Peter\'s Hats",
-		        "image_url": "https://petersfancybrownhats.com/company_image.png",
-		        "subtitle": "We\'ve got the right hat for everyone.",
-		        "default_action": {
-			  "type": "web_url",
-			  "url": "https://peterssendreceiveapp.ngrok.io/view?item=103",
-			  "messenger_extensions": true,
-			  "webview_height_ratio": "tall",
-			  "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-		        },
-		        "buttons": [
-			  {
-			      "type": "web_url",
-			      "url": "https://petersfancybrownhats.com",
-			      "title": "View Website"
-			  }, {
-			      "type": "postback",
-			      "title": "Start Chatting",
-			      "payload": "DEVELOPER_DEFINED_PAYLOAD"
-			  }
-		        ]
-		    }
-		]
+		"elements": elements
 	      }
 	  }
         };
 
         return response;
+    },
+
+    getQRElement: function (text, quick_replies) {
+        return {
+	  "text": text,
+	  "quick_replies": quick_replies
+        }
+    },
+
+    getQRButton: function (content_type, title, payload) {
+
+        let response = {
+	  "content_type": content_type,
+	  "title": title,
+	  "payload": payload
+        };
+
+        if (!response.payload) {
+	  response.payload = title;
+        }
+
+        return response;
+    },
+
+    getShareMessage: function (title, subtitle, imageUrl, buttons) {
+        return {
+	  "attachment": {
+	      "type": "template",
+	      "payload": {
+		"template_type": "generic",
+		"elements": [
+		    {
+		        "title": title,
+		        "subtitle": subtitle,
+		        "image_url": imageUrl,
+		        "buttons": buttons
+		    }
+		]
+	      }
+	  }
+        };
+    },
+
+    getShareButton: function () {
+        return {
+	  "type": "element_share"
+        };
     }
 };

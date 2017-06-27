@@ -11,10 +11,12 @@
   "dependencies": {
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
+    "mongoose": "^4.10.7",
     "request": "^2.71.0",
     "request-promise": "^4.1.1",
     "requestify": "^0.2.5",
     "soap": "^0.19.1",
+    "webshot": "^0.18.0",
     "zoho": "^0.5.0"
   }
 }

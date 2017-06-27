@@ -1,0 +1,330 @@
+const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
+const requestify = require('requestify');
+const Util = require('util');
+const MyUtils = require('../../interfaces/utils');
+const moment = require('moment');
+const facebookResponse = require('../../interfaces/FacebookResponse');
+const Mocks = require('../../interfaces/Mocks');
+const request = require('request');
+const SharedLogic = require('../SharedLogic');
+const WelcomeLogic = require('../Intents/WelcomeLogic');
+const AppointmentLogic = require('../Intents/AppointmentLogic');
+const ClientLogic = require('../Intents/ClientLogic');
+const GeneralLogic = require('../Intents/GeneralLogic');
+
+/**
+ * ListenLogic constructor
+ * @constructor
+ */
+function ListenLogic() {
+    this.DBManager = require('../../dal/DBManager');
+}
+
+const delayTime = 3000;
+
+/**
+ * process intent with NLP and return response
+ * @param setBotTyping - function, launch it if you want to send to the user that the bot is typing
+ * @param bot - the bot object
+ * @param payload - request object, contains sender details, message and other stuff
+ * @param input - the user input
+ * @param callback - what to send to the user
+ */
+ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot, callback) {
+
+    let self = this;
+
+    Util.log("User input = " + input);
+
+    //check intent with NLP
+    requestify.request('http://52.174.244.154:8080/zoi/getIntent?text=' + input, {
+        method: 'GET'
+    }).then(function (response) {
+        response = response.getBody();
+        Util.log("Intent -> " + response.intent);
+        Util.log("Entities -> " + response.entities.toString());
+
+        //save conversation data
+        let conversationData = {
+	  input: input,
+	  intent: response.intent,
+	  entities: response.entities,
+	  context: response.intent.split(' ')[0].toUpperCase()//the type is the first word in the intent
+        };
+
+        //check if this is a button of quick replay
+        if (payload.message.quick_reply && payload.message.quick_reply.payload) {
+	  let jsonPayload = JSON.parse(payload.message.quick_reply.payload);
+	  conversationData.context = jsonPayload.type;
+	  conversationData.intent = input;
+	  conversationData.entities = {};
+        }
+
+        //get the user
+        self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {//
+	  //if the user have no email or full name - go the complete the "welcome conversation"
+	  if (!user || input.toLowerCase() == "reset") {
+	      conversationData.context = "WELCOME_CONVERSATION";
+	      //ignore the zoi-brain, and return the intent to the original input
+	      conversationData.intent = input;
+	      conversationData.entities = {};
+	  }
+	  //if the user in the middle of a conversation - get the context.
+	  //if the user want to leave the conversation - don't use the context, and delete the conversation data from the user
+	  else if (user && user.conversationData && conversationData.intent != "general bye zoi" && conversationData.intent != "general no thanks") {
+	      conversationData.context = user.conversationData.context;
+	  }
+
+	  //check the intent
+	  switch (conversationData.context) {
+	      case "WELCOME_CONVERSATION":
+		let welcomeLogic = new WelcomeLogic();
+		welcomeLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+		break;
+	      case "APPOINTMENT":
+		let appointmentLogic = new AppointmentLogic();
+		appointmentLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+		break;
+	      case "CLIENT":
+		let clientLogic = new ClientLogic();
+		clientLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+		break;
+	      case "GENERAL":
+		let generalLogic = new GeneralLogic();
+		generalLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+		break;
+	      default:
+		callback(facebookResponse.getTextMessage("What is the intent Yair?"));
+		break;
+	  }
+        }).catch(function (err) {
+
+	  Util.log(err);
+	  callback(facebookResponse.getTextMessage("Some error..."));
+        });
+    }).catch(function (err) {
+        Util.log(err);
+        callback(facebookResponse.getTextMessage("Zoi brain error..."));
+    });
+};
+
+/**
+ * process inputs and return mock response
+ * @param setBotTyping - function, launch it if you want to send to the user that the bot is typing
+ * @param bot - the bot object
+ * @param payload - request object, contains sender details, message and other staff
+ * @param input - the user input
+ * @param callback - what to send to the user
+ */
+ListenLogic.prototype.processMock = function (input, payload, setBotTyping, bot, callback) {
+
+    let self = this;
+
+    input = input.toLowerCase();
+
+    //check similarity of input
+    if (!(input.includes("book".toLowerCase()) && input.includes("for this slot".toLowerCase()))) {
+        input = MyUtils.getSimilarityFromMocks(input, Mocks).toLowerCase();
+    }
+
+    if (input == Mocks.HI_ZOI.toLowerCase() || input == Mocks.HEY_ZOI.toLowerCase()) {//he said hi zoi - we send revenue reporter
+
+        setBotTyping();
+
+        setTimeout(function () {
+	  callback(facebookResponse.getTextMessage(Mocks.I_NOTICED_SOMETHING), true);
+
+	  setTimeout(function () {
+
+	      callback(facebookResponse.getButtonMessage(Mocks.REVENUE_DOWN, [
+		facebookResponse.getGenericButton("web_url", "Watch the graph", null, "http://dice.beezee.be/test.html", "tall")
+	      ]), true);
+
+	      setTimeout(function () {
+
+		callback(facebookResponse.getTextMessage(Mocks.I_THINK_ITS_BECAUSE_PRIVATE_SESSIONS), true);
+
+		setTimeout(function () {
+
+		    callback(facebookResponse.getTextMessage(Mocks.LETS_OFFER_PROMOTIONS), true);
+
+		    setTimeout(function () {
+
+		        callback(facebookResponse.getQRElement(Mocks.DO_YOU_WANT_TO_SEND_PROMOTION, [
+			  facebookResponse.getQRButton("text", Mocks.SEND_PROMOTION),
+			  facebookResponse.getQRButton("text", Mocks.DONT_SEND_PROMOTION)
+		        ]));
+
+		    }, delayTime);
+
+		}, delayTime);
+
+	      }, delayTime + 1500);
+
+	  }, delayTime);
+
+        }, delayTime);
+
+
+    } else if (input == Mocks.SEND_PROMOTION.toLowerCase()) { //send promotion
+
+        setBotTyping();
+
+        callback(facebookResponse.getTextMessage(Mocks.I_AM_ON_IT), true);
+
+        setTimeout(function () {
+
+	  callback(facebookResponse.getTextMessage(Mocks.DONE_I_SENT_EMAILS), true);
+
+	  setTimeout(function () {
+
+	      callback(facebookResponse.getTextMessage(Mocks.I_SEE_YOUR_CUSTOMERS_RESPOND));
+
+	  }, delayTime);
+
+        }, delayTime);
+
+
+    } else if (input == Mocks.DONT_SEND_PROMOTION.toLowerCase()) { //don't send promotion
+
+        callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
+
+
+    } else if (input == Mocks.YES_POST.toLowerCase()) {//post on facebook
+
+        setBotTyping();
+
+        setTimeout(function () {
+
+	  callback(facebookResponse.getTextMessage(Mocks.THATS_SMART_MOVE), true);
+
+	  setTimeout(function () {
+
+	      callback(facebookResponse.getTextMessage(Mocks.THIS_IS_WHAT_I_WILL_POST), true);
+
+	      setTimeout(function () {
+
+		callback(facebookResponse.getGenericTemplate(
+		    [
+		        facebookResponse.getGenericElement(Mocks.TWENTY_PRECENT_OFF, "http://media.gq.com/photos/575f0063c2433a86159c8d71/16:9/pass/summer-haircut-gq-0716-3.jpg", Mocks.DONT_MISS_IT)
+		    ]
+		), true);
+
+		setTimeout(function () {
+
+		    callback(facebookResponse.getQRElement(Mocks.DO_I_SHARE_IT, [
+		        facebookResponse.getQRButton("text", Mocks.SHARE_IT),
+		        facebookResponse.getQRButton("text", Mocks.DONT_SHARE_IT)
+		    ]));
+
+		}, delayTime);
+
+	      }, 2000);
+
+	  }, delayTime);
+
+        }, delayTime);
+
+    } else if (input == Mocks.DONT_POST.toLowerCase()) {//don't post on facebook
+
+        callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
+
+
+    } else if (input == Mocks.SHARE_IT.toLowerCase()) {//share this template on facebook
+
+        let shareItFlow = function () {
+	  setBotTyping();
+
+	  setTimeout(function () {
+
+	      callback(facebookResponse.getTextMessage(Mocks.I_SHARED_IT), true);
+
+	      setTimeout(function () {
+
+		callback(facebookResponse.getTextMessage("www.goo.gl/Am2532"));
+
+	      }, delayTime);
+
+	  }, delayTime);
+        };
+
+        SharedLogic.postOnFacebook()
+	  .then(shareItFlow)
+	  .catch(shareItFlow);
+
+
+    } else if (input == Mocks.DONT_SHARE_IT.toLowerCase()) {//don't this template it on facebook
+
+        callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
+
+    } else if (input == Mocks.HELLO_ZOI.toLowerCase()) {
+
+        callback(facebookResponse.getTextMessage(Mocks.HEY_BOSS_WHAT_CAN_I_DO_FOR_YOU));
+
+
+    } else if (input == Mocks.WHAT_IS_MY_SCHEDULE_TODAY.toLowerCase()) {//what is my schedule today question
+
+        callback(facebookResponse.getTextMessage(Mocks.LET_ME_SEE), true);
+
+        setTimeout(function () {
+
+	  callback(facebookResponse.getTextMessage(Mocks.HERE_IS_YOUR_SCHEDULE), true);
+	  callback(facebookResponse.getImageMessage(MyUtils.getImageByHtml("http://dice.beezee.be/scheduleList.html")));
+
+	  setTimeout(function () {
+
+	      callback(facebookResponse.getTextMessage(Mocks.ANYTHING_ELSE));
+
+	  }, delayTime * 2.5);
+
+        }, delayTime);
+
+
+    } else if (input == Mocks.ZOI_QUESTION.toLowerCase()) {//zoi?
+
+        callback(facebookResponse.getTextMessage(Mocks.HEY_CHIEF));
+
+
+    } else if (input == Mocks.WHEN_IS_MY_NEXT_FREE_SLOT.toLowerCase()) {//when is my next free slot?
+
+        callback(facebookResponse.getTextMessage(Mocks.YOUR_NEXT_FREE_SLOT_AT));
+
+
+    } else if (input.includes("book".toLowerCase()) && input.includes("for this slot".toLowerCase())) {//when is my next free slot?
+
+        //cut the input and stay with the customer name
+        input = input.replace("book", "");
+        input = input.replace("for this slot", "");
+        let customerName = MyUtils.setCapitalLetterForEveryWord(input.trim());
+
+        setTimeout(function () {
+
+	  callback(facebookResponse.getTextMessage(Mocks.OKI_DOKI), true);
+
+	  setTimeout(function () {
+
+	      callback(facebookResponse.getRegularMessage(Mocks.CUSTOMER_BOOKED.replace("{customer}", customerName)), true);
+
+	      setTimeout(function () {
+
+		callback(facebookResponse.getRegularMessage(Mocks.ANYTHING_ELSE));
+
+	      }, delayTime);
+
+	  }, delayTime);
+
+        }, delayTime);
+
+    } else if (input == Mocks.NO.toLowerCase()) {//user said NO
+
+        callback(facebookResponse.getRegularMessage(Mocks.OK_BOSS));
+
+
+    } else { //on case we didn't understood what the user want
+
+        callback(facebookResponse.getRegularMessage(Mocks.CAN_YOU_BE_MORE_EXPLICIT));
+
+    }
+};
+
+module.exports = ListenLogic;

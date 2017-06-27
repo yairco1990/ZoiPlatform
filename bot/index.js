@@ -1,24 +1,25 @@
 'use strict';
 const https = require('https');
 const fs = require('fs');
-const ListenLogic = require('../logic/ListenLogic');
+const ListenLogic = require('../logic/Listeners/ListenLogic');
 const Bot = require('./bot_framework');
 const repHandler = require('./replyHandler');
 const Util = require('util');
 const MyUtils = require('../interfaces/utils');
-const PostbackLogic = require('../logic/PostbackLogic');
+const PostbackLogic = require('../logic/Listeners/PostbackLogic');
+require('../dal/DBManager');
 
 // Webhook port (facebook will access to https://myserver.com:4488)
 // Facebook doesn't work with http, only https allowed
 const PORT = 3000;
 
 //TODO here we decide if mock or real world
-const logicType = MyUtils.logicType.MOCK;
+const logicType = MyUtils.logicType.REAL_WORLD;
 
 // initialize bot
 let bot = new Bot({
     // page token
-    token: 'EAATS43ZAMkJQBAJBYqHuDcbO3YezZAtK0ekf82lZAZB4ll1BshhtzkFZCDJu7N0EAT0ciav3MZC9FTeKD1ebiWvceTbxbuuAMGtcuLUNhA5D1JoZCyBvcK65ZCZBBXuZBZBFKbDHzkckq67YVf8hIbnCyZAZASEcddUMbeZB2ZCikLMmtgJ1AZDZD',
+    token: 'EAATS43ZAMkJQBANoXinzXRjPuZC0525CMDtesm8yIdYdBTt9IKftGgyQTfEBlONO04m08CkI4rU2Fv9tPQQmn7wD2m5GMUIUxPKG2u1ZCH3eYJZBFQNH2EeZCL8YSg4RCO5qgIK6roZCfnjaseNCDBBGszIj40AlYjMZCkgxMOzMQZDZD',
 
     // verify token
     verify: 'testtoken',
@@ -59,11 +60,16 @@ bot.on('message', (payload, reply) => {
         let processType = logicType === MyUtils.logicType.REAL_WORLD ? "processInput" : "processMock";
 
         //process the input and return an answer to the sender
-        listenLogic[processType](payload.message.text, function (status, rep) {
+        listenLogic[processType](payload.message.text, payload, function () {
+	  bot.sendSenderAction(payload.sender.id, "typing_on");
+        }, bot, function (rep, isBotTyping) {
 	  // send reply
 	  reply(rep, (err) => {
 	      if (err) throw err;
 	      console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
+	      if (isBotTyping) {
+		bot.sendSenderAction(payload.sender.id, "typing_on");
+	      }
 	  });
         });
     });
@@ -84,11 +90,17 @@ bot.on('postback', (payload, reply) => {
         //check if real world or mock to decide which process function we should use
         let processActionType = logicType === MyUtils.logicType.REAL_WORLD ? "processAction" : "processMockAction";
 
-        postbackLogic[processActionType](JSON.parse(payload.postback.payload), function (status, rep) {
+        postbackLogic[processActionType](function () {
+	  bot.sendSenderAction(payload.sender.id, "typing_on");
+        }, bot, payload, JSON.parse(payload.postback.payload), function (rep, isBotTyping) {
 	  // send reply
 	  reply(rep, (err) => {
 	      if (err) throw err;
 	      console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
+
+	      if (isBotTyping) {
+		bot.sendSenderAction(payload.sender.id, "typing_on");
+	      }
 	  });
         });
     });
@@ -103,13 +115,12 @@ let server = https.createServer({
 server.listen(PORT);
 console.log('Echo bot server running at port ' + PORT + '.');
 
-
-if (logicType === MyUtils.logicType.REAL_WORLD) {
-    //TODO this is arab
-    const BookerplusLogic = require('../logic/BookerplusLogic');
-    //MY RESPONSE LOGIC
-    let bookerplusLogic = new BookerplusLogic('eyJjdHkiOiJ0ZXh0XC9wbGFpbiIsImFsZyI6IkhTMjU2In0.eyJzZXNzaW9uVG9rZW4iOiI1OGZjMGNkOS01MjJlLTQzZmMtODI4Yi01YmFhZTEzZmY2ZGEiLCJpZCI6MTgzNCwidHlwZSI6MX0.cxiL0yX4knjiRJlUGutB0CIsQaRsddyLreHURZVFH4o');
-    bookerplusLogic.getServices({}, function () {
-        Util.log("got services");
-    });
-}
+//     //TODO this is arab
+// if (logicType === MyUtils.logicType.REAL_WORLD) {
+//     const BookerplusLogic = require('../logic/BookerplusLogic');
+//     //MY RESPONSE LOGIC
+//     let bookerplusLogic = new BookerplusLogic('eyJjdHkiOiJ0ZXh0XC9wbGFpbiIsImFsZyI6IkhTMjU2In0.eyJzZXNzaW9uVG9rZW4iOiI1OGZjMGNkOS01MjJlLTQzZmMtODI4Yi01YmFhZTEzZmY2ZGEiLCJpZCI6MTgzNCwidHlwZSI6MX0.cxiL0yX4knjiRJlUGutB0CIsQaRsddyLreHURZVFH4o');
+//     bookerplusLogic.getServices({}, function () {
+//         Util.log("got services");
+//     });
+// }
