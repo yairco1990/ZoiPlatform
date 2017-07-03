@@ -113,10 +113,10 @@ module.exports = {
         return response;
     },
 
-    getQRElement: function (text, quick_replies) {
+    getQRElement: function (text, qrButtons) {
         return {
 	  "text": text,
-	  "quick_replies": quick_replies
+	  "quick_replies": qrButtons
         }
     },
 

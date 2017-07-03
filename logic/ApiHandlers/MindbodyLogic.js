@@ -103,8 +103,8 @@ MindbodyLogic.prototype.getNextFreeSlot = function (entities) {
 	      if (err || result.GetBookableItemsResult.ErrorCode != 200) {
 		reject(err);
 	      } else {
-		if (result.GetBookableItemsResult.Bookables.Bookabl) {
-		    resolve(result.GetBookableItemsResult.Bookables.Bookabl);
+		if (result.GetBookableItemsResult && result.GetBookableItemsResult.ScheduleItems && result.GetBookableItemsResult.ScheduleItems.ScheduleItem) {
+		    resolve(result.GetBookableItemsResult.ScheduleItems.ScheduleItem);
 		} else {
 		    //return empty appointments
 		    resolve([]);
@@ -138,7 +138,7 @@ MindbodyLogic.prototype.getClasses = function () {
 
 	  let authRequest = self.getAuthRequest();
 
-	  client.GetClasses(self.requestBody, function (err, result) {
+	  client.GetClasses(authRequest, function (err, result) {
 
 	      if (err) {
 		reject(err);
@@ -292,6 +292,57 @@ MindbodyLogic.prototype.getClients = function (entities) {
 		reject(err);
 	      } else {
 		resolve(result.GetClientsResult.Clients.Client);
+	      }
+
+	  });
+        });
+    });
+};
+
+
+/**
+ * book for customer
+ * @returns {Promise}
+ */
+MindbodyLogic.prototype.bookAppointment = function (appointmentDetails) {
+
+    Util.log("bookAppointment from mindbody function");
+
+    let self = this;
+
+    return new Promise(function (resolve, reject) {
+
+        let url = mindbodyApiUrl + '/AppointmentService.asmx?wsdl';
+
+        soap.createClient(url, self.wdsl, function (err, client) {
+
+	  if (err) {
+	      reject(err);
+	      return;
+	  }
+
+	  let authRequest = self.getAuthRequest();
+
+	  authRequest.Request.Appointments = appointmentDetails.Appointments;
+	  authRequest.Request.UpdateAction = appointmentDetails.UpdateAction;
+
+	  client.AddOrUpdateAppointments(authRequest, function (err, result) {
+
+	      if (err) {
+		reject(err);
+	      } else {
+		if (result && result.AddOrUpdateAppointmentsResult &&
+		    result.AddOrUpdateAppointmentsResult.Appointments &&
+		    result.AddOrUpdateAppointmentsResult.Appointments.Appointment &&
+		    result.AddOrUpdateAppointmentsResult.Appointments.Appointment.length) {
+		    if (result.AddOrUpdateAppointmentsResult.Appointments.Appointment[0].Action !== "Failed") {
+		        resolve(result.AddOrUpdateAppointmentsResult.Appointments.Appointment[0]);
+		    } else {
+		        reject({errorReason: result.AddOrUpdateAppointmentsResult.Appointments.Appointment[0].Messages.string[0]});
+		    }
+		} else {
+		    reject(result);
+		}
 	      }
 
 	  });

@@ -55,4 +55,12 @@ module.exports = {
     BOOK_FOR_THIS_CUSTOMER: "book {customer} for this slot",
     OKI_DOKI: "Oki-doki",
     CUSTOMER_BOOKED: "{customer} is booked for 13:30 ,Today.",
+
+    // OPENING SLOTS
+    HEY_BOSS_NOTICED_4_OPENING_THIS_WEEK: "Hey boss, I noticed that you have 4 openings in your calendar this week.",
+    LETS_FEEL_THOSE_UP: "I can promote them for you.",
+    GREAT_SOME_OPTIONS: "Great, I made 3 options, feel free to choose the one you like:",
+    GREAT_I_WILL_SEND_IT_NOW: "Great, I will send it right now. 👍",
+    DONE_I_SENT_IT:"Done, I sent it.",
+    THANKS: "thanks"
 };

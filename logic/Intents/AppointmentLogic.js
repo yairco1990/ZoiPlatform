@@ -7,9 +7,7 @@ const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
-const SharedAppointment = require('../../interfaces/SharedModels/SharedAppointment');
-const SharedCustomer = require('../../interfaces/SharedModels/SharedCustomer');
-const SharedEmployee = require('../../interfaces/SharedModels/SharedEmployee');
+const MindbodyFactory = require('../../interfaces/Factories/MindbodyFactory');
 
 const delayTime = 3000;
 
@@ -33,6 +31,10 @@ AppointmentLogic.prototype.processIntent = function (conversationData, user, set
 	  setBotTyping();
 	  self.getNextFreeSlot(user, conversationData, callback);
 	  break;
+        case "appointment book for customer":
+	  setBotTyping();
+	  self.bookForCustomer(user, conversationData, callback);
+	  break;
     }
 };
 
@@ -48,16 +50,8 @@ AppointmentLogic.prototype.getAppointments = function (user, conversationData, c
         //get appointments for today
         self.mindbodyLogic.getAppointments(conversationData.entities).then(function (appointments) {
 
-	  let result = "";//
-	  appointments.forEach(function (q, index) {
-	      let sharedAppointment = new SharedAppointment(
-		q.StartDateTime,
-		q.EndDateTime,
-		q.SessionType.Name,
-		new SharedEmployee(q.Staff.FirstName, q.Staff.LastName),
-		new SharedCustomer(q.Client.FirstName, q.Client.LastName, q.Client.Email, q.Client.MobilePhone));
-	      result += (index + 1) + ". " + sharedAppointment.toString();
-	  });
+	  let result = "Show it on web view";
+	  MindbodyFactory.generateAppointmentsList(appointments);
 
 	  callback(facebookResponse.getTextMessage(result));
 
@@ -77,11 +71,6 @@ const nextFreeSlotQuestions = {
         id: 1,
         text: "For which service?",
         field: "serviceObject"
-    },
-    staffQuestion: {
-        id: 2,
-        text: "Staff name?",
-        field: "staffObject"
     }
 };
 /**
@@ -100,7 +89,7 @@ AppointmentLogic.prototype.getNextFreeSlot = function (user, conversationData, c
         //save the service question
         user.conversationData.lastQuestion = question;
         //create session object to store the user data during the session
-        user.conversationData.session = {};
+        // user.session = {};
         //save the user
         self.DBManager.saveUser(user).then(function () {
 	  callback(facebookResponse.getTextMessage(question.text));
@@ -110,39 +99,99 @@ AppointmentLogic.prototype.getNextFreeSlot = function (user, conversationData, c
 
         //get the services list
         self.mindbodyLogic.getSessionTypes().then(function (services) {
+
+	  user.session = {};
 	  //get the service by the user input
-	  //save the service object to the session
-	  user.conversationData.session[user.conversationData.lastQuestion.field] = MyUtils.getSimilarityFromArray(conversationData.input, services, 'Name');
+	  user.session[user.conversationData.lastQuestion.field] = MyUtils.getSimilarityFromArray(conversationData.input, services, 'Name');
 
-	  let question = nextFreeSlotQuestions.staffQuestion;
+	  //get the next free slot with the service id
+	  self.mindbodyLogic.getNextFreeSlot({sessionTypeId: user.session.serviceObject.ID}).then(function (slots) {
 
-	  //save the staff question
-	  user.conversationData.lastQuestion = question;
-	  //save the user
-	  self.DBManager.saveUser(user).then(function () {
-	      callback(facebookResponse.getTextMessage(question.text));
-	  });
-        });
-    }
-    else if (user.conversationData.lastQuestion.id === nextFreeSlotQuestions.staffQuestion.id) {
+	      let responseText = "";
+	      if (slots.length) {
+		let slot = slots[1];
+		responseText = "The next free slot for " + user.session.serviceObject.Name + " is at " + moment(slot.StartDateTime).format("HH:mm MM/DD");
 
-        //save the staff name to the session object
-        user.conversationData.session[user.conversationData.lastQuestion.field] = conversationData.input;
+		user.session.nextFreeSlot = slot;
+	      } else {
+		responseText = "There are no available slots for this service";
+	      }
 
-        //get the next free slot with the service id
-        self.mindbodyLogic.getNextFreeSlot({sessionTypeId: user.conversationData.session.serviceObject.ID}).then(function (slots) {
-	  //save the user
-	  self.DBManager.saveUser(user).then(function () {
-	      callback(facebookResponse.getTextMessage(JSON.stringify(user.conversationData.session)));
-
+	      //clean conversation data
 	      user.conversationData = null;
+
 	      self.DBManager.saveUser(user).then(function () {
-	          //TODO for debug
-		callback(facebookResponse.getTextMessage("conversation cleaned"));
+		callback(facebookResponse.getTextMessage(responseText));
+
+		setTimeout(function () {
+		    callback(facebookResponse.getTextMessage("Is there another thing you want to do sir?"))
+		}, delayTime);
 	      });
 	  });
         });
     }
+};
+
+/**
+ * book for customer for free slot
+ * the session must contains details about free slot!
+ * @param user
+ * @param conversationData
+ * @param callback
+ */
+AppointmentLogic.prototype.bookForCustomer = function (user, conversationData, callback) {
+    let self = this;
+
+    //validate request
+    if (!conversationData.entities.CUSTOMER && !conversationData.entities.person) {
+        callback(facebookResponse.getTextMessage("Need details about the customer"));
+        return;
+    }
+    if (!user.session || !user.session.nextFreeSlot) {
+        callback(facebookResponse.getTextMessage("Need details about the required slot"));
+        return;
+    }
+
+    self.mindbodyLogic.getClients(conversationData.entities).then(function (customers) {
+        if (!customers.length) {
+	  callback(facebookResponse.getTextMessage("Didn't found customer with this name"));
+	  return;
+        }
+
+        let customer = customers[0];
+        let slot = user.session.nextFreeSlot;
+
+        let appointmentObject = {
+	  Appointments: {
+	      Appointment: {
+		Location: {
+		    ID: slot.Location.ID
+		},
+		Staff: {
+		    ID: slot.Staff.ID
+		},
+		Client: {
+		    ID: customer.ID
+		},
+		SessionType: {
+		    ID: slot.SessionType.ID
+		},
+		StartDateTime: moment(slot.StartDateTime).format('YYYY-MM-DDTHH:mm:ss')
+	      }
+	  },
+	  UpdateAction: "AddNew"
+        };
+        self.mindbodyLogic.bookAppointment(appointmentObject).then(function (result) {
+	  console.log(result);
+	  callback(facebookResponse.getTextMessage("Booked successfully for " + customer.FirstName + " " + customer.LastName));
+        }).catch(function (err) {
+	  if (err.errorReason) {
+	      callback(facebookResponse.getTextMessage(err.errorReason));
+	  } else {
+	      callback(facebookResponse.getTextMessage("Try to book for " + customer.FirstName));
+	  }
+        });
+    });
 };
 
 module.exports = AppointmentLogic;

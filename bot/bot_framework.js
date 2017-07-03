@@ -5,6 +5,9 @@ const EventEmitter = require('events').EventEmitter;
 const request = require('request-promise');
 const crypto = require('crypto');
 const MyUtils = require('../interfaces/utils');
+const GeneralTest = require('../tests/general');
+const ApiLogic = require('../logic/ApiLogic/index');
+const RequestLogic = require('../logic/Listeners/RequestLogic');
 
 class Bot extends EventEmitter {
     /**
@@ -189,31 +192,31 @@ class Bot extends EventEmitter {
      * @returns {function(*=, *=)}
      */
     middleware() {
+        let self = this;
+
         return (req, res) => {
 
 	  if (req.url === '/ping') {
 	      res.end(JSON.stringify({status: 'ok, pong'}));
 	  }
+	  //api requests
+	  else if (req.url.includes('/api/')) {
+	      ApiLogic.index(req, res);
+	  }
+	  //api requests
+	  else if (req.url.startsWith('/mock/openings')) {
+	      let requestLogic = new RequestLogic();
+	      requestLogic.processMock(self, {id: 1}, req.url.substring(req.url.indexOf("senderId") + "senderId=".length, req.url.length));
+	      res.end("Message sent!");
+	  }
 	  //test
-	  else if (req.url.includes('/test')) {
-	      let MindBodyLogic = require('../logic/ApiHandlers/MindbodyLogic');
-	      let MyUtils = require('../interfaces/utils');
-	      let mindBodyLogic = new MindBodyLogic({});
-	      mindBodyLogic.getPrograms().then(function (result) {
-		res.end(JSON.stringify(result));
-	      });
-	      // mindBodyLogic.getSessionTypes().then(function (result) {
-		// let sessionObject = MyUtils.getSimilarityFromArray("Tra", result, 'Name');
-		// res.end(JSON.stringify(result));
-	      // });
+	  else if (req.url.includes('/test/mindbody')) {
+	      GeneralTest.index(req, res);
 	  }
 	  //get image case
 	  else if (req.url.substring(0, 9) === '/getImage' && req.method === 'GET') {
-
 	      console.log("Get image request");
-
 	      MyUtils.getScreenShot(res, req.url.substring(10));
-
 	  } else {
 
 	      console.log("--------------------------------");

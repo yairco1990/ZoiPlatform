@@ -48,11 +48,23 @@ PostbackLogic.prototype.processMockAction = function (setBotTyping, bot, request
 
     let delayTime = 3000;
 
-    if (payload.type == Mocks.MENU_BUTTON_REVENUE_REPORTER) {
+    if (payload.id == 3) {
+        callback(facebookResponse.getTextMessage("Great! I will send this email to your customers right now."));
+
+        setTimeout(function () {
+	  callback(facebookResponse.getTextMessage("Done! I sent the promotion to 67 customers. 🙂"));
+
+	  setTimeout(function () {
+	      callback(facebookResponse.getTextMessage("Your calendar is going to be full in no time"));
+	  }, delayTime * 2);
+        }, delayTime * 2);
+    }
+    else if (payload.type == Mocks.MENU_BUTTON_REVENUE_REPORTER) {
 
         callback(facebookResponse.getTextMessage("Hi boss"));
 
-    } else if (payload.type == Mocks.MENU_BUTTON_VALENTINES_DAY) {
+    }
+    else if (payload.type == Mocks.MENU_BUTTON_VALENTINES_DAY) {
 
         callback(facebookResponse.getTextMessage(Mocks.VALENTINES_DAY_THIS_WEEKEND), true);
 
@@ -63,7 +75,8 @@ PostbackLogic.prototype.processMockAction = function (setBotTyping, bot, request
 	  ]));
         }, delayTime);
 
-    } else {
+    }
+    else {
 
         callback(facebookResponse.getTextMessage(Mocks.I_HAVE_NOTHING_TO_SAY));
 

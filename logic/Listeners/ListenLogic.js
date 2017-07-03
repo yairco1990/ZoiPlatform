@@ -73,6 +73,7 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 	  //if the user want to leave the conversation - don't use the context, and delete the conversation data from the user
 	  else if (user && user.conversationData && conversationData.intent != "general bye zoi" && conversationData.intent != "general no thanks") {
 	      conversationData.context = user.conversationData.context;
+	      conversationData.intent = user.conversationData.intent;
 	  }
 
 	  //check the intent
@@ -122,208 +123,244 @@ ListenLogic.prototype.processMock = function (input, payload, setBotTyping, bot,
 
     input = input.toLowerCase();
 
-    //check similarity of input
-    if (!(input.includes("book".toLowerCase()) && input.includes("for this slot".toLowerCase()))) {
-        input = MyUtils.getSimilarityFromMocks(input, Mocks).toLowerCase();
+    //get message payload if exist
+    let messagePayload = null;
+    try {
+        messagePayload = JSON.parse(payload.message.quick_reply.payload);
+    } catch (err) {
     }
 
-    if (input == Mocks.HI_ZOI.toLowerCase() || input == Mocks.HEY_ZOI.toLowerCase()) {//he said hi zoi - we send revenue reporter
+    if (messagePayload && messagePayload.id == 2) {
 
-        setBotTyping();
+        callback(facebookResponse.getTextMessage(Mocks.GREAT_SOME_OPTIONS));
 
         setTimeout(function () {
-	  callback(facebookResponse.getTextMessage(Mocks.I_NOTICED_SOMETHING), true);
+	  callback(facebookResponse.getGenericTemplate([
+	      facebookResponse.getGenericElement("A day in a spa for 100$", "http://alluredayspavi.com/portals/_default/Skins/Vaspan/images/BoxImgB1.jpg", "Book now for a whole day in our spa for just 100$. Don\'t miss it!", [
+		facebookResponse.getGenericButton("postback", "I like it", {id: 3}),
+		facebookResponse.getGenericButton("postback", "Edit", {id: 3}),
+	      ]),
+	      facebookResponse.getGenericElement("20% off massage treatments", "https://preview.ibb.co/fX8mhv/spa1.jpg", "Book a massage now and get 20% off", [
+		facebookResponse.getGenericButton("postback", "I like it", {id: 3}),
+		facebookResponse.getGenericButton("postback", "Edit", {id: 3}),
+	      ]),
+	      facebookResponse.getGenericElement("1 + 1 on face treatments", "https://image.ibb.co/fv5XNv/spa3.jpg", "Get 2 treatments for the price of one. Book now to claim your reward", [
+		facebookResponse.getGenericButton("postback", "I like it", {id: 3}),
+		facebookResponse.getGenericButton("postback", "Edit", {id: 3}),
+	      ])
+	  ]));
+        }, delayTime);
+
+    } else {
+
+        //check similarity of input
+        if (!(input.includes("book".toLowerCase()) && input.includes("for this slot".toLowerCase()))) {
+	  input = MyUtils.getSimilarityFromMocks(input, Mocks).toLowerCase();
+        }
+
+        if (input == Mocks.HI_ZOI.toLowerCase() || input == Mocks.HEY_ZOI.toLowerCase()) {//he said hi zoi - we send revenue reporter
+
+	  setBotTyping();
 
 	  setTimeout(function () {
-
-	      callback(facebookResponse.getButtonMessage(Mocks.REVENUE_DOWN, [
-		facebookResponse.getGenericButton("web_url", "Watch the graph", null, "http://dice.beezee.be/test.html", "tall")
-	      ]), true);
+	      callback(facebookResponse.getTextMessage(Mocks.I_NOTICED_SOMETHING), true);
 
 	      setTimeout(function () {
 
-		callback(facebookResponse.getTextMessage(Mocks.I_THINK_ITS_BECAUSE_PRIVATE_SESSIONS), true);
+		callback(facebookResponse.getButtonMessage(Mocks.REVENUE_DOWN, [
+		    facebookResponse.getGenericButton("web_url", "Watch the graph", null, "http://dice.beezee.be/test.html", "tall")
+		]), true);
 
 		setTimeout(function () {
 
-		    callback(facebookResponse.getTextMessage(Mocks.LETS_OFFER_PROMOTIONS), true);
+		    callback(facebookResponse.getTextMessage(Mocks.I_THINK_ITS_BECAUSE_PRIVATE_SESSIONS), true);
 
 		    setTimeout(function () {
 
-		        callback(facebookResponse.getQRElement(Mocks.DO_YOU_WANT_TO_SEND_PROMOTION, [
-			  facebookResponse.getQRButton("text", Mocks.SEND_PROMOTION),
-			  facebookResponse.getQRButton("text", Mocks.DONT_SEND_PROMOTION)
-		        ]));
+		        callback(facebookResponse.getTextMessage(Mocks.LETS_OFFER_PROMOTIONS), true);
+
+		        setTimeout(function () {
+
+			  callback(facebookResponse.getQRElement(Mocks.DO_YOU_WANT_TO_SEND_PROMOTION, [
+			      facebookResponse.getQRButton("text", Mocks.SEND_PROMOTION),
+			      facebookResponse.getQRButton("text", Mocks.DONT_SEND_PROMOTION)
+			  ]));
+
+		        }, delayTime);
 
 		    }, delayTime);
 
-		}, delayTime);
+		}, delayTime + 1500);
 
-	      }, delayTime + 1500);
-
-	  }, delayTime);
-
-        }, delayTime);
-
-
-    } else if (input == Mocks.SEND_PROMOTION.toLowerCase()) { //send promotion
-
-        setBotTyping();
-
-        callback(facebookResponse.getTextMessage(Mocks.I_AM_ON_IT), true);
-
-        setTimeout(function () {
-
-	  callback(facebookResponse.getTextMessage(Mocks.DONE_I_SENT_EMAILS), true);
-
-	  setTimeout(function () {
-
-	      callback(facebookResponse.getTextMessage(Mocks.I_SEE_YOUR_CUSTOMERS_RESPOND));
+	      }, delayTime);
 
 	  }, delayTime);
 
-        }, delayTime);
 
+        } else if (input == Mocks.SEND_PROMOTION.toLowerCase()) { //send promotion
 
-    } else if (input == Mocks.DONT_SEND_PROMOTION.toLowerCase()) { //don't send promotion
+	  setBotTyping();
 
-        callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
-
-
-    } else if (input == Mocks.YES_POST.toLowerCase()) {//post on facebook
-
-        setBotTyping();
-
-        setTimeout(function () {
-
-	  callback(facebookResponse.getTextMessage(Mocks.THATS_SMART_MOVE), true);
+	  callback(facebookResponse.getTextMessage(Mocks.I_AM_ON_IT), true);
 
 	  setTimeout(function () {
 
-	      callback(facebookResponse.getTextMessage(Mocks.THIS_IS_WHAT_I_WILL_POST), true);
+	      callback(facebookResponse.getTextMessage(Mocks.DONE_I_SENT_EMAILS), true);
 
 	      setTimeout(function () {
 
-		callback(facebookResponse.getGenericTemplate(
-		    [
-		        facebookResponse.getGenericElement(Mocks.TWENTY_PRECENT_OFF, "http://media.gq.com/photos/575f0063c2433a86159c8d71/16:9/pass/summer-haircut-gq-0716-3.jpg", Mocks.DONT_MISS_IT)
-		    ]
-		), true);
+		callback(facebookResponse.getTextMessage(Mocks.I_SEE_YOUR_CUSTOMERS_RESPOND));
 
-		setTimeout(function () {
-
-		    callback(facebookResponse.getQRElement(Mocks.DO_I_SHARE_IT, [
-		        facebookResponse.getQRButton("text", Mocks.SHARE_IT),
-		        facebookResponse.getQRButton("text", Mocks.DONT_SHARE_IT)
-		    ]));
-
-		}, delayTime);
-
-	      }, 2000);
+	      }, delayTime);
 
 	  }, delayTime);
 
-        }, delayTime);
 
-    } else if (input == Mocks.DONT_POST.toLowerCase()) {//don't post on facebook
+        } else if (input == Mocks.DONT_SEND_PROMOTION.toLowerCase()) { //don't send promotion
 
-        callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
+	  callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
 
 
-    } else if (input == Mocks.SHARE_IT.toLowerCase()) {//share this template on facebook
+        } else if (input == Mocks.YES_POST.toLowerCase()) {//post on facebook
 
-        let shareItFlow = function () {
 	  setBotTyping();
 
 	  setTimeout(function () {
 
-	      callback(facebookResponse.getTextMessage(Mocks.I_SHARED_IT), true);
+	      callback(facebookResponse.getTextMessage(Mocks.THATS_SMART_MOVE), true);
 
 	      setTimeout(function () {
 
-		callback(facebookResponse.getTextMessage("www.goo.gl/Am2532"));
+		callback(facebookResponse.getTextMessage(Mocks.THIS_IS_WHAT_I_WILL_POST), true);
 
-	      }, delayTime);
+		setTimeout(function () {
 
-	  }, delayTime);
-        };
+		    callback(facebookResponse.getGenericTemplate(
+		        [
+			  facebookResponse.getGenericElement(Mocks.TWENTY_PRECENT_OFF, "http://media.gq.com/photos/575f0063c2433a86159c8d71/16:9/pass/summer-haircut-gq-0716-3.jpg", Mocks.DONT_MISS_IT)
+		        ]
+		    ), true);
 
-        SharedLogic.postOnFacebook()
-	  .then(shareItFlow)
-	  .catch(shareItFlow);
+		    setTimeout(function () {
 
+		        callback(facebookResponse.getQRElement(Mocks.DO_I_SHARE_IT, [
+			  facebookResponse.getQRButton("text", Mocks.SHARE_IT),
+			  facebookResponse.getQRButton("text", Mocks.DONT_SHARE_IT)
+		        ]));
 
-    } else if (input == Mocks.DONT_SHARE_IT.toLowerCase()) {//don't this template it on facebook
+		    }, delayTime);
 
-        callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
-
-    } else if (input == Mocks.HELLO_ZOI.toLowerCase()) {
-
-        callback(facebookResponse.getTextMessage(Mocks.HEY_BOSS_WHAT_CAN_I_DO_FOR_YOU));
-
-
-    } else if (input == Mocks.WHAT_IS_MY_SCHEDULE_TODAY.toLowerCase()) {//what is my schedule today question
-
-        callback(facebookResponse.getTextMessage(Mocks.LET_ME_SEE), true);
-
-        setTimeout(function () {
-
-	  callback(facebookResponse.getTextMessage(Mocks.HERE_IS_YOUR_SCHEDULE), true);
-	  callback(facebookResponse.getImageMessage(MyUtils.getImageByHtml("http://dice.beezee.be/scheduleList.html")));
-
-	  setTimeout(function () {
-
-	      callback(facebookResponse.getTextMessage(Mocks.ANYTHING_ELSE));
-
-	  }, delayTime * 2.5);
-
-        }, delayTime);
-
-
-    } else if (input == Mocks.ZOI_QUESTION.toLowerCase()) {//zoi?
-
-        callback(facebookResponse.getTextMessage(Mocks.HEY_CHIEF));
-
-
-    } else if (input == Mocks.WHEN_IS_MY_NEXT_FREE_SLOT.toLowerCase()) {//when is my next free slot?
-
-        callback(facebookResponse.getTextMessage(Mocks.YOUR_NEXT_FREE_SLOT_AT));
-
-
-    } else if (input.includes("book".toLowerCase()) && input.includes("for this slot".toLowerCase())) {//when is my next free slot?
-
-        //cut the input and stay with the customer name
-        input = input.replace("book", "");
-        input = input.replace("for this slot", "");
-        let customerName = MyUtils.setCapitalLetterForEveryWord(input.trim());
-
-        setTimeout(function () {
-
-	  callback(facebookResponse.getTextMessage(Mocks.OKI_DOKI), true);
-
-	  setTimeout(function () {
-
-	      callback(facebookResponse.getRegularMessage(Mocks.CUSTOMER_BOOKED.replace("{customer}", customerName)), true);
-
-	      setTimeout(function () {
-
-		callback(facebookResponse.getRegularMessage(Mocks.ANYTHING_ELSE));
+		}, 2000);
 
 	      }, delayTime);
 
 	  }, delayTime);
 
-        }, delayTime);
+        } else if (input == Mocks.DONT_POST.toLowerCase()) {//don't post on facebook
 
-    } else if (input == Mocks.NO.toLowerCase()) {//user said NO
-
-        callback(facebookResponse.getRegularMessage(Mocks.OK_BOSS));
+	  callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
 
 
-    } else { //on case we didn't understood what the user want
+        } else if (input == Mocks.SHARE_IT.toLowerCase()) {//share this template on facebook
 
-        callback(facebookResponse.getRegularMessage(Mocks.CAN_YOU_BE_MORE_EXPLICIT));
+	  let shareItFlow = function () {
+	      setBotTyping();
 
+	      setTimeout(function () {
+
+		callback(facebookResponse.getTextMessage(Mocks.I_SHARED_IT), true);
+
+		setTimeout(function () {
+
+		    callback(facebookResponse.getTextMessage("www.goo.gl/Am2532"));
+
+		}, delayTime);
+
+	      }, delayTime);
+	  };
+
+	  SharedLogic.postOnFacebook()
+	      .then(shareItFlow)
+	      .catch(shareItFlow);
+
+
+        } else if (input == Mocks.DONT_SHARE_IT.toLowerCase()) {//don't this template it on facebook
+
+	  callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
+
+        } else if (input == Mocks.HELLO_ZOI.toLowerCase()) {
+
+	  callback(facebookResponse.getTextMessage(Mocks.HEY_BOSS_WHAT_CAN_I_DO_FOR_YOU));
+
+
+        } else if (input == Mocks.WHAT_IS_MY_SCHEDULE_TODAY.toLowerCase()) {//what is my schedule today question
+
+	  callback(facebookResponse.getTextMessage(Mocks.LET_ME_SEE), true);
+
+	  setTimeout(function () {
+
+	      callback(facebookResponse.getTextMessage(Mocks.HERE_IS_YOUR_SCHEDULE), true);
+	      callback(facebookResponse.getImageMessage(MyUtils.getImageByHtml("http://dice.beezee.be/scheduleList.html")));
+
+	      setTimeout(function () {
+
+		callback(facebookResponse.getTextMessage(Mocks.ANYTHING_ELSE));
+
+	      }, delayTime * 2.5);
+
+	  }, delayTime);
+
+
+        } else if (input == Mocks.ZOI_QUESTION.toLowerCase()) {//zoi?
+
+	  callback(facebookResponse.getTextMessage(Mocks.HEY_CHIEF));
+
+
+        } else if (input == Mocks.WHEN_IS_MY_NEXT_FREE_SLOT.toLowerCase()) {//when is my next free slot?
+
+	  callback(facebookResponse.getTextMessage(Mocks.YOUR_NEXT_FREE_SLOT_AT));
+
+
+        } else if (input.includes("book".toLowerCase()) && input.includes("for this slot".toLowerCase())) {//when is my next free slot?
+
+	  //cut the input and stay with the customer name
+	  input = input.replace("book", "");
+	  input = input.replace("for this slot", "");
+	  let customerName = MyUtils.setCapitalLetterForEveryWord(input.trim());
+
+	  setTimeout(function () {
+
+	      callback(facebookResponse.getTextMessage(Mocks.OKI_DOKI), true);
+
+	      setTimeout(function () {
+
+		callback(facebookResponse.getTextMessage(Mocks.CUSTOMER_BOOKED.replace("{customer}", customerName)), true);
+
+		setTimeout(function () {
+
+		    callback(facebookResponse.getTextMessage(Mocks.ANYTHING_ELSE));
+
+		}, delayTime);
+
+	      }, delayTime);
+
+	  }, delayTime);
+
+        } else if (input == Mocks.NO.toLowerCase()) {//user said NO
+
+	  callback(facebookResponse.getTextMessage(Mocks.OK_BOSS));
+
+
+        } else if (input == Mocks.THANKS.toLowerCase()) {//user said NO
+
+	  callback(facebookResponse.getTextMessage("😎 You are welcome, boss!"));
+
+
+        } else { //on case we didn't understood what the user want
+
+	  callback(facebookResponse.getTextMessage(Mocks.CAN_YOU_BE_MORE_EXPLICIT));
+
+        }
     }
 };
 

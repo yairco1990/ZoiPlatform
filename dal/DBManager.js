@@ -13,7 +13,8 @@ function DBManager() {
         _id: String,
         fullname: String,
         email: String,
-        conversationData: Object
+        conversationData: Object,
+        session: Object
     });
 
     this.User = mongoose.model('User', userSchema);

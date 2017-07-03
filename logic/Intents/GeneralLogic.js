@@ -25,12 +25,14 @@ GeneralLogic.prototype.processIntent = function (conversationData, user, setBotT
 	  break;
         case "general no thanks":
 	  user.conversationData = null;
+	  user.session = null;
 	  self.DBManager.saveUser(user).then(function () {
 	      callback(facebookResponse.getTextMessage("OK boss"));
 	  });
 	  break;
         case "general bye zoi":
 	  user.conversationData = null;
+	  user.session = null;
 	  self.DBManager.saveUser(user).then(function () {
 	      callback(facebookResponse.getTextMessage("Bye boss"));
 	  });
