@@ -24,12 +24,12 @@ function MindbodyLogic(credentials) {
 	  }
         }
     };
-
-    this.wdsl = [
-        {soap_version: "SOAP_1_1"},
-        {trace: true}
-    ];
 }
+
+MindbodyLogic.wdsl = [
+    {soap_version: "SOAP_1_1"},
+    {trace: true}
+];
 
 /**
  * get client
@@ -46,7 +46,7 @@ MindbodyLogic.prototype.getAppointments = function (entities) {
 
         let url = mindbodyApiUrl + '/AppointmentService.asmx?wsdl';
 
-        soap.createClient(url, self.wdsl, function (err, client) {
+        soap.createClient(url, MindbodyLogic.wdsl, function (err, client) {
 
 	  if (err) {
 	      reject(err);
@@ -85,7 +85,7 @@ MindbodyLogic.prototype.getNextFreeSlot = function (entities) {
 
         let url = mindbodyApiUrl + '/AppointmentService.asmx?wsdl';
 
-        soap.createClient(url, self.wdsl, function (err, client) {
+        soap.createClient(url, MindbodyLogic.wdsl, function (err, client) {
 
 	  if (err) {
 	      reject(err);
@@ -129,7 +129,7 @@ MindbodyLogic.prototype.getClasses = function () {
 
         let url = mindbodyApiUrl + '/ClassService.asmx?wsdl';
 
-        soap.createClient(url, self.wdsl, function (err, client) {
+        soap.createClient(url, MindbodyLogic.wdsl, function (err, client) {
 
 	  if (err) {
 	      reject(err);
@@ -164,7 +164,7 @@ MindbodyLogic.prototype.getSales = function () {
 
         let url = mindbodyApiUrl + '/SaleService.asmx?wsdl';
 
-        soap.createClient(url, self.wdsl, function (err, client) {
+        soap.createClient(url, MindbodyLogic.wdsl, function (err, client) {
 
 	  if (err) {
 	      reject(err);
@@ -201,7 +201,7 @@ MindbodyLogic.prototype.getSessionTypes = function () {
 
         let url = mindbodyApiUrl + '/SiteService.asmx?wsdl';
 
-        soap.createClient(url, self.wdsl, function (err, client) {
+        soap.createClient(url, MindbodyLogic.wdsl, function (err, client) {
 
 	  if (err) {
 	      reject(err);
@@ -233,7 +233,7 @@ MindbodyLogic.prototype.getPrograms = function () {
 
         let url = mindbodyApiUrl + '/SiteService.asmx?wsdl';
 
-        soap.createClient(url, self.wdsl, function (err, client) {
+        soap.createClient(url, MindbodyLogic.wdsl, function (err, client) {
 
 	  if (err) {
 	      reject(err);
@@ -270,7 +270,7 @@ MindbodyLogic.prototype.getClients = function (entities) {
 
         let url = mindbodyApiUrl + '/ClientService.asmx?wsdl';
 
-        soap.createClient(url, self.wdsl, function (err, client) {
+        soap.createClient(url, MindbodyLogic.wdsl, function (err, client) {
 
 	  if (err) {
 	      reject(err);
@@ -314,7 +314,7 @@ MindbodyLogic.prototype.bookAppointment = function (appointmentDetails) {
 
         let url = mindbodyApiUrl + '/AppointmentService.asmx?wsdl';
 
-        soap.createClient(url, self.wdsl, function (err, client) {
+        soap.createClient(url, MindbodyLogic.wdsl, function (err, client) {
 
 	  if (err) {
 	      reject(err);

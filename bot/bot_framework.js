@@ -6,7 +6,6 @@ const request = require('request-promise');
 const crypto = require('crypto');
 const MyUtils = require('../interfaces/utils');
 const GeneralTest = require('../tests/general');
-const ApiLogic = require('../logic/ApiLogic/index');
 const RequestLogic = require('../logic/Listeners/RequestLogic');
 
 class Bot extends EventEmitter {

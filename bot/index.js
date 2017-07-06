@@ -10,6 +10,8 @@ const facebookResponses = require('../interfaces/FacebookResponse');
 const express = require('express');
 const app = express();
 const Services = require('./Services');
+const ApiRouting = require('./ApiRouting');
+const bodyParser = require('body-parser');
 require('../dal/DBManager');
 
 // Webhook port (facebook will access to https://myserver.com:3000)
@@ -36,6 +38,31 @@ let bot = new Bot({
     app_secret: '1b27655a518d7d7ee75312074afabe09'
 });
 
+// Add headers
+app.use(function (req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    // Pass to next layer of middleware
+    next();
+});
+
+//parse body for every request
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+//sign that the server got the request
+app.use(function (req, res, next) {
+    console.log("-------------------------------------");
+    next();
+});
+
 //set the routing
 Services.setRouting(app, bot);
 Services.setBotListeners(bot);
+ApiRouting.setApiRouting(app);

@@ -1,7 +1,7 @@
 *to start bot (workdir=mybot/):
 node bot
     or
-node bot\index.js
+node bot\ApiRouting.js
 
 * Step by step - creating a Facebook bot:
 https://blog.hartleybrody.com/fb-messenger-bot/

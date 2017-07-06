@@ -14,7 +14,8 @@ function DBManager() {
         fullname: String,
         email: String,
         conversationData: Object,
-        session: Object
+        session: Object,
+        integrations: Object
     });
 
     this.User = mongoose.model('User', userSchema);
@@ -50,17 +51,21 @@ DBManager.prototype.saveUser = function (user) {
     let self = this;
 
     return new Promise(function (resolve, reject) {
-        //create model instance with the user object
-        let savedUser = self.User(user);
 
-        //save the user
-        savedUser.save(function (err) {
-	  if (err) {
-	      reject(err);
-	  } else {
-	      resolve(user);
+        let userObj = new self.User(user);
+
+        self.User.findOneAndUpdate(
+	  {_id: user._id}, // find a document with that filter
+	  userObj, // document to insert when nothing was found
+	  {upsert: true, new: true}, // options
+	  function (err, doc) { // callback
+	      if (err) {
+		reject(err);
+	      } else {
+		resolve(doc);
+	      }
 	  }
-        });
+        );
     });
 };
 

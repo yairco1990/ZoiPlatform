@@ -8,26 +8,16 @@ const MyUtils = require('../interfaces/utils');
 const PostbackLogic = require('../logic/Listeners/PostbackLogic');
 const speechToText = require('../interfaces/SpeechToText');
 const facebookResponses = require('../interfaces/FacebookResponse');
-const ApiLogic = require('../logic/ApiLogic/index');
 const GeneralTest = require('../tests/general');
 const RequestLogic = require('../logic/Listeners/RequestLogic');
 const crypto = require('crypto');
-const bodyParser = require('body-parser');
 
 //TODO here we decide if mock or real world
-const logicType = MyUtils.logicType.MOCK;
+const logicType = MyUtils.logicType.REAL_WORLD;
 
 module.exports = {
     //set server routing
     setRouting: function (app, bot) {
-
-        //parse body for every request
-        app.use(bodyParser.json());
-        app.use(bodyParser.urlencoded({extended: true}));
-        //sign that the server got the request
-        // app.use('/', function () {
-	 //  console.log("-------------------------------------");
-        // });
 
         //ping request
         app.get('/ping', function (req, res) {
@@ -44,11 +34,21 @@ module.exports = {
 	  GeneralTest.index(req, res);
         });
 
+        //getImage request
+        app.get('/getImage', function (req, res) {
+	  MyUtils.getScreenShot(res, req.url.substring(10));
+        });
+
         //test mindbody api
         app.get('/mock/openings', function (req, res) {
 	  let requestLogic = new RequestLogic();
 	  requestLogic.processMock(bot, {id: 1}, req.query.senderId);
 	  res.end("Message sent!");
+        });
+
+        //verify bot
+        app.get('/', function (req, res) {
+	  return bot._verify(req, res);
         });
 
         //facebook message request

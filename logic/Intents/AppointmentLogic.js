@@ -47,22 +47,15 @@ AppointmentLogic.prototype.getAppointments = function (user, conversationData, c
     callback(facebookResponse.getTextMessage("Let me see..."), true);
 
     setTimeout(function () {
-        //get appointments for today
-        self.mindbodyLogic.getAppointments(conversationData.entities).then(function (appointments) {
 
-	  let result = "Show it on web view";
-	  MindbodyFactory.generateAppointmentsList(appointments);
+        callback(facebookResponse.getButtonMessage("This is your schedule for today sir:", [
+	  facebookResponse.getGenericButton("web_url", "Watch your schedule", null, "http://zoiai.com/#/agenda", "tall")
+        ]));
 
-	  callback(facebookResponse.getTextMessage(result));
+        setTimeout(function () {
+	  callback(facebookResponse.getTextMessage("Anything else?"));
+        }, delayTime);
 
-	  setTimeout(function () {
-	      callback(facebookResponse.getTextMessage("Anything else?"));
-	  }, delayTime);
-
-        }).catch(function (err) {
-	  Util.log(err);
-	  callback(facebookResponse.getTextMessage("Error..."));
-        });
     }, delayTime);
 };
 

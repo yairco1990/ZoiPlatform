@@ -1,8 +1,9 @@
-function SharedCustomer(firstname, lastname, email, mobile) {
+function SharedCustomer(firstname, lastname, email, mobile, photoUrl) {
     this.firstname = firstname;
     this.lastname = lastname;
     this.email = email;
     this.mobile = mobile;
+    this.photoUrl = photoUrl;
 }
 
 SharedCustomer.prototype.toString = function () {

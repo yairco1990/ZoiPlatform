@@ -21,7 +21,7 @@ module.exports = {
 	      q.EndDateTime,
 	      q.SessionType.Name,
 	      new SharedEmployee(q.Staff.FirstName, q.Staff.LastName),
-	      new SharedCustomer(q.Client.FirstName, q.Client.LastName, q.Client.Email, q.Client.MobilePhone));
+	      new SharedCustomer(q.Client.FirstName, q.Client.LastName, q.Client.Email, q.Client.MobilePhone, q.Client.PhotoURL));
 
 	  appointmentsList.push(sharedAppointment);
         });
