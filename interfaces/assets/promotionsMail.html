@@ -1,0 +1,129 @@
+<html>
+<head>
+    <style>
+
+        @media only screen and (max-width: 500px) {
+            .top-stripe {
+                width: 100% !important;
+            }
+        }
+
+        html {
+            color: #464646;
+        }
+
+        .form-titles {
+            text-align: center;
+        }
+
+        .container {
+            text-align: left;
+            padding: 40px;
+            max-width: 100% !important;
+        }
+
+        label {
+            max-width: 100% !important;
+        }
+
+        .md-card {
+            display: -webkit-inline-box;
+            border-radius: 2px;
+            width: 100%;
+            box-sizing: border-box;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            margin: 8px;
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+            background-color: #f9f9f9;
+            border: #cecece solid;
+            border-width: 1px;
+            border-top: initial;
+			margin: auto;
+        }
+
+        .top-stripe {
+            border-top: 8px solid #3d6db6;
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+        }
+
+        .main-title {
+            font: 400 25px/40px Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+            font-size: 20px;
+            padding-bottom: 10px;
+        }
+
+        .first-title {
+            font: 400 20px/40px Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+            font-size: 18px;
+        }
+
+        .vertical-center {
+            display: flex;
+            align-items: center;
+        }
+
+        .second-title {
+            white-space: pre-wrap;
+        }
+
+        .im {
+            color: #500050;
+        }
+
+        .third-title {
+            margin-top: 10px;
+        }
+
+        #fobi-logo {
+            background-position-y: 50%;
+            height: 54px;
+            width: 9rem;
+            background-repeat: no-repeat;
+            background-size: contain;
+            text-align: center;
+            margin-top: 13px;
+            display: -webkit-inline-box;
+        }
+    </style>
+</head>
+<body>
+<div class="form-titles">
+
+    <div style="text-align: center">
+        <img src="https://zoi.ai/wp-content/uploads/2017/05/zoi-logo-new.png"
+             style="height: 100px;margin-bottom: 20px">
+
+        </img>
+    </div>
+
+    <div class="md-card top-stripe">
+        <div class="container">
+            <div class="row vertical-center main-title">
+                <label>Hi there!</label>
+            </div>
+
+            <div class="row vertical-center first-title">
+                <label>{{title}}</label>
+            </div>
+
+           <div class="row vertical-center third-title" ng-click="vm.sendAnotherResponse()"
+                 style="text-align: left;display: block;">
+                {{scheduleButtons}}
+            </div>
+            
+        </div>
+
+    </div>
+    <br>
+    <div style="margin-top: 15px;font-size: 16px;">
+        <label>
+            <a href="http://zoi.ai">Zoi.Ai</a>
+        </label>
+        <br>
+    </div>
+</div>
+</body>
+</html>

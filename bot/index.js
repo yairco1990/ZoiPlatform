@@ -12,6 +12,7 @@ const app = express();
 const Services = require('./Services');
 const ApiRouting = require('./ApiRouting');
 const bodyParser = require('body-parser');
+const session = require('express-session');
 require('../dal/DBManager');
 
 // Webhook port (facebook will access to https://myserver.com:3000)
@@ -55,12 +56,17 @@ app.use(function (req, res, next) {
 
 //parse body for every request
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: false}));
 //sign that the server got the request
 app.use(function (req, res, next) {
     console.log("-------------------------------------");
     next();
 });
+app.use(session({
+    secret: 'pwnz0rz',
+    saveUninitialized: true,
+    resave: false
+}));
 
 //set the routing
 Services.setRouting(app, bot);

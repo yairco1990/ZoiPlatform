@@ -19,25 +19,25 @@ const delayTime = 3000;
 
 RequestLogic.prototype.processMock = function (bot, payload, senderId) {
 
-    if (payload.id == 1) {
-        setTimeout(function () {
-	  bot.sendMessage(senderId, facebookResponse.getTextMessage(Mocks.HEY_BOSS_NOTICED_4_OPENING_THIS_WEEK));
+	if (payload.id == 1) {
+		setTimeout(function () {
+			bot.sendMessage(senderId, facebookResponse.getTextMessage(Mocks.HEY_BOSS_NOTICED_4_OPENING_THIS_WEEK));
 
-	  setTimeout(function () {
-	      bot.sendMessage(senderId, facebookResponse.getTextMessage(Mocks.LETS_FEEL_THOSE_UP));
+			setTimeout(function () {
+				bot.sendMessage(senderId, facebookResponse.getTextMessage(Mocks.LETS_FEEL_THOSE_UP));
 
-	      setTimeout(function () {
-		bot.sendMessage(senderId, facebookResponse.getQRElement("What do you want me to do?",
-		    [
-		        facebookResponse.getQRButton('text', 'Email Promotion', JSON.stringify({id: 2})),
-		        facebookResponse.getQRButton('text', 'Post on Facebook', JSON.stringify({id: 2})),
-		        facebookResponse.getQRButton('text', 'No Thank\'s', JSON.stringify({id: 2}))
-		    ]
-		));
-	      }, delayTime);
-	  }, delayTime);
-        }, delayTime);
-    }
+				setTimeout(function () {
+					bot.sendMessage(senderId, facebookResponse.getQRElement("What do you want me to do?",
+						[
+							facebookResponse.getQRButton('text', 'Email Promotion', JSON.stringify({id: 2})),
+							facebookResponse.getQRButton('text', 'Post on Facebook', JSON.stringify({id: 2})),
+							facebookResponse.getQRButton('text', 'No Thank\'s', JSON.stringify({id: 2}))
+						]
+					));
+				}, delayTime);
+			}, delayTime);
+		}, delayTime);
+	}
 };
 
 module.exports = RequestLogic;

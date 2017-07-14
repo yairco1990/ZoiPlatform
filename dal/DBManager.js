@@ -5,22 +5,22 @@ let mongoose = require('mongoose');
 let Util = require('util');
 
 function DBManager() {
-    mongoose.connect('mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db');
+	mongoose.connect('mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db');
 
-    let Schema = mongoose.Schema;
+	let Schema = mongoose.Schema;
 
-    let userSchema = new Schema({
-        _id: String,
-        fullname: String,
-        email: String,
-        conversationData: Object,
-        session: Object,
-        integrations: Object
-    });
+	let userSchema = new Schema({
+		_id: String,
+		fullname: String,
+		email: String,
+		conversationData: Object,
+		session: Object,
+		integrations: Object
+	});
 
-    this.User = mongoose.model('User', userSchema);
+	this.User = mongoose.model('User', userSchema);
 
-    Util.log("DB synced");
+	Util.log("DB synced");
 }
 
 /**
@@ -29,17 +29,17 @@ function DBManager() {
  */
 DBManager.prototype.getUser = function (where) {
 
-    let self = this;
+	let self = this;
 
-    return new Promise(function (resolve, reject) {
-        self.User.findOne(where, function (err, user) {
-	  if (err) {
-	      reject(err);
-	  } else {
-	      resolve(user);
-	  }
-        });
-    });
+	return new Promise(function (resolve, reject) {
+		self.User.findOne(where, function (err, user) {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(user);
+			}
+		});
+	});
 };
 
 /**
@@ -48,25 +48,25 @@ DBManager.prototype.getUser = function (where) {
  */
 DBManager.prototype.saveUser = function (user) {
 
-    let self = this;
+	let self = this;
 
-    return new Promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
 
-        let userObj = new self.User(user);
+		let userObj = new self.User(user);
 
-        self.User.findOneAndUpdate(
-	  {_id: user._id}, // find a document with that filter
-	  userObj, // document to insert when nothing was found
-	  {upsert: true, new: true}, // options
-	  function (err, doc) { // callback
-	      if (err) {
-		reject(err);
-	      } else {
-		resolve(doc);
-	      }
-	  }
-        );
-    });
+		self.User.findOneAndUpdate(
+			{_id: user._id}, // find a document with that filter
+			userObj, // document to insert when nothing was found
+			{upsert: true, new: true}, // options
+			function (err, doc) { // callback
+				if (err) {
+					reject(err);
+				} else {
+					resolve(doc);
+				}
+			}
+		);
+	});
 };
 
 /**
@@ -76,18 +76,18 @@ DBManager.prototype.saveUser = function (user) {
  */
 DBManager.prototype.deleteUser = function (where) {
 
-    let self = this;
+	let self = this;
 
-    return new Promise(function (resolve, reject) {
-        self.User.remove(where, function (err) {
-	  if (err) {
-	      reject(err);
-	  }
-	  else {
-	      resolve();
-	  }
-        });
-    });
+	return new Promise(function (resolve, reject) {
+		self.User.remove(where, function (err) {
+			if (err) {
+				reject(err);
+			}
+			else {
+				resolve();
+			}
+		});
+	});
 };
 
 module.exports = new DBManager();
