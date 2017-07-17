@@ -78,20 +78,20 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 			//check the intent
 			switch (conversationData.context) {
 				case "WELCOME_CONVERSATION":
-					let welcomeLogic = new WelcomeLogic();
-					welcomeLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+					let welcomeLogic = new WelcomeLogic(user);
+					welcomeLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
 				case "APPOINTMENT":
-					let appointmentLogic = new AppointmentLogic();
-					appointmentLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+					let appointmentLogic = new AppointmentLogic(user);
+					appointmentLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
 				case "CLIENT":
-					let clientLogic = new ClientLogic();
-					clientLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+					let clientLogic = new ClientLogic(user);
+					clientLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
 				case "GENERAL":
-					let generalLogic = new GeneralLogic();
-					generalLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+					let generalLogic = new GeneralLogic(user);
+					generalLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
 				default:
 					callback(facebookResponse.getTextMessage("What is the intent Yair?"));

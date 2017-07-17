@@ -4,6 +4,11 @@
 const AcuityApi = require('../ApiHandlers/AcuitySchedulingLogic');
 const Util = require('util');
 const moment = require('moment');
+const ZoiConfig = require('../../config');
+const GmailLogic = require('../GmailLogic');
+const _ = require('underscore');
+const MyUtils = require('../../interfaces/utils');
+const AcuityFactory = require('../../interfaces/Factories/AcuityFactory');
 
 class AcuityLogic {
 
@@ -69,8 +74,24 @@ class AcuityLogic {
 			//iterate slots
 			slots.forEach(function (slot) {
 				callback(200, slot);
-				return;
 			})
+		});
+	}
+
+	getAgenda(data, callback) {
+		let self = this;
+
+		self.DBManager.getUser({_id: data.ownerId}).then(function (user) {
+			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+
+			return acuityApi.getAppointments({
+				minDate: MyUtils.convertToAcuityDate(),
+				maxDate: MyUtils.convertToAcuityDate(moment().endOf('day'))
+			});
+		}).then(function (appoitnemnts) {
+			callback(200, AcuityFactory.generateAppointmentsList(appoitnemnts));
+		}).catch(function (err) {
+			callback(401, err);
 		});
 	}
 
@@ -107,6 +128,50 @@ class AcuityLogic {
 		});
 	}
 
+	getEmails(data, callback) {
+
+		let self = this;
+
+		self.DBManager.getUser({_id: data.ownerId}).then(function (user) {
+
+			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+			let tokens = user.integrations.Gmail;
+
+			acuityApi.getClients().then(function (clients) {
+
+				let queryString = "newer_than:7d is:unread";
+
+				//get unread emails from the user clients
+				GmailLogic.getEmailsList(tokens, queryString, 'me').then(function (messages) {
+
+					let messagePromises = [];
+
+					messages.forEach(function (m) {
+						messagePromises.push(GmailLogic.getMessage(tokens, m.id, 'me'));
+					});
+
+					return Promise.all(messagePromises);
+
+				}).then(function (messages) {
+
+					let clientsMessages = _.filter(messages, function (item1) {
+						return _.some(this, function (item2) {
+							return item1.from.includes(item2.email);
+						});
+					}, clients);
+
+					callback(200, clientsMessages);
+				}).catch(function (err) {
+					callback(401, err);
+				});
+			}).catch(function (err) {
+				callback(401, err);
+			});
+		}).catch(function (err) {
+			callback(401, err);
+		});
+	}
+
 	integrate(userId, code, callback) {
 
 		let self = this;
@@ -129,7 +194,7 @@ class AcuityLogic {
 			}).then(function () {
 
 				//redirect the user to his integrations page
-				callback(302, {'location': 'http://localhost:63343/ZoiClient/index.html#/main?facebookId=' + userId});
+				callback(302, {'location': ZoiConfig.clientUrl + '/main?facebookId=' + userId});
 
 
 			}).catch(function (err) {
@@ -138,9 +203,7 @@ class AcuityLogic {
 				Util.log(err);
 			});
 		});
-
 	}
-	;
 }
 
 module.exports = AcuityLogic;

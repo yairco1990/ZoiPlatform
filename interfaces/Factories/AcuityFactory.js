@@ -17,11 +17,11 @@ module.exports = {
 
 		appointments.forEach(function (q, index) {
 			let sharedAppointment = new SharedAppointment(
-				q.StartDateTime,
-				q.EndDateTime,
-				q.SessionType.Name,
-				new SharedEmployee(q.Staff.FirstName, q.Staff.LastName),
-				new SharedCustomer(q.Client.FirstName, q.Client.LastName, q.Client.Email, q.Client.MobilePhone, q.Client.PhotoURL));
+				q.time,
+				q.endTime,
+				q.type,
+				null,
+				new SharedCustomer(q.firstName, q.lastName, q.email, q.phone, null));
 
 			appointmentsList.push(sharedAppointment);
 		});

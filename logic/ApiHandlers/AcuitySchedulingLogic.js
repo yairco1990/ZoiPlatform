@@ -48,12 +48,29 @@ class AcuitySchedulingLogic {
 		});
 	}
 
+	getAppointments(options) {
+		let self = this;
+
+		return new Promise((resolve, reject) => {
+
+			self.acuity.request(MyUtils.addParamsToUrl('appointments', options), function (err, res, body) {
+
+				if (err || body.error) {
+					reject(err);
+					return console.error(err);
+				}
+
+				resolve(body);
+			});
+		});
+	}
+
 	scheduleAppointment(options) {
 		let self = this;
 
 		return new Promise((resolve, reject) => {
 
-			self.acuity.request('appointments?admin=true', options, function (err, res, body) {
+			self.acuity.request('appointments?admin=true&noEmail=true', options, function (err, res, body) {
 
 				if (err || body.error) {
 					reject(err || body.error);

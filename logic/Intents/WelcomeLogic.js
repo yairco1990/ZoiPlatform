@@ -6,6 +6,7 @@ const Util = require('util');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
+const ZoiConfig = require('../../config');
 
 const delayTime = 3000;
 const welcomeQuestions = {
@@ -21,7 +22,8 @@ const welcomeQuestions = {
 	}
 };
 
-function WelcomeLogic() {
+function WelcomeLogic(user) {
+	this.user = user;
 	//get the single instance of DBManager
 	this.DBManager = require('../../dal/DBManager');
 }
@@ -29,15 +31,16 @@ function WelcomeLogic() {
 /**
  * process the user intent
  */
-WelcomeLogic.prototype.processIntent = function (conversationData, user, setBotTyping, requestObj, callback) {
+WelcomeLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, callback) {
 
 	let self = this;
+	let user = self.user;
 
 	let senderId = requestObj.sender.id;
 
 	//if the user not created yet or wants to be reset
-	if (!user || conversationData.input == "reset") {
-		self.sendWelcomeDialog(senderId, callback);
+	if (!user || conversationData.input.toLowerCase() == "reset") {
+		self.sendWelcomeDialog(conversationData, senderId, callback);
 	}
 	//in case that there is user
 	else {
@@ -48,22 +51,21 @@ WelcomeLogic.prototype.processIntent = function (conversationData, user, setBotT
 				//ask about the full name
 				callback(facebookResponse.getTextMessage("Great! Let's start!"), true);
 
-				setTimeout(function () {
+				let currentQuestion = welcomeQuestions.nameQuestion;
+				user.conversationData = conversationData;
+				user.conversationData.lastQuestion = currentQuestion;
 
-					let currentQuestion = welcomeQuestions.nameQuestion;
-					user.conversationData = conversationData;
-					user.conversationData.lastQuestion = currentQuestion;
-
-					//save the name question to the user
-					self.DBManager.saveUser(user).then(function () {
+				//save the name question to the user
+				self.DBManager.saveUser(user).then(function () {
+					setTimeout(function () {
 						callback(facebookResponse.getTextMessage(currentQuestion.text));
-					}).catch(function (err) {
-						//TODO what to do with errors?
-						callback(facebookResponse.getTextMessage("Zoi got an error - ask Yair what to do."));
-						Util.log(err);
-					});
+					}, delayTime);
+				}).catch(function (err) {
+					//TODO what to do with errors?
+					callback(facebookResponse.getTextMessage("Zoi got an error - ask Yair what to do."));
+					Util.log(err);
+				});
 
-				}, delayTime);
 				break;
 			//the user don't want to fill the form now
 			case "Not now".toLowerCase():
@@ -138,7 +140,7 @@ WelcomeLogic.prototype.processIntent = function (conversationData, user, setBotT
 
 										//send integration page
 										callback(facebookResponse.getButtonMessage("This is your integration page.", [
-											facebookResponse.getGenericButton("web_url", "Zoi Integrations", null, "http://zoiai.com/#/main?facebookId=" + user._id, "tall")
+											facebookResponse.getGenericButton("web_url", "Zoi Integrations", null, ZoiConfig.clientUrl + "/main?facebookId=" + user._id, "tall")
 										]));
 
 									}, delayTime);
@@ -168,17 +170,19 @@ WelcomeLogic.prototype.processIntent = function (conversationData, user, setBotT
 
 /**
  * welcome dialog - first dialog
+ * @param conversationData
  * @param senderId
  * @param callback
  */
-WelcomeLogic.prototype.sendWelcomeDialog = function (senderId, callback) {
+WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId, callback) {
 
 	let self = this;
 
 	self.DBManager.deleteUser({_id: senderId}).then(function () {
 		//save the user
 		return self.DBManager.saveUser({
-			_id: senderId
+			_id: senderId,
+			conversationData: conversationData
 		});
 
 	}).then(function () {
@@ -190,10 +194,12 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (senderId, callback) {
 			setTimeout(function () {
 				callback(facebookResponse.getQRElement("Can I ask you some questions before we starting our great journey together?", [
 					facebookResponse.getQRButton("text", "Yes, lets start!", JSON.stringify({
-						type: "WELCOME_CONVERSATION"
+						type: "WELCOME_CONVERSATION",
+						answer: "yes"
 					})),
 					facebookResponse.getQRButton("text", "Not now", JSON.stringify({
-						type: "WELCOME_CONVERSATION"
+						type: "WELCOME_CONVERSATION",
+						answer: "no"
 					})),
 				]));
 

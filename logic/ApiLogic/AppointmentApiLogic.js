@@ -3,6 +3,7 @@
  */
 const MindbodyApi = require('../ApiHandlers/MindbodyLogic');
 const MindbodyFactory = require('../../interfaces/Factories/MindbodyFactory');
+const AcuityLogic = require('../ApiHandlers/AcuitySchedulingLogic');
 const Util = require('util');
 
 function AppointmentApiLogic() {
@@ -11,16 +12,16 @@ function AppointmentApiLogic() {
 
 AppointmentApiLogic.prototype.getAppointments = function (res) {
 
-    let mindbodyApi = new MindbodyApi({});
+	let acuityLogic = new AcuityLogic();
 
-    mindbodyApi.getAppointments({}).then(function (appointments) {
-        res.status(200).send({
-	  result: MindbodyFactory.generateAppointmentsList(appointments)
-        })
-    }).catch(function (err) {
-        Util.log(err);
-        Util.log("Failed to get appointments");
-    });
+	mindbodyApi.getAppointments({}).then(function (appointments) {
+		res.status(200).send({
+			result: MindbodyFactory.generateAppointmentsList(appointments)
+		})
+	}).catch(function (err) {
+		Util.log(err);
+		Util.log("Failed to get appointments");
+	});
 
 };
 
