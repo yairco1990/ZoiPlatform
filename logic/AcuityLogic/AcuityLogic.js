@@ -200,31 +200,41 @@ class AcuityLogic {
 
 		}).then(function (appointments) {
 
-			//if (appointments.length < 2) {
-			let appointment = appointments[0];
-			let client = {
-				firstName: appointment.firstName,
-				lastName: appointment.lastName
-			};
+			if (appointments.length < 2) {
+				let appointment = appointments[0];
+				let newClient = {
+					firstName: appointment.firstName,
+					lastName: appointment.lastName,
+					email: appointment.email,
+				};
 
-			let clientLogic = new ClientLogic(_user);
-			let conversationData = {
-				intent: "client new customer join",
-				context: "CLIENT"
-			};
-			//start the conversation in the clientLogic class
-			clientLogic.processIntent(conversationData, null, null, function (msg, setTyping) {
-				bot.sendMessage(_user._id, msg, function () {
-					if (setTyping) {
-						bot.sendSenderAction(_user._id, "typing_on");
-					}
-				});
-			});
+				if (!_user.conversationData) {
 
-			callback(200, {message: "It's a new customer"});
-			//} else {
-			//	callback(200, {message: "Not a new customer"});
-			//}
+					//save the new client to user
+					_user.session = {
+						newClient: newClient
+					};
+					self.DBManager.saveUser(_user).then(function () {
+						let clientLogic = new ClientLogic(_user);
+						let conversationData = {
+							intent: "client new customer join",
+							context: "CLIENT"
+						};
+						//start the conversation in the clientLogic class
+						clientLogic.processIntent(conversationData, null, null, function (msg, setTyping) {
+							bot.sendMessage(_user._id, msg, function () {
+								if (setTyping) {
+									bot.sendSenderAction(_user._id, "typing_on");
+								}
+							});
+						});
+					});
+				}
+
+				callback(200, {message: "It's a new customer"});
+			} else {
+				callback(200, {message: "Not a new customer"});
+			}
 
 		}).catch(MyUtils.getErrorMsg(function (err) {
 			callback(400, err);

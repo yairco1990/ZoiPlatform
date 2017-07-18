@@ -28,8 +28,6 @@ module.exports = {
 	Acuity: {
 		"clientId": "zyD9dntj6EnOQ0tH",
 		"clientSecret": "mezlVskAfjoAJSy8iAGhh3FYOW3MvSEASBnlUGQE",
-		// "clientId": "0bsQgfUYYtTiwyoV",
-		// "clientSecret": "PBljloalFuHEns1TjDvwbKkatyEWVlbjRYrnAJLl",
 		"redirectUri": SELECTED_ENVIRONMENT.serverUrl + "/acuity/oauth2"
 	}
 };

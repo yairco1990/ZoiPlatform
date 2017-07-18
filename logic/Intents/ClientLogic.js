@@ -7,6 +7,7 @@ const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
+const EmailLib = require('../../interfaces/EmailLib');
 
 const delayTime = 3000;
 
@@ -91,18 +92,18 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, callback) {
 					setTimeout(function () {
 						callback(facebookResponse.getGenericTemplate([
 							facebookResponse.getGenericElement("Welcome Email",
-								"http://alluredayspavi.com/portals/_default/Skins/Vaspan/images/BoxImgB1.jpg",
+								"https://www.askideas.com/media/13/Welcome-3d-Picture.jpg",
 								"Welcome my friend!",
 								[facebookResponse.getGenericButton("postback", "I like it", {
 									id: 1,
-									title: "You are welcome!"
+									title: "Welcome to our spa!"
 								})]),
 							facebookResponse.getGenericElement("Good Choice!",
-								"https://preview.ibb.co/fX8mhv/spa1.jpg",
+								"http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg",
 								"You did the right thing!",
 								[facebookResponse.getGenericButton("postback", "I like it", {
 									id: 2,
-									title: "Good job!"
+									title: "Hope you will enjoy our services!"
 								})])
 						]));
 					}, delayTime);
@@ -118,7 +119,18 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, callback) {
 			});
 		}
 	} else if (user.conversationData.lastQuestion.id === newCustomerJoinQuestions.whichTemplate.id) {
-		//TODO send the email
+
+		if (user.session && user.session.newClient && user.session.newClient.email) {
+			EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailHtml) {
+				EmailLib.sendEmail(emailHtml, [{
+					address: user.session.newClient.email,
+					from: 'Zoi.AI <noreply@fobi.io>',
+					subject: 'Test Subject',
+					alt: 'Test Alt'
+				}]);
+			}).catch(MyUtils.getErrorMsg);
+		}
+
 		callback(facebookResponse.getTextMessage("Great! I sent it to him. 😎"), true);
 
 		setTimeout(function () {
@@ -128,10 +140,9 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, callback) {
 		//clear conversation data
 		user.conversationData = null;
 		user.session = null;
-
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
-		});
+		}).catch(MyUtils.getErrorMsg);
 	}
 };
 
