@@ -36,6 +36,7 @@ GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping,
 			self.clearAndSaveUser(callback);
 			break;
 		case "general morning brief":
+			setBotTyping();
 			self.sendMorningBrief(conversationData, setBotTyping, requestObj, callback);
 			break;
 	}
@@ -59,16 +60,6 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 
 		//get unread emails from the user clients
 		GmailLogic.getEmailsList(tokens, queryString, 'me').then(function (messages) {
-
-			let messagePromises = [];
-
-			messages.forEach(function (m) {
-				messagePromises.push(GmailLogic.getMessage(tokens, m.id, 'me'));
-			});
-
-			return Promise.all(messagePromises);
-
-		}).then(function (messages) {
 
 			let clientsMessages = _.filter(messages, function (item1) {
 				return _.some(this, function (item2) {
@@ -108,7 +99,7 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 
 					callback(facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
 						facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "tall")
-					]));
+					]), true);
 
 					//sort appointments
 					appointments.sort(function (q1, q2) {
@@ -132,7 +123,7 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 						setTimeout(function () {
 							callback(facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true);
 							startSendPromotions();
-						}, delayTime * 3);
+						}, delayTime);
 					}
 				} else {
 					callback(facebookResponse.getTextMessage("You have no appointments today"));
@@ -169,7 +160,7 @@ GeneralLogic.prototype.clearAndSaveUser = function (callback) {
 	user.conversationData = null;
 	user.session = null;
 	self.DBManager.saveUser(user).then(function () {
-		callback(facebookResponse.getTextMessage("OK boss"));
+		callback(facebookResponse.getTextMessage("Bye boss..I will wait here for your commands! :)"));
 	});
 };
 

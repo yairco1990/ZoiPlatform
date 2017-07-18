@@ -48,16 +48,18 @@ class AcuitySchedulingLogic {
 		});
 	}
 
-	getAppointments(options) {
+	getAppointments(options, endpoint) {
 		let self = this;
 
 		return new Promise((resolve, reject) => {
 
-			self.acuity.request(MyUtils.addParamsToUrl('appointments', options), function (err, res, body) {
+			endpoint = endpoint || 'appointments';
+
+			self.acuity.request(MyUtils.addParamsToUrl(endpoint, options), function (err, res, body) {
 
 				if (err || body.error) {
 					reject(err);
-					return console.error(err);
+					return;
 				}
 
 				resolve(body);
@@ -88,6 +90,23 @@ class AcuitySchedulingLogic {
 		return new Promise((resolve, reject) => {
 
 			self.acuity.request('appointment-types', function (err, res, body) {
+
+				if (err) {
+					reject(err);
+					return console.error(err);
+				}
+
+				resolve(body);
+			});
+		});
+	}
+
+	setWebhooks(options) {
+		let self = this;
+
+		return new Promise((resolve, reject) => {
+
+			self.acuity.request('webhooks', options, function (err, res, body) {
 
 				if (err) {
 					reject(err);

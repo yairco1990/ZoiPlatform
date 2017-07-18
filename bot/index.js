@@ -32,7 +32,7 @@ if (process.argv[2] == "local") {
 }
 
 server.listen(PORT);
-console.log('Echo bot server running at port ' + PORT + '.');
+Util.log('Bot server running at port ' + PORT + '.');
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // initialize bot
@@ -68,13 +68,13 @@ app.use(function (req, res, next) {
 	console.log("-------------------------------------");
 	next();
 });
-app.use(session({
-	secret: 'pwnz0rz',
-	saveUninitialized: true,
-	resave: false
-}));
+// app.use(session({
+// 	secret: 'pwnz0rz',
+// 	saveUninitialized: true,
+// 	resave: false
+// }));
 
 //set the routing
 Services.setRouting(app, bot);
 Services.setBotListeners(bot);
-ApiRouting.setApiRouting(app);
+ApiRouting.setApiRouting(app, bot);

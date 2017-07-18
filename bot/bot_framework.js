@@ -82,6 +82,27 @@ class Bot extends EventEmitter {
 			})
 	}
 
+	static sendMessageStatic(recipient, payload) {
+		return request({
+			method: 'POST',
+			uri: 'https://graph.facebook.com/v2.6/me/messages',
+			qs: {},
+			json: {
+				recipient: {id: recipient},
+				message: payload
+			}
+		})
+			.then(body => {
+				if (body.error) return Promise.reject(body.error);
+				if (!cb) return body;
+				cb(null, body)
+			})
+			.catch(err => {
+				if (!cb) return Promise.reject(err);
+				cb(err)
+			})
+	}
+
 	/**
 	 * send sender action
 	 * for example, send the user that the bot is typing
@@ -184,85 +205,6 @@ class Bot extends EventEmitter {
 
 	removePersistentMenu(cb) {
 		return this.removeThreadSettings('existing_thread', cb)
-	}
-
-	/**
-	 * handle request to our bot
-	 * @returns {function(*=, *=)}
-	 */
-	middleware() {
-		let self = this;
-
-		return (req, res) => {
-
-			if (req.url === '/ping') {
-				res.end(JSON.stringify({status: 'ok, pong'}));
-			}
-			//api requests
-			else if (req.url.includes('/api/')) {
-				ApiLogic.index(req, res);
-			}
-			//api requests
-			else if (req.url.startsWith('/mock/openings')) {
-				let requestLogic = new RequestLogic();
-				requestLogic.processMock(self, {id: 1}, req.url.substring(req.url.indexOf("senderId") + "senderId=".length, req.url.length));
-				res.end("Message sent!");
-			}
-			//test
-			else if (req.url.includes('/test/mindbody')) {
-				GeneralTest.index(req, res);
-			}
-			//get image case
-			else if (req.url.substring(0, 9) === '/getImage' && req.method === 'GET') {
-				console.log("Get image request");
-				MyUtils.getScreenShot(res, req.url.substring(10));
-			} else {
-
-				console.log("--------------------------------");
-				// we always write 200, otherwise facebook will keep retrying the request
-				res.writeHead(200, {'Content-Type': 'application/json'});
-
-				//if just checking status - return ok message.
-				if (req.url === '/_status') return res.end(JSON.stringify({status: 'ok'}));
-
-				//if check the token - send the verify token
-				if (this.verify_token && req.method === 'GET') return this._verify(req, res);
-
-				//for the rest of the options, the request must be with POST method
-				if (req.method !== 'POST') return res.end();
-
-				//body string, to hold the request data
-				let body = '';
-
-				//loading the data
-				req.on('data', (chunk) => {
-					body += chunk
-				});
-
-				//on finish to loading data
-				req.on('end', () => {
-					// check message integrity
-					if (this.app_secret) {
-						let hmac = crypto.createHmac('sha1', this.app_secret);
-						hmac.update(body);
-
-						if (req.headers['x-hub-signature'] !== `sha1=${hmac.digest('hex')}`) {
-							this.emit('error', new Error('Message integrity check failed'));
-							return res.end(JSON.stringify({status: 'not ok', error: 'Message integrity check failed'}));
-						}
-					}
-
-					//parse the body
-					let parsed = JSON.parse(body);
-
-					//handle the message
-					this._handleMessage(parsed);
-
-					//send ok after getting the message
-					res.end(JSON.stringify({status: 'ok'}));
-				})
-			}
-		}
 	}
 
 	_getQs(qs) {

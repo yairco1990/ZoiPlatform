@@ -98,7 +98,6 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 					break;
 			}
 		}).catch(function (err) {
-
 			Util.log(err);
 			callback(facebookResponse.getTextMessage("Some error..."));
 		});

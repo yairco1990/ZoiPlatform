@@ -6,6 +6,8 @@ const rp = require('request-promise');
 const batchUtils = require('google-api-batch-utils');
 const createBatchBody = batchUtils.createBatchBody;
 const parseBatchResponse = batchUtils.parseBatchResponse;
+const _h = require('highland');
+const GmailBatchStream = require('gmail-batch-stream');
 
 class GmailLogic {
 	constructor() {
@@ -87,6 +89,7 @@ class GmailLogic {
 	 */
 	static getAuthObject() {
 		let OAuth2 = google.auth.OAuth2;
+		//TODO change the localhost to zoiai.com after review in google
 		return new OAuth2("514803140347-utj3lmcijoj5flqo2i5c393m0gf8sq6r.apps.googleusercontent.com", "N7WGFdSUY02RqdhaEm-BbVia", "http://localhost:3000/gmail/oauthcallback");
 	}
 
@@ -98,58 +101,38 @@ class GmailLogic {
 	 * @returns {Promise}
 	 */
 	static getEmailsList(tokens, queryString, userId) {
-
 		return new Promise((resolve, reject) => {
 
 			let oauthObject = GmailLogic.getAuthObject();
 			oauthObject.setCredentials(tokens);
-			let gmail = google.gmail('v1');
-			gmail.users.messages.list({
-				auth: oauthObject,
-				q: queryString,
-				userId: userId,
-			}, function (err, response) {
-				if (err) {
-					Util.log('The API returned an error: ' + err);
-					reject(err);
-					return;
-				}
-				if (response.messages) {
-					resolve(response.messages);
-				} else {
-					resolve([]);
-				}
-			})
-		});
-	}
 
-	static getMessage(tokens, messageId, userId) {
-		return new Promise((resolve, reject) => {
+			let GBS = new GmailBatchStream(tokens.access_token);
+			const gmailGBS = GBS.gmail();
+			const messageIdStream = _h([gmailGBS.users.messages.list({userId: userId, q: queryString})])
+				.pipe(GBS.pipeline(1, 5))
+				.pluck('messages')
+				.sequence()
+				.pluck('id');
 
-			let oauthObject = GmailLogic.getAuthObject();
-			oauthObject.setCredentials(tokens);
-			let gmail = google.gmail('v1');
-			gmail.users.messages.get({
-				auth: oauthObject,
-				id: messageId,
-				userId: userId
-			}, function (err, response) {
-				if (err) {
-					console.log('The API returned an error: ' + err);
-					reject(err);
-					return;
-				}
-				let message = response;
-				let headers = message.payload.headers;
-				resolve({
-					id: messageId,
-					snippet: response.snippet,
-					'Message-ID': GmailLogic.getByKey(headers, 'Message-ID'),
-					from: GmailLogic.getByKey(headers, 'From'),
-					date: GmailLogic.getByKey(headers, 'Date'),
-					subject: GmailLogic.getByKey(headers, 'Subject')
-				});
-			})
+			let messages = [];
+
+			messageIdStream
+				.map(messageId => gmailGBS.users.messages.get({userId: 'me', id: messageId, format: 'metadata'}))
+				.pipe(GBS.pipeline(100, 5)) //Run in batches of 100. Use quota of 5 (for users.messages.get).
+				// .tap( _h.log )
+				.each(function (message) {
+					let headers = message.payload.headers;
+					messages.push({
+						id: message.id,
+						snippet: message.snippet,
+						'Message-ID': GmailLogic.getByKey(headers, 'Message-ID'),
+						from: GmailLogic.getByKey(headers, 'From'),
+						date: GmailLogic.getByKey(headers, 'Date'),
+						subject: GmailLogic.getByKey(headers, 'Subject')
+					});
+				}).done(() => {
+				resolve(messages);
+			});
 		});
 	}
 

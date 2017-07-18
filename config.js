@@ -1,18 +1,21 @@
+let CLIENT_DEV = "http://zoiai.com/#";
+let CLIENT_LOCAL = "http://localhost:63343/ZoiClient/#";
+
 let Environments = {
 	Local: {
 		serverUrl: "http://localhost:3000",
-		clientUrl: "http://localhost:63343/ZoiClient/#"
+		clientUrl: CLIENT_LOCAL
 	},
 	Dev: {
 		serverUrl: "https://zoiai.com:3000",
-		clientUrl: "http://zoiai.com/#/ZoiClient/#"
+		clientUrl: CLIENT_DEV
 	},
 	Ngrok: {
 		serverUrl: "https://45e73634.ngrok.io",
-		clientUrl: "http://localhost:63343/ZoiClient/#"
+		clientUrl: CLIENT_DEV
 	}
 };
-let SELECTED_ENVIRONMENT = Environments.Ngrok;
+let SELECTED_ENVIRONMENT = Environments.Dev;
 
 module.exports = {
 	serverUrl: SELECTED_ENVIRONMENT.serverUrl,

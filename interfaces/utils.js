@@ -1,6 +1,7 @@
 /**
  * Created by Yair on 2/20/2017.
  */
+const Util = require('util');
 const fs = require('fs');
 const webshot = require('webshot');
 const moment = require('moment');
@@ -266,6 +267,14 @@ let Utils = {
 			return moment(time).format('YYYY-MM-DDTHH:mm:ss');
 		}
 		return moment().format('YYYY-MM-DDTHH:mm:ss');
+	},
+
+	getErrorMsg: function (onFinally) {
+		return function (err) {
+			Util.log("Error:");
+			Util.log(err);
+			onFinally && onFinally(err);
+		}
 	}
 };
 

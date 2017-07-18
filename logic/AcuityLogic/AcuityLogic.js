@@ -9,6 +9,9 @@ const GmailLogic = require('../GmailLogic');
 const _ = require('underscore');
 const MyUtils = require('../../interfaces/utils');
 const AcuityFactory = require('../../interfaces/Factories/AcuityFactory');
+const requestify = require('requestify');
+const facebookResponse = require('../../interfaces/FacebookResponse');
+const ClientLogic = require('../Intents/ClientLogic');
 
 class AcuityLogic {
 
@@ -85,11 +88,21 @@ class AcuityLogic {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			return acuityApi.getAppointments({
-				minDate: MyUtils.convertToAcuityDate(),
+				minDate: MyUtils.convertToAcuityDate(moment().startOf('day')),
 				maxDate: MyUtils.convertToAcuityDate(moment().endOf('day'))
 			});
-		}).then(function (appoitnemnts) {
-			callback(200, AcuityFactory.generateAppointmentsList(appoitnemnts));
+		}).then(function (appointments) {
+
+			//sort appointments
+			appointments.sort(function (q1, q2) {
+				if (moment(q1.datetime).isAfter(moment(q2.datetime))) {
+					return 1;
+				} else {
+					return -1;
+				}
+			});
+
+			callback(200, AcuityFactory.generateAppointmentsList(appointments));
 		}).catch(function (err) {
 			callback(401, err);
 		});
@@ -144,16 +157,6 @@ class AcuityLogic {
 				//get unread emails from the user clients
 				GmailLogic.getEmailsList(tokens, queryString, 'me').then(function (messages) {
 
-					let messagePromises = [];
-
-					messages.forEach(function (m) {
-						messagePromises.push(GmailLogic.getMessage(tokens, m.id, 'me'));
-					});
-
-					return Promise.all(messagePromises);
-
-				}).then(function (messages) {
-
 					let clientsMessages = _.filter(messages, function (item1) {
 						return _.some(this, function (item2) {
 							return item1.from.includes(item2.email);
@@ -170,6 +173,62 @@ class AcuityLogic {
 		}).catch(function (err) {
 			callback(401, err);
 		});
+	}
+
+	onAppointmentScheduled(ownerId, data, bot, callback) {
+		let self = this;
+
+		let acuityApi;
+		let _user;
+		//get the user that wants to integrate
+		self.DBManager.getUser({_id: ownerId}).then(function (user) {
+
+			_user = user;
+
+			acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+
+			return acuityApi.getAppointments(null, 'appointments/' + data.id);
+
+		}).then(function (appointment) {
+
+			let options = {
+				firstName: appointment.firstName,
+				lastName: appointment.lastName
+			};
+
+			return acuityApi.getAppointments(options);
+
+		}).then(function (appointments) {
+
+			//if (appointments.length < 2) {
+			let appointment = appointments[0];
+			let client = {
+				firstName: appointment.firstName,
+				lastName: appointment.lastName
+			};
+
+			let clientLogic = new ClientLogic(_user);
+			let conversationData = {
+				intent: "client new customer join",
+				context: "CLIENT"
+			};
+			//start the conversation in the clientLogic class
+			clientLogic.processIntent(conversationData, null, null, function (msg, setTyping) {
+				bot.sendMessage(_user._id, msg, function () {
+					if (setTyping) {
+						bot.sendSenderAction(_user._id, "typing_on");
+					}
+				});
+			});
+
+			callback(200, {message: "It's a new customer"});
+			//} else {
+			//	callback(200, {message: "Not a new customer"});
+			//}
+
+		}).catch(MyUtils.getErrorMsg(function (err) {
+			callback(400, err);
+		}));
 	}
 
 	integrate(userId, code, callback) {
@@ -196,12 +255,24 @@ class AcuityLogic {
 				//redirect the user to his integrations page
 				callback(302, {'location': ZoiConfig.clientUrl + '/main?facebookId=' + userId});
 
+				let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-			}).catch(function (err) {
+				//register for Acuity webhooks
+				let options = {
+					method: 'POST',
+					body: {
+						event: "appointment.scheduled",
+						target: ZoiConfig.serverUrl + "/acuity/webhook/" + userId + "/scheduled"
+					}
+				};
+				return acuityApi.setWebhooks(options);
 
-				Util.log("Error:");
-				Util.log(err);
-			});
+			}).then(function (response) {
+
+				Util.log("Response");
+				Util.log(response);
+
+			}).catch(MyUtils.getErrorMsg());
 		});
 	}
 }
