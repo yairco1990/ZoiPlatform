@@ -30,10 +30,14 @@ class EmailLib {
 		//AWS client
 		let client = ses.createClient(ZoiConfig.AWS);
 
+		if (!emailHtml) {
+			emailHtml = "<div>Test Message</div>";
+		}
+
 		// emailHtml = emailHtml.replace('{{botPage}}', '');
 		try {
 			emails.forEach(function (email) {
-				if (email) {
+				if (email.address) {
 					// Give SES the details and let it construct the message for you.
 					client.sendEmail({
 						to: email.address,

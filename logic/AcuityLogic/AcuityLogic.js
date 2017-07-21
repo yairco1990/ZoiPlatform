@@ -12,6 +12,7 @@ const AcuityFactory = require('../../interfaces/Factories/AcuityFactory');
 const requestify = require('requestify');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const ClientLogic = require('../Intents/ClientLogic');
+const EmailLib = require('../../interfaces/EmailLib');
 
 class AcuityLogic {
 
@@ -60,6 +61,7 @@ class AcuityLogic {
 		});
 	}
 
+	//TODO only for test now
 	sendPromotions(userId, callback) {
 		let self = this;
 
@@ -84,7 +86,7 @@ class AcuityLogic {
 	getAgenda(data, callback) {
 		let self = this;
 
-		self.DBManager.getUser({_id: data.ownerId}).then(function (user) {
+		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			return acuityApi.getAppointments({
@@ -108,10 +110,61 @@ class AcuityLogic {
 		});
 	}
 
+	getOldCustomers(data, callback) {
+		let self = this;
+
+		self.DBManager.getUser({_id: data.userId}).then(function (user) {
+
+			if (user.metadata && user.metadata.oldCustomers) {
+				callback(200, user.metadata.oldCustomers);
+			} else {
+				callback(200, "NOT_AVAILABLE");
+			}
+
+		}).catch(function (err) {
+			callback(401, err);
+		});
+	}
+
+	promoteOldCustomers(data, callback) {
+		let self = this;
+
+		let customers = JSON.parse(data.customers);
+
+		self.DBManager.getUser({_id: data.userId}).then(function (user) {
+
+			let emailList = [];
+
+			customers.forEach(function (customer) {
+				emailList.push({
+					address: customer.email,
+					from: 'Zoi.AI <noreply@fobi.io>',
+					subject: customer.firstName + ' ' + customer.lastName,
+					alt: 'Old Customers Promotions'
+				})
+			});
+
+			EmailLib.sendEmail(null, emailList);
+
+			callback(200, "SUCCESS");
+
+			//remove the metadata
+			if (user.metadata) {
+				user.metadata.oldCustomers = null;
+				self.DBManager.saveUser(user).then(function () {
+					//old customers removed
+				});
+			}
+
+		}).catch(function (err) {
+			callback(401, err);
+		});
+	}
+
 	scheduleAppointment(data, callback) {
 		let self = this;
 
-		self.DBManager.getUser({_id: data.ownerId}).then(function (user) {
+		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			// Create appointment:
@@ -145,7 +198,7 @@ class AcuityLogic {
 
 		let self = this;
 
-		self.DBManager.getUser({_id: data.ownerId}).then(function (user) {
+		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 			let tokens = user.integrations.Gmail;
@@ -159,7 +212,7 @@ class AcuityLogic {
 
 					let clientsMessages = _.filter(messages, function (item1) {
 						return _.some(this, function (item2) {
-							return item1.from.includes(item2.email);
+							return item1.from.includes(item2.email) && item2.email;
 						});
 					}, clients);
 
@@ -175,13 +228,13 @@ class AcuityLogic {
 		});
 	}
 
-	onAppointmentScheduled(ownerId, data, bot, callback) {
+	onAppointmentScheduled(userId, data, bot, callback) {
 		let self = this;
 
 		let acuityApi;
 		let _user;
 		//get the user that wants to integrate
-		self.DBManager.getUser({_id: ownerId}).then(function (user) {
+		self.DBManager.getUser({_id: userId}).then(function (user) {
 
 			_user = user;
 
@@ -215,12 +268,13 @@ class AcuityLogic {
 						newClient: newClient
 					};
 					self.DBManager.saveUser(_user).then(function () {
+
+						//start the conversation in the clientLogic class
 						let clientLogic = new ClientLogic(_user);
 						let conversationData = {
 							intent: "client new customer join",
 							context: "CLIENT"
 						};
-						//start the conversation in the clientLogic class
 						clientLogic.processIntent(conversationData, null, null, function (msg, setTyping) {
 							bot.sendMessage(_user._id, msg, function () {
 								if (setTyping) {
@@ -263,7 +317,7 @@ class AcuityLogic {
 			}).then(function () {
 
 				//redirect the user to his integrations page
-				callback(302, {'location': ZoiConfig.clientUrl + '/main?facebookId=' + userId});
+				callback(302, {'location': ZoiConfig.clientUrl + '/integrations?userId=' + userId});
 
 				let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 

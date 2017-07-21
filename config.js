@@ -15,11 +15,11 @@ let Environments = {
 		clientUrl: CLIENT_DEV
 	}
 };
-let SELECTED_ENVIRONMENT = Environments.Dev;
+let selectedEnvironment = Environments.Ngrok;
 
 module.exports = {
-	serverUrl: SELECTED_ENVIRONMENT.serverUrl,
-	clientUrl: SELECTED_ENVIRONMENT.clientUrl,
+	serverUrl: selectedEnvironment.serverUrl,
+	clientUrl: selectedEnvironment.clientUrl,
 	AWS: {
 		key: 'AKIAIH4A77U64F5NNU6Q',
 		secret: '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',
@@ -28,6 +28,8 @@ module.exports = {
 	Acuity: {
 		"clientId": "zyD9dntj6EnOQ0tH",
 		"clientSecret": "mezlVskAfjoAJSy8iAGhh3FYOW3MvSEASBnlUGQE",
-		"redirectUri": SELECTED_ENVIRONMENT.serverUrl + "/acuity/oauth2"
+		// "clientId": "VyZtYYyz2be8VpZ6",
+		// "clientSecret": "Au4oQ6mG9vSvRnbHRUEBWQ8YOdMw2ZRqkDUg5ehM",
+		"redirectUri": Environments.Dev.serverUrl + "/acuity/oauth2"
 	}
 };

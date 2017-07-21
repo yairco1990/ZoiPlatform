@@ -15,7 +15,8 @@ function DBManager() {
 		email: String,
 		conversationData: Object,
 		session: Object,
-		integrations: Object
+		integrations: Object,
+		metadata: Object
 	});
 
 	this.User = mongoose.model('User', userSchema);

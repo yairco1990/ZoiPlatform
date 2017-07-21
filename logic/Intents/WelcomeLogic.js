@@ -133,14 +133,14 @@ WelcomeLogic.prototype.processIntent = function (conversationData, setBotTyping,
 								self.DBManager.saveUser(user).then(function () {
 									//show abilities
 									callback(facebookResponse.getButtonMessage("This is a list of my abilities, please take a look.", [
-										facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, "http://dice.beezee.be/abilities.html", "tall")
-									]));
+										facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, "http://dice.beezee.be/abilities.html", "full")
+									]), true);
 
 									setTimeout(function () {
 
 										//send integration page
 										callback(facebookResponse.getButtonMessage("This is your integration page.", [
-											facebookResponse.getGenericButton("web_url", "Zoi Integrations", null, ZoiConfig.clientUrl + "/main?facebookId=" + user._id, "tall")
+											facebookResponse.getGenericButton("web_url", "Zoi Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
 										]));
 
 									}, delayTime);

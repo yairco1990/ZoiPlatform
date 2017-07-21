@@ -55,7 +55,7 @@ class GmailLogic {
 
 				//save the user with the integrations
 				DBManager.saveUser(user).then(() => {
-					callback(302, {'location': ZoiConfig.clientUrl + '/main?facebookId=' + userId});
+					callback(302, {'location': ZoiConfig.clientUrl + '/integrations?userId=' + userId});
 				});
 				// oauth2Client.setCredentials(tokens);
 				// res.send(tokens);
@@ -90,7 +90,9 @@ class GmailLogic {
 	static getAuthObject() {
 		let OAuth2 = google.auth.OAuth2;
 		//TODO change the localhost to zoiai.com after review in google
-		return new OAuth2("514803140347-utj3lmcijoj5flqo2i5c393m0gf8sq6r.apps.googleusercontent.com", "N7WGFdSUY02RqdhaEm-BbVia", "http://localhost:3000/gmail/oauthcallback");
+		// http://192.168.43.233.xip.io:3000/gmail/oauthcallback
+		// http://localhost:3000/gmail/oauthcallback
+		return new OAuth2("514803140347-utj3lmcijoj5flqo2i5c393m0gf8sq6r.apps.googleusercontent.com", "N7WGFdSUY02RqdhaEm-BbVia", ZoiConfig.serverUrl + "/gmail/oauthcallback");
 	}
 
 	/**

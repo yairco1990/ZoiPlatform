@@ -93,13 +93,26 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 					let generalLogic = new GeneralLogic(user);
 					generalLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
+				case "GENERIC":
+					callback(facebookResponse.getTextMessage(conversationData.intent));
+					break;
 				default:
 					callback(facebookResponse.getTextMessage("What is the intent Yair?"));
 					break;
 			}
 		}).catch(function (err) {
+
+			self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {
+				user.conversationData = null;
+				self.DBManager.saveUser(user).then(function () {
+					Util.log("user session deleted after error. userId -> " + user._id);
+					callback(facebookResponse.getTextMessage("Can you be more explicitly?"));
+				});
+			}).catch(function () {
+				callback(facebookResponse.getTextMessage("Zoi is confused..."));
+			});
+
 			Util.log(err);
-			callback(facebookResponse.getTextMessage("Some error..."));
 		});
 	}).catch(function (err) {
 		Util.log(err);
@@ -166,7 +179,7 @@ ListenLogic.prototype.processMock = function (input, payload, setBotTyping, bot,
 				setTimeout(function () {
 
 					callback(facebookResponse.getButtonMessage(Mocks.REVENUE_DOWN, [
-						facebookResponse.getGenericButton("web_url", "Watch the graph", null, "http://dice.beezee.be/test.html", "tall")
+						facebookResponse.getGenericButton("web_url", "Watch the graph", null, "http://dice.beezee.be/test.html", "full")
 					]), true);
 
 					setTimeout(function () {

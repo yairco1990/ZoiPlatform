@@ -4,33 +4,33 @@
 const Util = require('util');
 
 function UserApiLogic() {
-    this.DBManager = require('../../dal/DBManager');
+	this.DBManager = require('../../dal/DBManager');
 }
 
 /**
  * get user by facebook id
- * @param facebookId
+ * @param userId
  * @param callback
  */
-UserApiLogic.prototype.getUser = function (facebookId, callback) {
+UserApiLogic.prototype.getUser = function (userId, callback) {
 
-    let self = this;
+	let self = this;
 
-    //get the user
-    self.DBManager.getUser({_id: facebookId}).then(function (user) {
+	//get the user
+	self.DBManager.getUser({_id: userId}).then(function (user) {
 
-        if (user) {
-	  callback(200, user);
-        } else {
-	  callback(404, "NO_SUCH_USER");
-        }
+		if (user) {
+			callback(200, user);
+		} else {
+			callback(404, "NO_SUCH_USER");
+		}
 
-    }).catch(function (err) {
-        Util.log(err);
-        Util.log("Failed to get user by facebook id");
+	}).catch(function (err) {
+		Util.log(err);
+		Util.log("Failed to get user by facebook id");
 
-        callback(404, err);
-    });
+		callback(404, err);
+	});
 };
 
 /**
@@ -40,16 +40,16 @@ UserApiLogic.prototype.getUser = function (facebookId, callback) {
  */
 UserApiLogic.prototype.saveUser = function (user, callback) {
 
-    let self = this;
+	let self = this;
 
-    //get the user
-    self.DBManager.saveUser(user).then(function (user) {
-        callback(200, user);
-    }).catch(function (err) {
-        Util.log(err);
-        Util.log("Failed to save user");
-        callback(404, err);
-    });
+	//get the user
+	self.DBManager.saveUser(user).then(function (user) {
+		callback(200, user);
+	}).catch(function (err) {
+		Util.log(err);
+		Util.log("Failed to save user");
+		callback(404, err);
+	});
 };
 
 module.exports = UserApiLogic;

@@ -14,9 +14,9 @@ module.exports = {
 
 		//get user
 		app.get('/api/getUser', function (req, res) {
-			Util.log(API_LOG + "getUser. userId = " + req.query.facebookId);
+			Util.log(API_LOG + "getUser. userId = " + req.query.userId);
 			let userApiLogic = new UserApiLogic();
-			userApiLogic.getUser(req.query.facebookId, function (status, data) {
+			userApiLogic.getUser(req.query.userId, function (status, data) {
 				res.status(status).send(data);
 			});
 		});
@@ -57,9 +57,9 @@ module.exports = {
 		});
 
 		app.get('/acuity/authorize', function (req, res) {
-			Util.log(API_LOG + "Authorize Acuity. userId = " + req.query.facebookId);
+			Util.log(API_LOG + "Authorize Acuity. userId = " + req.query.userId);
 			let acuity = Acuity.oauth(zoiConfig.Acuity);
-			acuity.authorizeRedirect(res, {scope: 'api-v1', state: req.query.facebookId});
+			acuity.authorizeRedirect(res, {scope: 'api-v1', state: req.query.userId});
 		});
 
 		//oauth2 for acuity
@@ -74,43 +74,43 @@ module.exports = {
 
 		//get clients
 		app.get('/acuity/getClients', function (req, res) {
-			Util.log(API_LOG + "getClients. userId = " + req.query.facebookId);
+			Util.log(API_LOG + "getClients. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
-			acuityLogic.getClients(req.query.facebookId, function (status, data) {
+			acuityLogic.getClients(req.query.userId, function (status, data) {
 				res.status(status).send(data);
 			});
 		});
 
 		//getAvailability
 		app.get('/acuity/getAvailability', function (req, res) {
-			Util.log(API_LOG + "getAvailability. userId = " + req.query.facebookId);
+			Util.log(API_LOG + "getAvailability. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
-			acuityLogic.getAvailability(req.query.facebookId, function (status, data) {
+			acuityLogic.getAvailability(req.query.userId, function (status, data) {
 				res.status(status).send(data);
 			});
 		});
 
 		//get appointment types
 		app.get('/acuity/getAppointmentTypes', function (req, res) {
-			Util.log(API_LOG + "getAppointments. userId = " + req.query.facebookId);
+			Util.log(API_LOG + "getAppointments. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
-			acuityLogic.getAppointmentTypes(req.query.facebookId, function (status, data) {
+			acuityLogic.getAppointmentTypes(req.query.userId, function (status, data) {
 				res.status(status).send(data);
 			});
 		});
 
 		//get appointment types
 		app.get('/acuity/sendPromotions', function (req, res) {
-			Util.log(API_LOG + "sendPromotions. userId = " + req.query.facebookId);
+			Util.log(API_LOG + "sendPromotions. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
-			acuityLogic.sendPromotions(req.query.facebookId, function (status, data) {
+			acuityLogic.sendPromotions(req.query.userId, function (status, data) {
 				res.status(status).send(data);
 			});
 		});
 
 		//schedule appointment
 		app.get('/acuity/scheduleAppointment', function (req, res) {
-			Util.log(API_LOG + "scheduleAppointment. userId = " + req.query.ownerId);
+			Util.log(API_LOG + "scheduleAppointment. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
 			acuityLogic.scheduleAppointment(req.query, function (status, data) {
 				res.status(status).send(data);
@@ -119,7 +119,7 @@ module.exports = {
 
 		//get email
 		app.get('/acuity/getEmails', function (req, res) {
-			Util.log(API_LOG + "getEmails. userId = " + req.query.ownerId);
+			Util.log(API_LOG + "getEmails. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
 			acuityLogic.getEmails(req.query, function (status, data) {
 				res.status(status).send(data);
@@ -128,9 +128,27 @@ module.exports = {
 
 		//get agenda
 		app.get('/acuity/getAgenda', function (req, res) {
-			Util.log(API_LOG + "getAgenda. userId = " + req.query.ownerId);
+			Util.log(API_LOG + "getAgenda. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
 			acuityLogic.getAgenda(req.query, function (status, data) {
+				res.status(status).send(data);
+			});
+		});
+
+		//get old customers
+		app.get('/acuity/getOldCustomers', function (req, res) {
+			Util.log(API_LOG + "getOldCustomers. userId = " + req.query.userId);
+			let acuityLogic = new AcuityLogic();
+			acuityLogic.getOldCustomers(req.query, function (status, data) {
+				res.status(status).send(data);
+			});
+		});
+
+		//promote old customers
+		app.post('/acuity/promoteOldCustomers', function (req, res) {
+			Util.log(API_LOG + "promoteOldCustomers. userId = " + req.query.userId);
+			let acuityLogic = new AcuityLogic();
+			acuityLogic.promoteOldCustomers(req.query, function (status, data) {
 				res.status(status).send(data);
 			});
 		});

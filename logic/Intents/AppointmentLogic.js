@@ -58,7 +58,7 @@ AppointmentLogic.prototype.getAppointments = function (conversationData, callbac
 	setTimeout(function () {
 
 		callback(facebookResponse.getButtonMessage("This is your schedule for today sir:", [
-			facebookResponse.getGenericButton("web_url", "Watch your schedule", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "tall")
+			facebookResponse.getGenericButton("web_url", "Watch your schedule", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
 		]));
 
 		setTimeout(function () {
@@ -407,7 +407,7 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 								firstname: client.firstName,
 								lastname: client.lastName,
 								email: client.email,
-								ownerId: user._id,
+								userId: user._id,
 								serviceId: appointmentType.id,
 								serviceName: appointmentType.name,
 								notes: template.zoiCoupon
@@ -415,16 +415,17 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 
 							//choose 5 slots
 							let slotsCopy = deepcopy(slots);
-							slotsCopy = slotsCopy.slice(0, 5);
+							let gap = Math.floor(slotsCopy.length / 5);
 							//iterate slots
-							slotsCopy.forEach(function (slot) {
+							for (let i = 0; i < slotsCopy.length; i += gap) {
+								let slot = slotsCopy[i];
 								//create slot button
 								let formattedScheduleButton = deepcopy(scheduleButton);
 								appointmentParams.date = slot.time;
 								formattedScheduleButton = formattedScheduleButton.replace('{{href}}', MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams));
 								formattedScheduleButton = formattedScheduleButton.replace('{{appointmentTime}}', moment(slot.time).format('HH:mm MM.DD'));
 								scheduleButtonsHtml += formattedScheduleButton + "\n";
-							});
+							}
 
 							//send single email every loop
 							let emailList = [{

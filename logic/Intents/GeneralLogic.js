@@ -63,14 +63,14 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 
 			let clientsMessages = _.filter(messages, function (item1) {
 				return _.some(this, function (item2) {
-					return item1.from.includes(item2.email);
+					return item1.from.includes(item2.email) && item2.email;
 				});
 			}, clients);
 
 			if (clientsMessages.length > 0) {
 				//emails
 				callback(facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your clients on the last passed week", [
-					facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "tall")
+					facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
 				]), true);
 			} else {
 				callback(facebookResponse.getTextMessage("You have no unread emails from your customers. Good job! :)"), true);
@@ -98,7 +98,7 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 				if (appointments.length) {
 
 					callback(facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
-						facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "tall")
+						facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
 					]), true);
 
 					//sort appointments
