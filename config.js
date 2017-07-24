@@ -33,5 +33,5 @@ module.exports = {
 		// "clientSecret": "Au4oQ6mG9vSvRnbHRUEBWQ8YOdMw2ZRqkDUg5ehM",
 		"redirectUri": Environments.Dev.serverUrl + "/acuity/oauth2"//TODO change it!
 	},
-	delayTime: 1000
+	delayTime: 3000
 };
