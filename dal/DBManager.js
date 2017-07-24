@@ -16,8 +16,21 @@ function DBManager() {
 		conversationData: Object,
 		session: Object,
 		integrations: Object,
-		metadata: Object
-	});
+		metadata: Object,
+		wishList: [String],
+		profile: Object,
+		startedAt: String
+		// profile: {
+		// 	actionTime: {
+		// 		numOfIntegrations: Number,
+		// 		isShared: Boolean,
+		// 		numOfAppointments: Number,
+		// 		profitFromAppointments: Number,
+		// 		numOfPromotions: Number
+		// 	}
+		// }
+		//profile - {number of integrations, is did share, number of appointments, amount of money from appointments, number of promotions}
+	}, { minimize: false });
 
 	this.User = mongoose.model('User', userSchema);
 

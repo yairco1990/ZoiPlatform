@@ -12,7 +12,7 @@ const EmailLib = require('../../interfaces/EmailLib');
 const ZoiConfig = require('../../config');
 const deepcopy = require('deepcopy');
 
-const delayTime = 3000;
+const delayTime = ZoiConfig.delayTime || 3000;
 
 function AppointmentLogic(user) {
 	this.user = user;
@@ -204,17 +204,17 @@ const sendPromotionsQuestions = {
 	},
 	serviceName: {
 		id: 1,
-		text: "Which service you like to promote?",
+		text: "Which service (from your Acuity appointment types) would you like to promote?",
 		field: "service"
 	},
 	whichTemplate: {
 		id: 2,
-		text: "I made 3 options, feel free to choose the one you like:",
+		text: "I made three types of discount for you to choose from.  Which of them you want me to send to your customers?",
 		field: "template"
 	},
 	areYouSure: {
 		id: 3,
-		text: "Are you sure you want to send promotions to service {serviceName}?"
+		text: "Just so we clear, I am about to send {[promotion type}} promotion for {{service name}} to your customers?"
 	}
 };
 
@@ -247,10 +247,20 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 			//get slots
 			return acuityLogic.getAvailability(options);
 		}).then(function (slots) {
+
+			//save the response
+			let lastQRResponse = facebookResponse.getQRElement("Do you want me to promote your openings?",
+				[
+					facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
+					facebookResponse.getQRButton('text', 'Maybe later', {id: 2})
+				]
+			);
+			user.conversationData.lastQRResponse = lastQRResponse;
+
 			//save the user
 			self.DBManager.saveUser(user).then(function () {
 				setTimeout(function () {
-					let firstText = " noticed that you have " + slots.length + " openings in your calendars tomorrow.";
+					let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
 					if (!conversationData.skipHey) {
 						firstText = "Hey boss, I" + firstText;
 					} else {
@@ -259,15 +269,11 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 					callback(facebookResponse.getTextMessage(firstText), true);
 
 					setTimeout(function () {
-						callback(facebookResponse.getTextMessage("I can promote them for you."), true);
+						callback(facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true);
 
 						setTimeout(function () {
-							callback(facebookResponse.getQRElement("What do you want me to do?",
-								[
-									facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
-									facebookResponse.getQRButton('text', 'No Thank\'s', {id: 2})
-								]
-							))
+							callback(lastQRResponse);
+
 						}, delayTime);
 					}, delayTime);
 				}, delayTime);
@@ -276,31 +282,37 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 	}
 	else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
 
-		if (conversationData.payload.id == 1) {
+		if (conversationData.payload) {
 
-			callback(facebookResponse.getTextMessage("Great! 😊"), true);
+			if (conversationData.payload.id == 1) {
 
-			//ask which service
-			let question = sendPromotionsQuestions.serviceName;
-			//save conversation to the user
-			user.conversationData = conversationData;
-			//save the service question
-			user.conversationData.lastQuestion = question;
+				callback(facebookResponse.getTextMessage("Great! 😊"), true);
 
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
-				setTimeout(function () {
-					callback(facebookResponse.getTextMessage(question.text));
-				}, delayTime);
-			});
+				//ask which service
+				let question = sendPromotionsQuestions.serviceName;
+				//save conversation to the user
+				user.conversationData = conversationData;
+				//save the service question
+				user.conversationData.lastQuestion = question;
+
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
+					setTimeout(function () {
+						callback(facebookResponse.getTextMessage(question.text));
+					}, delayTime);
+				});
+			} else {
+
+				user.conversationData = null;
+				user.session = null;
+
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
+					callback(facebookResponse.getTextMessage("I'll be right here if you need me ☺"));
+				});
+			}
 		} else {
-			user.conversationData = null;
-			user.session = null;
-
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
-				callback(facebookResponse.getTextMessage("Ok boss.."));
-			});
+			callback(user.conversationData.lastQRResponse);
 		}
 	}
 	else if (lastQuestionId === sendPromotionsQuestions.serviceName.id) {
@@ -365,6 +377,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 		let currentQuestion = sendPromotionsQuestions.areYouSure;
 		let responseText = currentQuestion.text;
 		responseText = responseText.replace('{serviceName}', user.session['service'].name);
+		//TODO add promotion type to the session
+		responseText = responseText.replace('{promotionType}', user.session['promotionType'].name);
 
 		//set current question
 		user.conversationData.lastQuestion = currentQuestion;
@@ -410,6 +424,7 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 								userId: user._id,
 								serviceId: appointmentType.id,
 								serviceName: appointmentType.name,
+								price: appointmentType.price,
 								notes: template.zoiCoupon
 							};
 
@@ -455,11 +470,22 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 							}
 						});
 
+						//save promotion times
+						let actionTime = moment().format("YYYY/MM");
+						user.profile = user.profile || {};
+						if (user.profile[actionTime]) {
+							user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
+						} else {
+							user.profile[actionTime] = {
+								numOfPromotions: 1
+							}
+						}
+
 						//clear the session and the conversation data
 						self.clearSession();
-						callback(facebookResponse.getTextMessage("Great, I will send it right now. 👍"));
+						callback(facebookResponse.getTextMessage("I'm super exited!!! I'll send it right away. 👏"));
 						setTimeout(function () {
-							callback(facebookResponse.getTextMessage("Done! I sent the promotion to " + clients.length + " customers. 🙂"));
+							callback(facebookResponse.getTextMessage("Done! 😎 I sent the promotion to __ of your customers."));
 							setTimeout(function () {
 								callback(facebookResponse.getTextMessage("Your calendar is going to be full in no time"));
 							}, delayTime);

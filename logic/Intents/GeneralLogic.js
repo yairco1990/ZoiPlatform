@@ -12,7 +12,7 @@ const AppointmentLogic = require('./AppointmentLogic');
 const _ = require('underscore');
 const ZoiConfig = require('../../config');
 
-const delayTime = 3000;
+const delayTime = ZoiConfig.delayTime || 3000;
 
 function GeneralLogic(user) {
 	this.user = user;
@@ -30,10 +30,13 @@ GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping,
 			self.sayHey(conversationData.entities, callback);
 			break;
 		case "general no thanks":
-			self.clearAndSaveUser(callback);
+			self.clearSession(callback);
 			break;
 		case "general bye zoi":
-			self.clearAndSaveUser(callback);
+			self.clearSession(callback);
+			break;
+		case "general leave review":
+			self.wishZoi(conversationData, setBotTyping, requestObj, callback);
 			break;
 		case "general morning brief":
 			setBotTyping();
@@ -69,11 +72,11 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 
 			if (clientsMessages.length > 0) {
 				//emails
-				callback(facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your clients on the last passed week", [
+				callback(facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
 					facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
 				]), true);
 			} else {
-				callback(facebookResponse.getTextMessage("You have no unread emails from your customers. Good job! :)"), true);
+				callback(facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true);
 			}
 
 			//get appointments for today
@@ -122,11 +125,13 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 					if (nextAppointment) {
 						setTimeout(function () {
 							callback(facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true);
-							startSendPromotions();
 						}, delayTime);
 					}
+					setTimeout(function () {
+						startSendPromotions();
+					}, delayTime);
 				} else {
-					callback(facebookResponse.getTextMessage("You have no appointments today"));
+					callback(facebookResponse.getTextMessage("You don't have appointments today"));
 					startSendPromotions();
 				}
 			}, delayTime);
@@ -135,6 +140,49 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 			Util.log(err);
 		});
 	});
+};
+
+const wishZoiQuestions = {
+	writeReview: {
+		id: 1,
+		text: "What you with that zoi will do?"
+	}
+};
+/**
+ * send morning brief
+ */
+GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, requestObj, callback) {
+
+	let self = this;
+	let user = self.user;
+
+	//if this is the start of the conversation
+	if (!user.conversationData) {
+		//set current question
+		let currentQuestion = wishZoiQuestions.writeReview;
+		//save conversation to the user
+		user.conversationData = conversationData;
+		//save the question
+		user.conversationData.lastQuestion = currentQuestion;
+
+		//save the user
+		self.DBManager.saveUser(user).then(function () {
+
+			callback(facebookResponse.getTextMessage("What will you wish Zoi will do in the future?"));
+
+		});
+	} else if (user.conversationData.lastQuestion.id === wishZoiQuestions.writeReview.id) {
+
+		user.wishList.push(conversationData.input);
+
+		//save the user
+		self.DBManager.saveUser(user).then(function () {
+
+			callback(facebookResponse.getTextMessage("Thank you for helping Zoi become greater assistant! :)"));
+
+			self.clearSession();
+		});
+	}
 };
 
 /**
@@ -153,14 +201,14 @@ GeneralLogic.prototype.sayHey = function (entities, callback) {
 	}
 };
 
-GeneralLogic.prototype.clearAndSaveUser = function (callback) {
+GeneralLogic.prototype.clearSession = function (callback) {
 	let self = this;
 	let user = self.user;
 
 	user.conversationData = null;
 	user.session = null;
 	self.DBManager.saveUser(user).then(function () {
-		callback(facebookResponse.getTextMessage("Bye boss..I will wait here for your commands! :)"));
+		callback && callback(facebookResponse.getTextMessage("I'll be right here if you need me ☺"));
 	});
 };
 

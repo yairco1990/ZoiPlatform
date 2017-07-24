@@ -11,6 +11,7 @@ const WelcomeLogic = require('../Intents/WelcomeLogic');
 const AppointmentLogic = require('../Intents/AppointmentLogic');
 const ClientLogic = require('../Intents/ClientLogic');
 const GeneralLogic = require('../Intents/GeneralLogic');
+const ZoiConfig = require('../../config');
 
 /**
  * ListenLogic constructor
@@ -20,7 +21,7 @@ function ListenLogic() {
 	this.DBManager = require('../../dal/DBManager');
 }
 
-const delayTime = 3000;
+const delayTime = ZoiConfig.delayTime || 3000;
 
 /**
  * process intent with NLP and return response
@@ -63,7 +64,7 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 		self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {//
 			//if the user have no email or full name - go the complete the "welcome conversation"
 			if (!user || input.toLowerCase() == "reset") {
-				conversationData.context = "WELCOME_CONVERSATION";
+				conversationData.context = "WELCOME";
 				//ignore the zoi-brain, and return the intent to the original input
 				conversationData.intent = input;
 				conversationData.entities = {};
@@ -73,11 +74,14 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 			else if (user && user.conversationData && conversationData.intent != "general bye zoi" && conversationData.intent != "general no thanks") {
 				conversationData.context = user.conversationData.context;
 				conversationData.intent = user.conversationData.intent;
+			} else if (!user.integrations || !user.integrations.Acuity) {//block user from proceed without integration with Acuity
+				conversationData.context = "WELCOME";
+				conversationData.intent = "welcome acuity integrated";
 			}
 
 			//check the intent
 			switch (conversationData.context) {
-				case "WELCOME_CONVERSATION":
+				case "WELCOME":
 					let welcomeLogic = new WelcomeLogic(user);
 					welcomeLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
@@ -103,11 +107,14 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 		}).catch(function (err) {
 
 			self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {
+
 				user.conversationData = null;
 				self.DBManager.saveUser(user).then(function () {
 					Util.log("user session deleted after error. userId -> " + user._id);
-					callback(facebookResponse.getTextMessage("Can you be more explicitly?"));
+
+					callback(facebookResponse.getTextMessage("I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu."));
 				});
+
 			}).catch(function () {
 				callback(facebookResponse.getTextMessage("Zoi is confused..."));
 			});

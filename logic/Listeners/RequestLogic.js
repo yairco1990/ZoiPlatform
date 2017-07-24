@@ -11,11 +11,12 @@ const request = require('request');
 const SharedLogic = require('../SharedLogic');
 const WelcomeLogic = require('../Intents/WelcomeLogic');
 const AppointmentLogic = require('../Intents/AppointmentLogic');
+const ZoiConfig = require('../../config');
 
 function RequestLogic() {
 }
 
-const delayTime = 3000;
+const delayTime = ZoiConfig.delayTime || 3000;
 
 RequestLogic.prototype.processMock = function (bot, payload, senderId) {
 

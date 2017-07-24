@@ -21,11 +21,13 @@ module.exports = {
 
 		//ping request
 		app.get('/ping', function (req, res) {
+			Util.log("Ping request");
 			res.send("Pong!");
 		});
 
 		//status request
 		app.get('/_status', function (req, res) {
+			Util.log("Status request");
 			res.end(JSON.stringify({status: 'ok'}));
 		});
 
@@ -48,6 +50,7 @@ module.exports = {
 
 		//verify bot
 		app.get('/', function (req, res) {
+			Util.log("Verify bot request");
 			return bot._verify(req, res);
 		});
 
@@ -99,10 +102,10 @@ module.exports = {
 					payload.message.text = speechToText;
 				}
 
-				//process the input and return an answer to the sender
-				listenLogic[processType](payload.message.text, payload, function () {
+				let setTypingFunction = function () {
 					bot.sendSenderAction(payload.sender.id, "typing_on");
-				}, bot, function (rep, isBotTyping) {
+				};
+				let replyFunction = function (rep, isBotTyping, syncFunction) {
 					// send reply
 					reply(rep, (err) => {
 						if (err) throw err;
@@ -110,8 +113,13 @@ module.exports = {
 						if (isBotTyping) {
 							bot.sendSenderAction(payload.sender.id, "typing_on");
 						}
+						syncFunction && syncFunction();
 					});
-				});
+				};
+				let textMessage = payload.message.text;
+
+				//process the input and return an answer to the sender
+				listenLogic[processType](textMessage, payload, setTypingFunction, bot, replyFunction);
 			};
 
 			// get profile info
@@ -155,14 +163,11 @@ module.exports = {
 				// user information
 				let display_name = profile.first_name + ' ' + profile.last_name;
 				let sender_id = payload.sender.id;
-				let listenLogic = new ListenLogic();
 
-				//check if real world or mock to decide which process function we should use
-				let processType = logicType === MyUtils.logicType.REAL_WORLD ? "processInput" : "processMock";
-
-				listenLogic[processType](payload.postback.payload, payload, function () {
+				let setTypingFunction = function () {
 					bot.sendSenderAction(payload.sender.id, "typing_on");
-				}, bot, function (rep, isBotTyping) {
+				};
+				let replyFunction = function (rep, isBotTyping) {
 					// send reply
 					reply(rep, (err) => {
 						if (err) throw err;
@@ -171,7 +176,20 @@ module.exports = {
 							bot.sendSenderAction(payload.sender.id, "typing_on");
 						}
 					});
-				}, true);
+				};
+				let postbackPayload = payload.postback.payload;
+
+				if (postbackPayload.includes("POSTBACK")) {
+					let postbackLogic = new PostbackLogic();
+					//check if real world or mock to decide which process function we should use
+					let processType = logicType === MyUtils.logicType.REAL_WORLD ? "processAction" : "processMockAction";
+					postbackLogic[processType](postbackPayload, payload, setTypingFunction, bot, replyFunction);
+				} else {
+					let listenLogic = new ListenLogic();
+					//check if real world or mock to decide which process function we should use
+					let processType = logicType === MyUtils.logicType.REAL_WORLD ? "processInput" : "processMock";
+					listenLogic[processType](postbackPayload, payload, setTypingFunction, bot, replyFunction);
+				}
 			});
 		});
 	}

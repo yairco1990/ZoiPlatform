@@ -13,6 +13,7 @@ const requestify = require('requestify');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const ClientLogic = require('../Intents/ClientLogic');
 const EmailLib = require('../../interfaces/EmailLib');
+const WelcomeLogic = require('../Intents/WelcomeLogic');
 
 class AcuityLogic {
 
@@ -115,7 +116,7 @@ class AcuityLogic {
 
 		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 
-			if (user.metadata && user.metadata.oldCustomers) {
+			if (user.metadata.oldCustomers) {
 				callback(200, user.metadata.oldCustomers);
 			} else {
 				callback(200, "NOT_AVAILABLE");
@@ -149,12 +150,10 @@ class AcuityLogic {
 			callback(200, "SUCCESS");
 
 			//remove the metadata
-			if (user.metadata) {
-				user.metadata.oldCustomers = null;
-				self.DBManager.saveUser(user).then(function () {
-					//old customers removed
-				});
-			}
+			user.metadata.oldCustomers = null;
+			self.DBManager.saveUser(user).then(function () {
+				//old customers removed
+			});
 
 		}).catch(function (err) {
 			callback(401, err);
@@ -164,7 +163,9 @@ class AcuityLogic {
 	scheduleAppointment(data, callback) {
 		let self = this;
 
+		let _user;
 		self.DBManager.getUser({_id: data.userId}).then(function (user) {
+			_user = user;
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			// Create appointment:
@@ -188,6 +189,22 @@ class AcuityLogic {
 		}).then(function () {
 
 			callback(200, {});
+
+			//save appointment times
+			let actionTime = moment().format("YYYY/MM");
+			_user.profile = _user.profile || {};
+			if (_user.profile[actionTime]) {
+				_user.profile[actionTime].numOfAppointments = (_user.profile[actionTime].numOfAppointments || 0) + 1;
+				_user.profile[actionTime].profitFromAppointments = ((_user.profile[actionTime].profitFromAppointments || 0) + parseFloat(data.price)) || 0;
+			} else {
+				_user.profile[actionTime] = {
+					numOfAppointments: 1,
+					profitFromAppointments: parseFloat(data.price) || 0
+				}
+			}
+
+			self.DBManager.saveUser(_user).then(function () {
+			});
 		}).catch(function (err) {
 
 			callback(401, err);
@@ -275,12 +292,13 @@ class AcuityLogic {
 							intent: "client new customer join",
 							context: "CLIENT"
 						};
-						clientLogic.processIntent(conversationData, null, null, function (msg, setTyping) {
+						clientLogic.processIntent(conversationData, null, null, function (msg, setTyping, syncFunction) {
 							bot.sendMessage(_user._id, msg, function () {
 								if (setTyping) {
 									bot.sendSenderAction(_user._id, "typing_on");
 								}
 							});
+							syncFunction && syncFunction();
 						});
 					});
 				}
@@ -295,18 +313,18 @@ class AcuityLogic {
 		}));
 	}
 
-	integrate(userId, code, callback) {
+	integrate(userId, code, bot, callback) {
 
 		let self = this;
 
 		//get the user that wants to integrate
 		self.DBManager.getUser({_id: userId}).then(function (user) {
 
+			//check if already integrated with Acuity
+			let isAlreadyConnectedWithAcuity = user.integrations && user.integrations.Acuity;
+
 			//get acuity details
 			AcuityApi.getUserAndToken(code).then(function (userData) {
-
-				//if there are no integrations at all
-				if (!user.integrations) user.integrations = {};
 
 				//set integration
 				user.integrations.Acuity = userData;
@@ -332,6 +350,24 @@ class AcuityLogic {
 				return acuityApi.setWebhooks(options);
 
 			}).then(function (response) {
+
+				//proceed after user integrated for the first time only(if integrated more than once - skip it)
+				if (!isAlreadyConnectedWithAcuity) {
+					//start the conversation in the welcomeLogic class
+					let welcomeLogic = new WelcomeLogic(user);
+					let conversationData = {
+						intent: "welcome acuity integrated",
+						context: "WELCOME_CONVERSATION"
+					};
+					welcomeLogic.processIntent(conversationData, null, null, function (msg, setBotTyping, syncFunction) {
+						bot.sendMessage(user._id, msg, function () {
+							if (setBotTyping) {
+								bot.sendSenderAction(user._id, "typing_on");
+							}
+							syncFunction && syncFunction();
+						});
+					});
+				}
 
 				Util.log("Response");
 				Util.log(response);

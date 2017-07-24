@@ -66,7 +66,7 @@ module.exports = {
 		app.get('/acuity/oauth2', function (req, res) {
 			Util.log(API_LOG + "oAuth Acuity. userId = " + req.query.state);
 			let acuityLogic = new AcuityLogic();
-			acuityLogic.integrate(req.query.state, req.query.code, function (status, data) {
+			acuityLogic.integrate(req.query.state, req.query.code, bot, function (status, data) {
 				res.writeHead(status, data);
 				res.send();
 			});

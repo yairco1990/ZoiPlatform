@@ -74,6 +74,10 @@ app.use(function (req, res, next) {
 // 	resave: false
 // }));
 
+//save zoi emails
+const ZoiEmails = {};
+
+
 //set the routing
 Services.setRouting(app, bot);
 Services.setBotListeners(bot);

@@ -82,27 +82,6 @@ class Bot extends EventEmitter {
 			})
 	}
 
-	static sendMessageStatic(recipient, payload) {
-		return request({
-			method: 'POST',
-			uri: 'https://graph.facebook.com/v2.6/me/messages',
-			qs: {},
-			json: {
-				recipient: {id: recipient},
-				message: payload
-			}
-		})
-			.then(body => {
-				if (body.error) return Promise.reject(body.error);
-				if (!cb) return body;
-				cb(null, body)
-			})
-			.catch(err => {
-				if (!cb) return Promise.reject(err);
-				cb(err)
-			})
-	}
-
 	/**
 	 * send sender action
 	 * for example, send the user that the bot is typing

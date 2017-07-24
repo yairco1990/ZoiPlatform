@@ -1,5 +1,5 @@
 let CLIENT_DEV = "http://zoiai.com/#";
-let CLIENT_LOCAL = "http://localhost:63343/ZoiClient/#";
+let CLIENT_LOCAL = "http://local.host:63343/ZoiClient/#";
 
 let Environments = {
 	Local: {
@@ -12,11 +12,12 @@ let Environments = {
 	},
 	Ngrok: {
 		serverUrl: "https://45e73634.ngrok.io",
-		clientUrl: CLIENT_DEV
+		clientUrl: CLIENT_LOCAL
 	}
 };
 let selectedEnvironment = Environments.Ngrok;
 
+//////////////////////////////////////////////////////////////////////////////
 module.exports = {
 	serverUrl: selectedEnvironment.serverUrl,
 	clientUrl: selectedEnvironment.clientUrl,
@@ -30,6 +31,7 @@ module.exports = {
 		"clientSecret": "mezlVskAfjoAJSy8iAGhh3FYOW3MvSEASBnlUGQE",
 		// "clientId": "VyZtYYyz2be8VpZ6",
 		// "clientSecret": "Au4oQ6mG9vSvRnbHRUEBWQ8YOdMw2ZRqkDUg5ehM",
-		"redirectUri": Environments.Dev.serverUrl + "/acuity/oauth2"
-	}
+		"redirectUri": Environments.Dev.serverUrl + "/acuity/oauth2"//TODO change it!
+	},
+	delayTime: 2000
 };

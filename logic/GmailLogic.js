@@ -47,10 +47,6 @@ class GmailLogic {
 			//get user
 			DBManager.getUser({_id: userId}).then((user) => {
 
-				//check integrations exist
-				if (!user.integrations) {
-					user.integrations = {};
-				}
 				user.integrations.Gmail = tokens;
 
 				//save the user with the integrations
@@ -108,33 +104,39 @@ class GmailLogic {
 			let oauthObject = GmailLogic.getAuthObject();
 			oauthObject.setCredentials(tokens);
 
-			let GBS = new GmailBatchStream(tokens.access_token);
-			const gmailGBS = GBS.gmail();
-			const messageIdStream = _h([gmailGBS.users.messages.list({userId: userId, q: queryString})])
-				.pipe(GBS.pipeline(1, 5))
-				.pluck('messages')
-				.sequence()
-				.pluck('id');
+			//check token expiration date
+			if (tokens.expiry_date > new Date().valueOf()) {
+				let GBS = new GmailBatchStream(tokens.access_token);
+				const gmailGBS = GBS.gmail();
+				const messageIdStream = _h([gmailGBS.users.messages.list({userId: userId, q: queryString})])
+					.pipe(GBS.pipeline(1, 5))
+					.pluck('messages')
+					.sequence()
+					.pluck('id');
 
-			let messages = [];
+				let messages = [];
 
-			messageIdStream
-				.map(messageId => gmailGBS.users.messages.get({userId: 'me', id: messageId, format: 'metadata'}))
-				.pipe(GBS.pipeline(100, 5)) //Run in batches of 100. Use quota of 5 (for users.messages.get).
-				// .tap( _h.log )
-				.each(function (message) {
-					let headers = message.payload.headers;
-					messages.push({
-						id: message.id,
-						snippet: message.snippet,
-						'Message-ID': GmailLogic.getByKey(headers, 'Message-ID'),
-						from: GmailLogic.getByKey(headers, 'From'),
-						date: GmailLogic.getByKey(headers, 'Date'),
-						subject: GmailLogic.getByKey(headers, 'Subject')
-					});
-				}).done(() => {
-				resolve(messages);
-			});
+				messageIdStream
+					.map(messageId => gmailGBS.users.messages.get({userId: 'me', id: messageId, format: 'metadata'}))
+					.pipe(GBS.pipeline(100, 5)) //Run in batches of 100. Use quota of 5 (for users.messages.get).
+					// .tap( _h.log )
+					.each(function (message) {
+						let headers = message.payload.headers;
+						messages.push({
+							id: message.id,
+							snippet: message.snippet,
+							'Message-ID': GmailLogic.getByKey(headers, 'Message-ID'),
+							from: GmailLogic.getByKey(headers, 'From'),
+							date: GmailLogic.getByKey(headers, 'Date'),
+							subject: GmailLogic.getByKey(headers, 'Subject')
+						});
+					}).done(() => {
+					resolve(messages);
+				});
+			} else {
+				reject("TOKEN_EXPIRED");
+			}
+
 		});
 	}
 

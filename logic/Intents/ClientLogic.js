@@ -12,7 +12,7 @@ const AcuityLogic = require('../ApiHandlers/AcuitySchedulingLogic');
 const _ = require('underscore');
 const ZoiConfig = require('../../config');
 
-const delayTime = 3000;
+const delayTime = ZoiConfig.delayTime || 3000;
 
 function ClientLogic(user) {
 	this.user = user;
@@ -44,7 +44,7 @@ ClientLogic.prototype.processIntent = function (conversationData, setBotTyping, 
 const newCustomerJoinQuestions = {
 	sendEmail: {
 		id: 1,
-		text: "Do you want to send welcome email to this customer?"
+		text: "Do you want me to send this email?"
 	},
 	whichTemplate: {
 		id: 2,
@@ -58,98 +58,82 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, callback) {
 
 	//if this is the start of the conversation
 	if (!user.conversationData) {
-		//ask send email
+		//set current question
 		let currentQuestion = newCustomerJoinQuestions.sendEmail;
-
 		//save conversation to the user
 		user.conversationData = conversationData;
 		//save the question
 		user.conversationData.lastQuestion = currentQuestion;
+		//save qr
+		let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
+			[facebookResponse.getQRButton("text", "Yes, send it.", {id: 1}),
+				facebookResponse.getQRButton("text", "No, don't send it.", {id: 2})]
+		);
+		user.conversationData.lastQRResponse = lastQRResponse;
+
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
 
-			callback(facebookResponse.getTextMessage("Hey boss, New customer scheduled just now."), true);
+			callback(facebookResponse.getTextMessage("Hooray! 👏 " + user.session.newClient.firstName + " " + user.session.newClient.lastName + " scheduled an appointment for the first time"), true);
 
 			setTimeout(function () {
-				callback(facebookResponse.getQRElement(currentQuestion.text,
-					[facebookResponse.getQRButton("text", "Yes, send it.", {id: 1}),
-						facebookResponse.getQRButton("text", "No, don't send it.", {id: 2})]
-				))
+				callback(facebookResponse.getTextMessage("Let's send a welcome email"), true);
+
+				setTimeout(function () {
+					callback(facebookResponse.getGenericTemplate([
+						facebookResponse.getGenericElement("Welcome Email", "http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg", "", null)
+					]), null, function () {
+						setTimeout(function () {
+							callback(lastQRResponse);
+						}, delayTime);
+					});
+				}, delayTime);
 			}, delayTime);
 		});
 	}
 	else if (user.conversationData.lastQuestion.id === newCustomerJoinQuestions.sendEmail.id) {
 
-		if (conversationData.payload.id == 1) {
+		if (conversationData.payload) {
+			if (conversationData.payload.id == 1) {
 
-			callback(facebookResponse.getTextMessage("Let's send it!"), true);
+				if (user.session && user.session.newClient && user.session.newClient.email) {
+					EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailHtml) {
+						EmailLib.sendEmail(emailHtml, [{
+							address: user.session.newClient.email,
+							from: 'Zoi.AI <noreply@fobi.io>',
+							subject: 'Test Subject',
+							alt: 'Test Alt'
+						}]);
+					}).catch(MyUtils.getErrorMsg);
+				}
 
-			//ask which tenplate
-			let currentQuestion = newCustomerJoinQuestions.whichTemplate;
-			//save conversation to the user
-			user.conversationData = conversationData;
-			//save the question
-			user.conversationData.lastQuestion = currentQuestion;
-
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
+				callback(facebookResponse.getTextMessage("Done 😎"), true);
 				setTimeout(function () {
-					callback(facebookResponse.getTextMessage(currentQuestion.text), true);
-
+					callback(facebookResponse.getTextMessage("Greeting a new customer makes a good first step for retention"), true);
 					setTimeout(function () {
-						callback(facebookResponse.getGenericTemplate([
-							facebookResponse.getGenericElement("Welcome Email",
-								"https://www.askideas.com/media/13/Welcome-3d-Picture.jpg",
-								"Welcome my friend!",
-								[facebookResponse.getGenericButton("postback", "I like it", {
-									id: 1,
-									title: "Welcome to our spa!"
-								})]),
-							facebookResponse.getGenericElement("Good Choice!",
-								"http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg",
-								"You did the right thing!",
-								[facebookResponse.getGenericButton("postback", "I like it", {
-									id: 2,
-									title: "Hope you will enjoy our services!"
-								})])
-						]));
+						callback(facebookResponse.getTextMessage("I'll be here if you will need anything else"));
 					}, delayTime);
 				}, delayTime);
-			});
+
+				//clear conversation data
+				user.conversationData = null;
+				user.session = null;
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
+				}).catch(MyUtils.getErrorMsg);
+
+			} else {
+				user.conversationData = null;
+				user.session = null;
+
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
+					callback(facebookResponse.getTextMessage("Ok boss.."));
+				});
+			}
 		} else {
-			user.conversationData = null;
-			user.session = null;
-
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
-				callback(facebookResponse.getTextMessage("Ok boss.."));
-			});
+			callback(user.conversationData.lastQRResponse);
 		}
-	} else if (user.conversationData.lastQuestion.id === newCustomerJoinQuestions.whichTemplate.id) {
-
-		if (user.session && user.session.newClient && user.session.newClient.email) {
-			EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailHtml) {
-				EmailLib.sendEmail(emailHtml, [{
-					address: user.session.newClient.email,
-					from: 'Zoi.AI <noreply@fobi.io>',
-					subject: 'Test Subject',
-					alt: 'Test Alt'
-				}]);
-			}).catch(MyUtils.getErrorMsg);
-		}
-
-		callback(facebookResponse.getTextMessage("Great! I sent it to him. 😎"), true);
-
-		setTimeout(function () {
-			callback(facebookResponse.getTextMessage("I'm sure he will be happy to see your attitude! ☺"));
-		}, delayTime);
-
-		//clear conversation data
-		user.conversationData = null;
-		user.session = null;
-		//save the user
-		self.DBManager.saveUser(user).then(function () {
-		}).catch(MyUtils.getErrorMsg);
 	}
 };
 
@@ -157,7 +141,7 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, callback) {
 const promoteOldCustomersQuestions = {
 	toPromote: {
 		id: 1,
-		text: "Do you want me to send promotions to old customer?"
+		text: "I suggest we send a promotion to non-regular customers"
 	}
 };
 ClientLogic.prototype.promoteOldCustomers = function (conversationData, callback) {
@@ -237,53 +221,71 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, callback
 			}
 			user.session.oldCustomers = oldCustomers;
 
+			//save qr
+			let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
+				[facebookResponse.getQRButton("text", "Yes, send it.", {id: 1}),
+					facebookResponse.getQRButton("text", "No, don't send it.", {id: 2})]
+			);
+			user.conversationData.lastQRResponse = lastQRResponse;
+
 			//save the user
 			self.DBManager.saveUser(user).then(function () {
 
-				callback(facebookResponse.getTextMessage("Hey boss. You have " + oldCustomers.length + " customers that I didn't see for a long time..."), true);
+				if (oldCustomers.length) {
+					callback(facebookResponse.getTextMessage("Hey boss, I noticed that there are " + oldCustomers.length + " non-regular customers. These are customers that didn't visit for a while."), true);
+					setTimeout(function () {
+						callback(facebookResponse.getTextMessage("Let's send a welcome email"), true);
 
-				setTimeout(function () {
-					callback(facebookResponse.getQRElement(currentQuestion.text,
-						[facebookResponse.getQRButton("text", "Yes, send it.", {id: 1}),
-							facebookResponse.getQRButton("text", "No, don't send it.", {id: 2})]
-					))
-				}, delayTime);
+						setTimeout(function () {
+							callback(facebookResponse.getGenericTemplate([
+								facebookResponse.getGenericElement("Welcome Email", "http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg", "", null)
+							]), true, function () {
+								setTimeout(function () {
+									callback(lastQRResponse);
+								}, delayTime);
+							});
+						}, delayTime);
+					}, delayTime);
+				} else {
+					callback(facebookResponse.getTextMessage("There are no old customers to show today."));
+					self.clearSession();
+				}
 
-			}).catch(MyUtils.getErrorMsg(function () {
-				self.clearSession();
-			}));
-
+			})
 		}).catch(MyUtils.getErrorMsg(function () {
 			self.clearSession();
 		}));
 	}
 	else if (lastQuestionId === promoteOldCustomersQuestions.toPromote.id) {
 
-		if (conversationData.payload.id == 1) {
-			user.conversationData = null;
-			//save the old customers to metadata
-			if (!user.metadata) {
-				user.metadata = {};
+		if (conversationData.payload) {
+			if (conversationData.payload.id == 1) {
+				user.conversationData = null;
+				//save the old customers to metadata
+				user.metadata.oldCustomers = user.session.oldCustomers;
+
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
+
+					callback(facebookResponse.getTextMessage("Good!"), true);
+
+					setTimeout(function () {
+
+						callback(facebookResponse.getButtonMessage("Let's pick some non-regulars and try to make them come back", [
+							facebookResponse.getGenericButton("web_url", "Non-regulars", null, ZoiConfig.clientUrl + "/old-customers?userId=" + user._id, "full")
+						]));
+
+						//TODO after he sent the emails, send him message about - "WOOHOO! We will turn these non-regulars to big fans in no time!"
+						self.clearSession();
+
+					}, delayTime);
+				});
+			} else if (conversationData.payload.id == 2) {
+				callback(facebookResponse.getTextMessage("I will be here if you need me :)"));
+				self.clearSession();
 			}
-			user.metadata.oldCustomers = user.session.oldCustomers;
-
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
-				callback(facebookResponse.getTextMessage("Good!"), true);
-
-				setTimeout(function () {
-
-					callback(facebookResponse.getButtonMessage("Click here and choose who do you like to promote:", [
-						facebookResponse.getGenericButton("web_url", "Old Customers", null, ZoiConfig.clientUrl + "/old-customers?userId=" + user._id, "full")
-					]));
-
-					self.clearSession();
-
-				}, delayTime);
-			});
-		} else if (conversationData.payload.id == 2) {
-			callback(facebookResponse.getTextMessage("You said no.."));
-			self.clearSession();
+		} else {
+			callback(user.conversationData.lastQRResponse);
 		}
 	}
 };
