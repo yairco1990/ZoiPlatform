@@ -44,7 +44,7 @@ BookerplusLogic.prototype.getClient = function (entities, callback) {
 
         if (resultClient) {
 
-	  //TODO save client
+	  //save client
 	  DATABASE.customer = resultClient;
 
 	  myResult += "The client that zoi found is " + resultClient.firstname + " " + resultClient.lastname + ".";
@@ -111,7 +111,7 @@ BookerplusLogic.prototype.getServices = function (entities, callback) {
 
 	  if (services && services.length > 0) {
 
-	      //TODO save services
+	      //save services
 	      DATABASE.services = services;
 
 	      services.forEach(function (service) {
@@ -184,7 +184,7 @@ BookerplusLogic.prototype.getQueues = function (entities, params, callback) {
 	  endTime: new Date().valueOf()
         };
 
-        //TODO
+        //aTODO
         if (entities && entities.date == 'today') {
 	  params.startTime = moment().startOf('day').unix() * 1000; // set to 12:00 am today
 	  params.endTime = moment().endOf('day').unix() * 1000; // set to 23:59 pm today
@@ -197,7 +197,7 @@ BookerplusLogic.prototype.getQueues = function (entities, params, callback) {
 
 	  if (queues && queues.length > 0) {
 
-	      //TODO save queues
+	      //aTODO save queues
 	      DATABASE.weekQueues = queues;
 
 	      let queuesList = [];
@@ -296,7 +296,7 @@ BookerplusLogic.prototype.getNextQueue = function (entities, callback) {
 
 	      let queue = queues[0];
 
-	      //TODO save next queue
+	      //aTODO save next queue
 	      DATABASE.nextQueue = queue;
 
 	      myResult = "The next queue is for " + queue.customer.firstname + " "

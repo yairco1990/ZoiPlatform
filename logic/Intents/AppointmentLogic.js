@@ -214,7 +214,7 @@ const sendPromotionsQuestions = {
 	},
 	areYouSure: {
 		id: 3,
-		text: "Just so we clear, I am about to send {[promotion type}} promotion for {{service name}} to your customers?"
+		text: "Just so we clear, I am about to send {promotionName} promotion for {serviceName} to your customers?"
 	}
 };
 
@@ -376,133 +376,140 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 		//ask if he is sure
 		let currentQuestion = sendPromotionsQuestions.areYouSure;
 		let responseText = currentQuestion.text;
-		responseText = responseText.replace('{serviceName}', user.session['service'].name);
-		//TODO add promotion type to the session
-		responseText = responseText.replace('{promotionType}', user.session['promotionType'].name);
 
+		//parse the question text
+		responseText = responseText.replace('{serviceName}', user.session['service'].name);
+		responseText = responseText.replace('{promotionName}', template.title);
+
+		//save last qr
+		user.conversationData.lastQRResponse = facebookResponse.getQRElement(responseText, [
+			facebookResponse.getQRButton("text", "Yes, send it.", {answer: "yes"}),
+			facebookResponse.getQRButton("text", "No, don't send it.", {answer: "no"})
+		]);
 		//set current question
 		user.conversationData.lastQuestion = currentQuestion;
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
-			callback(facebookResponse.getQRElement(responseText, [
-				facebookResponse.getQRButton("text", "Yes, send it.", {answer: "yes"}),
-				facebookResponse.getQRButton("text", "No, don't send it.", {answer: "no"})
-			]));
+			callback(user.conversationData.lastQRResponse);
 		});
 
 	} else if (lastQuestionId === sendPromotionsQuestions.areYouSure.id) {
 
-		if (conversationData.payload && conversationData.payload.answer == "yes") {
+		if (conversationData.payload) {
+			if (conversationData.payload && conversationData.payload.answer == "yes") {
 
-			let appointmentType = user.session['service'];
-			let template = user.session['template'];
+				let appointmentType = user.session['service'];
+				let template = user.session['template'];
 
-			let emailFile;
+				let emailFile;
 
-			let options = {
-				appointmentTypeID: appointmentType.id,
-				date: moment().add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
-			};
+				let options = {
+					appointmentTypeID: appointmentType.id,
+					date: moment().add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
+				};
 
-			acuityLogic.getAvailability(options).then(function (slots) {
+				acuityLogic.getAvailability(options).then(function (slots) {
 
-				//get the clients of the business
-				acuityLogic.getClients().then(function (clients) {
+					//get the clients of the business
+					acuityLogic.getClients().then(function (clients) {
 
-					EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/scheduleButton.html").then(function (scheduleButton) {
+						EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/scheduleButton.html").then(function (scheduleButton) {
 
-						//iterate clients
-						clients.forEach(function (client) {
+							//iterate clients
+							clients.forEach(function (client) {
 
-							//transform slot to appointment scheduling button
-							let scheduleButtonsHtml = "";
+								//transform slot to appointment scheduling button
+								let scheduleButtonsHtml = "";
 
-							let appointmentParams = {
-								firstname: client.firstName,
-								lastname: client.lastName,
-								email: client.email,
-								userId: user._id,
-								serviceId: appointmentType.id,
-								serviceName: appointmentType.name,
-								price: appointmentType.price,
-								notes: template.zoiCoupon
-							};
+								let appointmentParams = {
+									firstname: client.firstName,
+									lastname: client.lastName,
+									email: client.email,
+									userId: user._id,
+									serviceId: appointmentType.id,
+									serviceName: appointmentType.name,
+									price: appointmentType.price,
+									notes: template.zoiCoupon
+								};
 
-							//choose 5 slots
-							let slotsCopy = deepcopy(slots);
-							let gap = Math.floor(slotsCopy.length / 5);
-							//iterate slots
-							for (let i = 0; i < slotsCopy.length; i += gap) {
-								let slot = slotsCopy[i];
-								//create slot button
-								let formattedScheduleButton = deepcopy(scheduleButton);
-								appointmentParams.date = slot.time;
-								formattedScheduleButton = formattedScheduleButton.replace('{{href}}', MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams));
-								formattedScheduleButton = formattedScheduleButton.replace('{{appointmentTime}}', moment(slot.time).format('HH:mm MM.DD'));
-								scheduleButtonsHtml += formattedScheduleButton + "\n";
-							}
+								//choose 5 slots
+								let slotsCopy = deepcopy(slots);
+								let gap = Math.floor(slotsCopy.length / 5);
+								//iterate slots
+								for (let i = 0; i < slotsCopy.length; i += gap) {
+									let slot = slotsCopy[i];
+									//create slot button
+									let formattedScheduleButton = deepcopy(scheduleButton);
+									appointmentParams.date = slot.time;
+									formattedScheduleButton = formattedScheduleButton.replace('{{href}}', MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams));
+									formattedScheduleButton = formattedScheduleButton.replace('{{appointmentTime}}', moment(slot.time).format('HH:mm MM.DD'));
+									scheduleButtonsHtml += formattedScheduleButton + "\n";
+								}
 
-							//send single email every loop
-							let emailList = [{
-								address: client.email,
-								from: 'Zoi.AI <noreply@fobi.io>',
-								subject: 'Test Subject',
-								alt: 'Test Alt'
-							}];
+								//send single email every loop
+								let emailList = [{
+									address: client.email,
+									from: 'Zoi.AI <noreply@fobi.io>',
+									subject: 'Test Subject',
+									alt: 'Test Alt'
+								}];
 
-							//send email function
-							let sendEmail = function (emailFile) {
-								emailFile = emailFile.replace('{{scheduleButtons}}', scheduleButtonsHtml);
-								emailFile = emailFile.replace('{{title}}', template.title);
-								//send the email to the list
-								EmailLib.sendEmail(emailFile, emailList);
-							};
+								//send email function
+								let sendEmail = function (emailFile) {
+									emailFile = emailFile.replace('{{scheduleButtons}}', scheduleButtonsHtml);
+									emailFile = emailFile.replace('{{title}}', template.title);
+									//send the email to the list
+									EmailLib.sendEmail(emailFile, emailList);
+								};
 
-							//check if we already got the email file
-							if (!emailFile) {
-								//get email file
-								EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailHtml) {
-									emailFile = emailHtml;
-									sendEmail(emailFile);
-								});
+								//check if we already got the email file
+								if (!emailFile) {
+									//get email file
+									EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailHtml) {
+										emailFile = emailHtml;
+										sendEmail(emailFile);
+									});
+								} else {
+									sendEmail(emailFile)
+								}
+							});
+
+							//save promotion times
+							let actionTime = moment().format("YYYY/MM");
+							user.profile = user.profile || {};
+							if (user.profile[actionTime]) {
+								user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
 							} else {
-								sendEmail(emailFile)
+								user.profile[actionTime] = {
+									numOfPromotions: 1
+								}
 							}
-						});
 
-						//save promotion times
-						let actionTime = moment().format("YYYY/MM");
-						user.profile = user.profile || {};
-						if (user.profile[actionTime]) {
-							user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
-						} else {
-							user.profile[actionTime] = {
-								numOfPromotions: 1
-							}
-						}
-
-						//clear the session and the conversation data
-						self.clearSession();
-						callback(facebookResponse.getTextMessage("I'm super exited!!! I'll send it right away. 👏"));
-						setTimeout(function () {
-							callback(facebookResponse.getTextMessage("Done! 😎 I sent the promotion to __ of your customers."));
+							//clear the session and the conversation data
+							self.clearSession();
+							callback(facebookResponse.getTextMessage("I'm super exited!!! I'll send it right away. 👏"));
 							setTimeout(function () {
-								callback(facebookResponse.getTextMessage("Your calendar is going to be full in no time"));
+								callback(facebookResponse.getTextMessage("Done! 😎 I sent the promotion to __ of your customers."));
+								setTimeout(function () {
+									callback(facebookResponse.getTextMessage("Your calendar is going to be full in no time"));
+								}, delayTime);
 							}, delayTime);
-						}, delayTime);
 
+						}).catch(function (err) {
+							Util.log("Error:");
+							Util.log(err);
+						});
 					}).catch(function (err) {
 						Util.log("Error:");
 						Util.log(err);
 					});
-				}).catch(function (err) {
-					Util.log("Error:");
-					Util.log(err);
 				});
-			});
+			} else {
+				self.clearSession();
+				callback(facebookResponse.getTextMessage("Ok boss"));
+			}
 		} else {
-			self.clearSession();
-			callback(facebookResponse.getTextMessage("Ok boss"));
+
 		}
 	}
 };

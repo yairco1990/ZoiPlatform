@@ -99,6 +99,7 @@ class GmailLogic {
 	 * @returns {Promise}
 	 */
 	static getEmailsList(tokens, queryString, userId) {
+		//TODO handle with expiration token
 		return new Promise((resolve, reject) => {
 
 			let oauthObject = GmailLogic.getAuthObject();

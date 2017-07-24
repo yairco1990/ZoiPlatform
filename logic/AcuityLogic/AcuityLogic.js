@@ -62,7 +62,7 @@ class AcuityLogic {
 		});
 	}
 
-	//TODO only for test now
+	//only for test now
 	sendPromotions(userId, callback) {
 		let self = this;
 
