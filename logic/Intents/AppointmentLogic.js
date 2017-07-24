@@ -11,6 +11,7 @@ const MindbodyFactory = require('../../interfaces/Factories/MindbodyFactory');
 const EmailLib = require('../../interfaces/EmailLib');
 const ZoiConfig = require('../../config');
 const deepcopy = require('deepcopy');
+const EmailConfig = require('../../interfaces/assets/EmailsConfig');
 
 const delayTime = ZoiConfig.delayTime || 3000;
 
@@ -339,29 +340,41 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 
 				setTimeout(function () {
 					callback(facebookResponse.getGenericTemplate([
-						facebookResponse.getGenericElement("A day in a spa for 100$",
-							"http://alluredayspavi.com/portals/_default/Skins/Vaspan/images/BoxImgB1.jpg",
-							"Book now for a whole day in our spa for just 100$. Don\'t miss it!",
+						//coupon
+						facebookResponse.getGenericElement("10% off massage treatments",
+							"http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
+							"Book a massage now and get 10% off",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 1,
-								title: "20% Off!!",
-								zoiCoupon: "Zoi.20PrecentOff"
+								title: "10% Off",
+								zoiCoupon: "Zoi.10PercentOff",
+								image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
+								color: "#F99C17",
+								hoverColor: "#F4771D"
 							})]),
-						facebookResponse.getGenericElement("20% off massage treatments",
-							"https://preview.ibb.co/fX8mhv/spa1.jpg",
-							"Book a massage now and get 20% off",
+						//25% off
+						facebookResponse.getGenericElement("25% off massage treatments",
+							"http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
+							"Book a massage now and get 25% off",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 2,
-								title: "1 + 1",
-								zoiCoupon: "Zoi.1Plus1"
+								title: "25% Off",
+								zoiCoupon: "Zoi.25PercentOff",
+								image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
+								color: "#00b0ea",
+								hoverColor: "#00a6db"
 							})]),
+						//1 plus 1
 						facebookResponse.getGenericElement("1 + 1 on face treatments",
-							"https://image.ibb.co/fv5XNv/spa3.jpg",
-							"Get 2 treatments for the price of one. Book now to claim your reward",
+							"http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
+							"Get 2 treatments for the price of one. Book now to claim your reward.",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 3,
-								title: "20$ coupon",
-								zoiCoupon: "Zoi.20DollarCoupon"
+								title: "1 + 1",
+								zoiCoupon: "Zoi.1Plus1",
+								image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
+								color: "#d1dd25",
+								hoverColor: "#c3c62f"
 							})])
 					]));
 				}, delayTime);
@@ -401,115 +414,79 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 				let appointmentType = user.session['service'];
 				let template = user.session['template'];
 
-				let emailFile;
+				//get the clients of the business
+				acuityLogic.getClients().then(function (clients) {
 
-				let options = {
-					appointmentTypeID: appointmentType.id,
-					date: moment().add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
-				};
+					//get email file
+					EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailFileSource) {
 
-				acuityLogic.getAvailability(options).then(function (slots) {
+						//iterate clients
+						clients.forEach(function (client) {
 
-					//get the clients of the business
-					acuityLogic.getClients().then(function (clients) {
+							//send single email every loop
+							let emailList = [{
+								address: client.email,
+								from: 'Zoi.AI <noreply@fobi.io>',
+								subject: 'Test Subject',
+								alt: 'Test Alt'
+							}];
 
-						EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/scheduleButton.html").then(function (scheduleButton) {
+							let emailFile = deepcopy(emailFileSource);
 
-							//iterate clients
-							clients.forEach(function (client) {
+							//parse the first part
+							emailFile = emailFile.replace('{{line1}}', EmailConfig.promotionsEmail.line1);
+							emailFile = emailFile.replace('{{line2}}', EmailConfig.promotionsEmail.line2);
+							emailFile = emailFile.replace('{{line3}}', EmailConfig.promotionsEmail.line3);
+							emailFile = emailFile.replace('{{line4}}', EmailConfig.promotionsEmail.line4);
+							emailFile = emailFile.replace('{{bannerSrc}}', template.image);
 
-								//transform slot to appointment scheduling button
-								let scheduleButtonsHtml = "";
+							//parse the second part
+							emailFile = emailFile.replace('{{Business name}}', user.integrations.Acuity.userDetails.name);
+							emailFile = emailFile.replace('{{business_name}}', user.integrations.Acuity.userDetails.name);
+							emailFile = emailFile.replace('{{firstName}}', client.firstName);
+							emailFile = emailFile.replace('{{business name}}', user.integrations.Acuity.userDetails.name);
+							emailFile = emailFile.replace('{{service}}', appointmentType.name);
+							emailFile = emailFile.replace('{{discount type}}', template.title);
+							emailFile = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailFile);
+							emailFile = MyUtils.replaceAll('{{color}}', template.color, emailFile);
 
-								let appointmentParams = {
-									firstname: client.firstName,
-									lastname: client.lastName,
-									email: client.email,
-									userId: user._id,
-									serviceId: appointmentType.id,
-									serviceName: appointmentType.name,
-									price: appointmentType.price,
-									notes: template.zoiCoupon
-								};
+							//send the email to the client
+							EmailLib.sendEmail(emailFile, emailList);
 
-								//choose 5 slots
-								let slotsCopy = deepcopy(slots);
-								let gap = Math.floor(slotsCopy.length / 5);
-								//iterate slots
-								for (let i = 0; i < slotsCopy.length; i += gap) {
-									let slot = slotsCopy[i];
-									//create slot button
-									let formattedScheduleButton = deepcopy(scheduleButton);
-									appointmentParams.date = slot.time;
-									formattedScheduleButton = formattedScheduleButton.replace('{{href}}', MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams));
-									formattedScheduleButton = formattedScheduleButton.replace('{{appointmentTime}}', moment(slot.time).format('HH:mm MM.DD'));
-									scheduleButtonsHtml += formattedScheduleButton + "\n";
-								}
-
-								//send single email every loop
-								let emailList = [{
-									address: client.email,
-									from: 'Zoi.AI <noreply@fobi.io>',
-									subject: 'Test Subject',
-									alt: 'Test Alt'
-								}];
-
-								//send email function
-								let sendEmail = function (emailFile) {
-									emailFile = emailFile.replace('{{scheduleButtons}}', scheduleButtonsHtml);
-									emailFile = emailFile.replace('{{title}}', template.title);
-									//send the email to the list
-									EmailLib.sendEmail(emailFile, emailList);
-								};
-
-								//check if we already got the email file
-								if (!emailFile) {
-									//get email file
-									EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailHtml) {
-										emailFile = emailHtml;
-										sendEmail(emailFile);
-									});
-								} else {
-									sendEmail(emailFile)
-								}
-							});
-
-							//save promotion times
-							let actionTime = moment().format("YYYY/MM");
-							user.profile = user.profile || {};
-							if (user.profile[actionTime]) {
-								user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
-							} else {
-								user.profile[actionTime] = {
-									numOfPromotions: 1
-								}
-							}
-
-							//clear the session and the conversation data
-							self.clearSession();
-							callback(facebookResponse.getTextMessage("I'm super exited!!! I'll send it right away. 👏"));
-							setTimeout(function () {
-								callback(facebookResponse.getTextMessage("Done! 😎 I sent the promotion to __ of your customers."));
-								setTimeout(function () {
-									callback(facebookResponse.getTextMessage("Your calendar is going to be full in no time"));
-								}, delayTime);
-							}, delayTime);
-
-						}).catch(function (err) {
-							Util.log("Error:");
-							Util.log(err);
 						});
-					}).catch(function (err) {
-						Util.log("Error:");
-						Util.log(err);
+
+						//save promotion times
+						let actionTime = moment().format("YYYY/MM");
+						user.profile = user.profile || {};
+						if (user.profile[actionTime]) {
+							user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
+						} else {
+							user.profile[actionTime] = {
+								numOfPromotions: 1
+							}
+						}
+
+						//clear the session and the conversation data
+						self.clearSession();
+						callback(facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"));
+						setTimeout(function () {
+							callback(facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."));
+							setTimeout(function () {
+								callback(facebookResponse.getTextMessage("Your calendar is going to be full in no time"));
+							}, delayTime);
+						}, delayTime);
+
 					});
+				}).catch(function (err) {
+					Util.log("Error:");
+					Util.log(err);
 				});
 			} else {
 				self.clearSession();
 				callback(facebookResponse.getTextMessage("Ok boss"));
 			}
 		} else {
-
+			callback(user.conversationData.lastQRResponse);
 		}
 	}
 };

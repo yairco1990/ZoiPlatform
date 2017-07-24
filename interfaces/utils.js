@@ -275,6 +275,11 @@ let Utils = {
 			Util.log(err);
 			onFinally && onFinally(err);
 		}
+	},
+
+	replaceAll: function (find, replace, str) {
+		find = find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+		return str.replace(new RegExp(find, 'g'), replace);
 	}
 };
 

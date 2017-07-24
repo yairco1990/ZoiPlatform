@@ -15,7 +15,7 @@ let Environments = {
 		clientUrl: CLIENT_LOCAL
 	}
 };
-let selectedEnvironment = Environments.Ngrok;
+let selectedEnvironment = Environments.Dev;
 
 ///////////////////////////////////////////////////////////////////////////////
 module.exports = {
@@ -33,5 +33,5 @@ module.exports = {
 		// "clientSecret": "Au4oQ6mG9vSvRnbHRUEBWQ8YOdMw2ZRqkDUg5ehM",
 		"redirectUri": Environments.Dev.serverUrl + "/acuity/oauth2"//TODO change it!
 	},
-	delayTime: 2000
+	delayTime: 1000
 };

@@ -63,10 +63,10 @@
                 line-height: inherit !important;
                 text-decoration: none !important; }
             .btn-primary table td:hover {
-                background-color: #34495e !important; }
+                background-color: {{hoverColor}} !important; }
             .btn-primary a:hover {
-                background-color: #34495e !important;
-                border-color: #34495e !important; } }
+                background-color: {{hoverColor}} !important;
+                border-color: {{color}} !important; } }
     </style>
 </head>
 <body class="" style="background-color:#f6f6f6;font-family:sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.4;margin:0;padding:0;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
@@ -84,11 +84,11 @@
                             <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;">
                                 <tr>
                                     <td style="font-family:sans-serif;font-size:14px;vertical-align:top;">
-                                        <img src="../assets/images/25p.png" style="width: 100%;    margin-bottom: 28px;">
-                                        <p style="font-family:sans-serif;font-size:14px;font-weight:normal;margin:0;Margin-bottom:15px;">Hi {{firstName}},</p>
-                                        <p style="font-family:sans-serif;font-size:14px;font-weight:normal;margin:0;Margin-bottom:15px;">We at {{business name}} value our customers and always find ways to make you happy.
-                                            <br><br><b>We have a special offer for you!</b><br>
-                                            Book for {{service}} today and enjoy <b>{{discount type}}</b> deal.</p>
+                                        <img src="{{bannerSrc}}" style="width: 100%;    margin-bottom: 28px;">
+                                        <p style="font-family:sans-serif;font-size:14px;font-weight:normal;margin:0;Margin-bottom:15px;">{{line1}}</p>
+                                        <p style="font-family:sans-serif;font-size:14px;font-weight:normal;margin:0;Margin-bottom:15px;">{{line2}}
+                                            <br><br><b>{{line3}}</b><br>
+                                            {{line4}}
                                         <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;box-sizing:border-box;width:100%;">
                                             <tbody>
                                             <tr>
@@ -96,7 +96,7 @@
                                                     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;width:auto;">
                                                         <tbody>
                                                         <tr>
-                                                            <td style="font-family:sans-serif;font-size:14px;vertical-align:top;background-color:#ffffff;border-radius:5px;text-align:center;background-color:#3498db;"> <a href="http://htmlemail.io" target="_blank" style="text-decoration:underline;background-color:#ffffff;border:solid 1px #3498db;border-radius:5px;box-sizing:border-box;color:#3498db;cursor:pointer;display:inline-block;font-size:14px;font-weight:bold;margin:0;padding:12px 25px;text-decoration:none;text-transform:capitalize;background-color:#3498db;border-color:#3498db;color:#ffffff;">I want it!
+                                                            <td style="font-family:sans-serif;font-size:14px;vertical-align:top;background-color:#ffffff;border-radius:5px;text-align:center;background-color:{{color}};"> <a href="http://htmlemail.io" target="_blank" style="text-decoration:underline;background-color:#ffffff;border:solid 1px #3498db;border-radius:5px;box-sizing:border-box;color:#3498db;cursor:pointer;display:inline-block;font-size:14px;font-weight:bold;margin:0;padding:12px 25px;text-decoration:none;text-transform:capitalize;background-color:{{color}};border-color:{{color}};color:#ffffff;">I want it!
                                                             </a> </td>
                                                         </tr>
                                                         </tbody>
@@ -120,7 +120,7 @@
                     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;">
                         <tr>
                             <td class="content-block" style="font-family:sans-serif;font-size:14px;vertical-align:top;color:#999999;font-size:12px;text-align:center;">
-                                <span class="apple-link" style="color:#999999;font-size:12px;text-align:center;">{{business_name}}, {{business address}}</span>
+                                <span class="apple-link" style="color:#999999;font-size:12px;text-align:center;">{{business_name}}</span>
                                 <br>
                                 Don't like these emails? <a href="http://i.imgur.com/CScmqnj.gif" style="color:#3498db;text-decoration:underline;color:#999999;font-size:12px;text-align:center;">Unsubscribe</a>.
                             </td>
