@@ -11,6 +11,7 @@ const WelcomeLogic = require('../Intents/WelcomeLogic');
 const AppointmentLogic = require('../Intents/AppointmentLogic');
 const ClientLogic = require('../Intents/ClientLogic');
 const GeneralLogic = require('../Intents/GeneralLogic');
+const ZoiConfig = require('../../config');
 
 /**
  * ListenLogic constructor
@@ -20,7 +21,7 @@ function ListenLogic() {
 	this.DBManager = require('../../dal/DBManager');
 }
 
-const delayTime = 3000;
+const delayTime = ZoiConfig.delayTime || 3000;
 
 /**
  * process intent with NLP and return response
@@ -63,7 +64,7 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 		self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {//
 			//if the user have no email or full name - go the complete the "welcome conversation"
 			if (!user || input.toLowerCase() == "reset") {
-				conversationData.context = "WELCOME_CONVERSATION";
+				conversationData.context = "WELCOME";
 				//ignore the zoi-brain, and return the intent to the original input
 				conversationData.intent = input;
 				conversationData.entities = {};
@@ -73,25 +74,31 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 			else if (user && user.conversationData && conversationData.intent != "general bye zoi" && conversationData.intent != "general no thanks") {
 				conversationData.context = user.conversationData.context;
 				conversationData.intent = user.conversationData.intent;
+			} else if (!user.integrations || !user.integrations.Acuity) {//block user from proceed without integration with Acuity
+				conversationData.context = "WELCOME";
+				conversationData.intent = "welcome acuity integrated";
 			}
 
 			//check the intent
 			switch (conversationData.context) {
-				case "WELCOME_CONVERSATION":
-					let welcomeLogic = new WelcomeLogic();
-					welcomeLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+				case "WELCOME":
+					let welcomeLogic = new WelcomeLogic(user);
+					welcomeLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
 				case "APPOINTMENT":
-					let appointmentLogic = new AppointmentLogic();
-					appointmentLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+					let appointmentLogic = new AppointmentLogic(user);
+					appointmentLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
 				case "CLIENT":
-					let clientLogic = new ClientLogic();
-					clientLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+					let clientLogic = new ClientLogic(user);
+					clientLogic.processIntent(conversationData, setBotTyping, payload, callback);
 					break;
 				case "GENERAL":
-					let generalLogic = new GeneralLogic();
-					generalLogic.processIntent(conversationData, user, setBotTyping, payload, callback);
+					let generalLogic = new GeneralLogic(user);
+					generalLogic.processIntent(conversationData, setBotTyping, payload, callback);
+					break;
+				case "GENERIC":
+					callback(facebookResponse.getTextMessage(conversationData.intent));
 					break;
 				default:
 					callback(facebookResponse.getTextMessage("What is the intent Yair?"));
@@ -99,8 +106,20 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 			}
 		}).catch(function (err) {
 
+			self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {
+
+				user.conversationData = null;
+				self.DBManager.saveUser(user).then(function () {
+					Util.log("user session deleted after error. userId -> " + user._id);
+
+					callback(facebookResponse.getTextMessage("I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu."));
+				});
+
+			}).catch(function () {
+				callback(facebookResponse.getTextMessage("Zoi is confused..."));
+			});
+
 			Util.log(err);
-			callback(facebookResponse.getTextMessage("Some error..."));
 		});
 	}).catch(function (err) {
 		Util.log(err);
@@ -167,7 +186,7 @@ ListenLogic.prototype.processMock = function (input, payload, setBotTyping, bot,
 				setTimeout(function () {
 
 					callback(facebookResponse.getButtonMessage(Mocks.REVENUE_DOWN, [
-						facebookResponse.getGenericButton("web_url", "Watch the graph", null, "http://dice.beezee.be/test.html", "tall")
+						facebookResponse.getGenericButton("web_url", "Watch the graph", null, "http://dice.beezee.be/test.html", "full")
 					]), true);
 
 					setTimeout(function () {

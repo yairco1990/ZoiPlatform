@@ -5,10 +5,14 @@
       <w>deepcopy</w>
       <w>dont</w>
       <w>fullname</w>
+      <w>gmail</w>
+      <w>gotime</w>
       <w>postback</w>
       <w>requestify</w>
       <w>screenshot</w>
       <w>upsert</w>
+      <w>webhook</w>
+      <w>webhooks</w>
       <w>webshot</w>
     </words>
   </dictionary>

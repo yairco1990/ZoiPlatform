@@ -30,22 +30,28 @@ class EmailLib {
 		//AWS client
 		let client = ses.createClient(ZoiConfig.AWS);
 
+		if (!emailHtml) {
+			emailHtml = "<div>Test Message</div>";
+		}
+
 		// emailHtml = emailHtml.replace('{{botPage}}', '');
 		try {
 			emails.forEach(function (email) {
-				// Give SES the details and let it construct the message for you.
-				client.sendEmail({
-					to: email.address,
-					from: email.from,// 'Zoi.AI <noreply@fobi.io>',
-					subject: email.subject, //'Your brand new bot',
-					message: emailHtml,
-					altText: email.alt
-				}, function (err) {
-					if (err) {
-						Util.log("Error:");
-						Util.log(err);
-					}
-				});
+				if (email.address) {
+					// Give SES the details and let it construct the message for you.
+					client.sendEmail({
+						to: email.address,
+						from: email.from,// 'Zoi.AI <noreply@fobi.io>',
+						subject: email.subject, //'Your brand new bot',
+						message: emailHtml,
+						altText: email.alt
+					}, function (err) {
+						if (err) {
+							Util.log("Error:");
+							Util.log(err);
+						}
+					});
+				}
 			});
 		} catch (err) {
 			Util.log("Error:");

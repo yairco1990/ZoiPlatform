@@ -9,11 +9,13 @@ const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
 const AcuityLogic = require('../ApiHandlers/AcuitySchedulingLogic');
 const MindbodyFactory = require('../../interfaces/Factories/MindbodyFactory');
 const EmailLib = require('../../interfaces/EmailLib');
+const ZoiConfig = require('../../config');
 const deepcopy = require('deepcopy');
 
-const delayTime = 3000;
+const delayTime = ZoiConfig.delayTime || 3000;
 
-function AppointmentLogic() {
+function AppointmentLogic(user) {
+	this.user = user;
 	//get the single instance of DBManager
 	this.DBManager = require('../../dal/DBManager');
 	this.mindbodyLogic = new MindbodyLogic({});
@@ -22,24 +24,24 @@ function AppointmentLogic() {
 /**
  * process the user input
  */
-AppointmentLogic.prototype.processIntent = function (conversationData, user, setBotTyping, requestObj, callback) {
+AppointmentLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, callback) {
 	let self = this;
 
 	switch (conversationData.intent) {
 		case "appointment what is my schedule":
-			self.getAppointments(user, conversationData, callback);
+			self.getAppointments(conversationData, callback);
 			break;
 		case "appointment bring next free slot":
 			setBotTyping();
-			self.getNextFreeSlot(user, conversationData, callback);
+			self.getNextFreeSlot(conversationData, callback);
 			break;
 		case "appointment book for customer":
 			setBotTyping();
-			self.bookForCustomer(user, conversationData, callback);
+			self.bookForCustomer(conversationData, callback);
 			break;
 		case "appointment send promotions":
 			setBotTyping();
-			self.sendPromotions(user, conversationData, callback);
+			self.sendPromotions(conversationData, callback);
 			break;
 	}
 };
@@ -47,15 +49,16 @@ AppointmentLogic.prototype.processIntent = function (conversationData, user, set
 /**
  * get appointments
  */
-AppointmentLogic.prototype.getAppointments = function (user, conversationData, callback) {
+AppointmentLogic.prototype.getAppointments = function (conversationData, callback) {
 	let self = this;
+	let user = self.user;
 
 	callback(facebookResponse.getTextMessage("Let me see..."), true);
 
 	setTimeout(function () {
 
 		callback(facebookResponse.getButtonMessage("This is your schedule for today sir:", [
-			facebookResponse.getGenericButton("web_url", "Watch your schedule", null, "http://zoiai.com/#/agenda", "tall")
+			facebookResponse.getGenericButton("web_url", "Watch your schedule", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
 		]));
 
 		setTimeout(function () {
@@ -75,8 +78,9 @@ const nextFreeSlotQuestions = {
 /**
  * get next free slot
  */
-AppointmentLogic.prototype.getNextFreeSlot = function (user, conversationData, callback) {
+AppointmentLogic.prototype.getNextFreeSlot = function (conversationData, callback) {
 	let self = this;
+	let user = self.user;
 
 	//if this is the start of the conversation
 	if (!user.conversationData) {
@@ -134,12 +138,12 @@ AppointmentLogic.prototype.getNextFreeSlot = function (user, conversationData, c
 /**
  * book for customer for free slot
  * the session must contains details about free slot!
- * @param user
  * @param conversationData
  * @param callback
  */
-AppointmentLogic.prototype.bookForCustomer = function (user, conversationData, callback) {
+AppointmentLogic.prototype.bookForCustomer = function (conversationData, callback) {
 	let self = this;
+	let user = self.user;
 
 	//validate request
 	if (!conversationData.entities.CUSTOMER && !conversationData.entities.person) {
@@ -200,25 +204,26 @@ const sendPromotionsQuestions = {
 	},
 	serviceName: {
 		id: 1,
-		text: "Which service you like to promote?",
+		text: "Which service (from your Acuity appointment types) would you like to promote?",
 		field: "service"
 	},
 	whichTemplate: {
 		id: 2,
-		text: "I made 3 options, feel free to choose the one you like:",
+		text: "I made three types of discount for you to choose from.  Which of them you want me to send to your customers?",
 		field: "template"
 	},
 	areYouSure: {
 		id: 3,
-		text: "Are you sure you want to send promotions to service {serviceName}?"
+		text: "Just so we clear, I am about to send {[promotion type}} promotion for {{service name}} to your customers?"
 	}
 };
 
 /**
  * send promotions
  */
-AppointmentLogic.prototype.sendPromotions = function (user, conversationData, callback) {
+AppointmentLogic.prototype.sendPromotions = function (conversationData, callback) {
 	let self = this;
+	let user = self.user;
 
 	let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 	let lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
@@ -242,21 +247,33 @@ AppointmentLogic.prototype.sendPromotions = function (user, conversationData, ca
 			//get slots
 			return acuityLogic.getAvailability(options);
 		}).then(function (slots) {
+
+			//save the response
+			let lastQRResponse = facebookResponse.getQRElement("Do you want me to promote your openings?",
+				[
+					facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
+					facebookResponse.getQRButton('text', 'Maybe later', {id: 2})
+				]
+			);
+			user.conversationData.lastQRResponse = lastQRResponse;
+
 			//save the user
 			self.DBManager.saveUser(user).then(function () {
 				setTimeout(function () {
-					callback(facebookResponse.getTextMessage("Hey boss, I noticed that you have " + slots.length + " openings in your calendars tomorrow."), true);
+					let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
+					if (!conversationData.skipHey) {
+						firstText = "Hey boss, I" + firstText;
+					} else {
+						firstText = "I also" + firstText;
+					}
+					callback(facebookResponse.getTextMessage(firstText), true);
 
 					setTimeout(function () {
-						callback(facebookResponse.getTextMessage("I can promote them for you."), true);
+						callback(facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true);
 
 						setTimeout(function () {
-							callback(facebookResponse.getQRElement("What do you want me to do?",
-								[
-									facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
-									facebookResponse.getQRButton('text', 'No Thank\'s', {id: 2})
-								]
-							))
+							callback(lastQRResponse);
+
 						}, delayTime);
 					}, delayTime);
 				}, delayTime);
@@ -265,29 +282,37 @@ AppointmentLogic.prototype.sendPromotions = function (user, conversationData, ca
 	}
 	else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
 
-		if (conversationData.payload.id == 1) {
+		if (conversationData.payload) {
 
-			callback(facebookResponse.getTextMessage("Great! 😊"), true);
+			if (conversationData.payload.id == 1) {
 
-			//ask which service
-			let question = sendPromotionsQuestions.serviceName;
-			//save conversation to the user
-			user.conversationData = conversationData;
-			//save the service question
-			user.conversationData.lastQuestion = question;
+				callback(facebookResponse.getTextMessage("Great! 😊"), true);
 
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
-				callback(facebookResponse.getTextMessage(question.text));
-			});
+				//ask which service
+				let question = sendPromotionsQuestions.serviceName;
+				//save conversation to the user
+				user.conversationData = conversationData;
+				//save the service question
+				user.conversationData.lastQuestion = question;
+
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
+					setTimeout(function () {
+						callback(facebookResponse.getTextMessage(question.text));
+					}, delayTime);
+				});
+			} else {
+
+				user.conversationData = null;
+				user.session = null;
+
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
+					callback(facebookResponse.getTextMessage("I'll be right here if you need me ☺"));
+				});
+			}
 		} else {
-			user.conversationData = null;
-			user.session = null;
-
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
-				callback(facebookResponse.getTextMessage("Ok boss.."));
-			});
+			callback(user.conversationData.lastQRResponse);
 		}
 	}
 	else if (lastQuestionId === sendPromotionsQuestions.serviceName.id) {
@@ -310,22 +335,36 @@ AppointmentLogic.prototype.sendPromotions = function (user, conversationData, ca
 			//save the user
 			self.DBManager.saveUser(user).then(function () {
 
-				callback(facebookResponse.getTextMessage(currentQuestion.text));
+				callback(facebookResponse.getTextMessage(currentQuestion.text), true);
 
-				callback(facebookResponse.getGenericTemplate([
-					facebookResponse.getGenericElement("A day in a spa for 100$",
-						"http://alluredayspavi.com/portals/_default/Skins/Vaspan/images/BoxImgB1.jpg",
-						"Book now for a whole day in our spa for just 100$. Don\'t miss it!",
-						[facebookResponse.getGenericButton("postback", "I like it", {id: 1, title: "20% Off!!", zoiCoupon: "Zoi.20PrecentOff"})]),
-					facebookResponse.getGenericElement("20% off massage treatments",
-						"https://preview.ibb.co/fX8mhv/spa1.jpg",
-						"Book a massage now and get 20% off",
-						[facebookResponse.getGenericButton("postback", "I like it", {id: 2, title: "1 + 1", zoiCoupon: "Zoi.1Plus1"})]),
-					facebookResponse.getGenericElement("1 + 1 on face treatments",
-						"https://image.ibb.co/fv5XNv/spa3.jpg",
-						"Get 2 treatments for the price of one. Book now to claim your reward",
-						[facebookResponse.getGenericButton("postback", "I like it", {id: 3, title: "20$ coupon", zoiCoupon:"Zoi.20DollarCoupon"})])
-				]));
+				setTimeout(function () {
+					callback(facebookResponse.getGenericTemplate([
+						facebookResponse.getGenericElement("A day in a spa for 100$",
+							"http://alluredayspavi.com/portals/_default/Skins/Vaspan/images/BoxImgB1.jpg",
+							"Book now for a whole day in our spa for just 100$. Don\'t miss it!",
+							[facebookResponse.getGenericButton("postback", "I like it", {
+								id: 1,
+								title: "20% Off!!",
+								zoiCoupon: "Zoi.20PrecentOff"
+							})]),
+						facebookResponse.getGenericElement("20% off massage treatments",
+							"https://preview.ibb.co/fX8mhv/spa1.jpg",
+							"Book a massage now and get 20% off",
+							[facebookResponse.getGenericButton("postback", "I like it", {
+								id: 2,
+								title: "1 + 1",
+								zoiCoupon: "Zoi.1Plus1"
+							})]),
+						facebookResponse.getGenericElement("1 + 1 on face treatments",
+							"https://image.ibb.co/fv5XNv/spa3.jpg",
+							"Get 2 treatments for the price of one. Book now to claim your reward",
+							[facebookResponse.getGenericButton("postback", "I like it", {
+								id: 3,
+								title: "20$ coupon",
+								zoiCoupon: "Zoi.20DollarCoupon"
+							})])
+					]));
+				}, delayTime);
 			});
 		});
 	} else if (lastQuestionId === sendPromotionsQuestions.whichTemplate.id) {
@@ -338,6 +377,8 @@ AppointmentLogic.prototype.sendPromotions = function (user, conversationData, ca
 		let currentQuestion = sendPromotionsQuestions.areYouSure;
 		let responseText = currentQuestion.text;
 		responseText = responseText.replace('{serviceName}', user.session['service'].name);
+		//TODO add promotion type to the session
+		responseText = responseText.replace('{promotionType}', user.session['promotionType'].name);
 
 		//set current question
 		user.conversationData.lastQuestion = currentQuestion;
@@ -380,24 +421,26 @@ AppointmentLogic.prototype.sendPromotions = function (user, conversationData, ca
 								firstname: client.firstName,
 								lastname: client.lastName,
 								email: client.email,
-								ownerId: user._id,
+								userId: user._id,
 								serviceId: appointmentType.id,
 								serviceName: appointmentType.name,
+								price: appointmentType.price,
 								notes: template.zoiCoupon
 							};
 
 							//choose 5 slots
 							let slotsCopy = deepcopy(slots);
-							slotsCopy = slotsCopy.slice(0, 5);
+							let gap = Math.floor(slotsCopy.length / 5);
 							//iterate slots
-							slotsCopy.forEach(function (slot) {
+							for (let i = 0; i < slotsCopy.length; i += gap) {
+								let slot = slotsCopy[i];
 								//create slot button
 								let formattedScheduleButton = deepcopy(scheduleButton);
 								appointmentParams.date = slot.time;
-								formattedScheduleButton = formattedScheduleButton.replace('{{href}}', MyUtils.addParamsToUrl('http://localhost:63343/ZoiClient/index.html#/appointment-sum', appointmentParams));
+								formattedScheduleButton = formattedScheduleButton.replace('{{href}}', MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams));
 								formattedScheduleButton = formattedScheduleButton.replace('{{appointmentTime}}', moment(slot.time).format('HH:mm MM.DD'));
 								scheduleButtonsHtml += formattedScheduleButton + "\n";
-							});
+							}
 
 							//send single email every loop
 							let emailList = [{
@@ -427,10 +470,22 @@ AppointmentLogic.prototype.sendPromotions = function (user, conversationData, ca
 							}
 						});
 
+						//save promotion times
+						let actionTime = moment().format("YYYY/MM");
+						user.profile = user.profile || {};
+						if (user.profile[actionTime]) {
+							user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
+						} else {
+							user.profile[actionTime] = {
+								numOfPromotions: 1
+							}
+						}
 
-						callback(facebookResponse.getTextMessage("Great, I will send it right now. 👍"));
+						//clear the session and the conversation data
+						self.clearSession();
+						callback(facebookResponse.getTextMessage("I'm super exited!!! I'll send it right away. 👏"));
 						setTimeout(function () {
-							callback(facebookResponse.getTextMessage("Done! I sent the promotion to " + clients.length + " customers. 🙂"));
+							callback(facebookResponse.getTextMessage("Done! 😎 I sent the promotion to __ of your customers."));
 							setTimeout(function () {
 								callback(facebookResponse.getTextMessage("Your calendar is going to be full in no time"));
 							}, delayTime);
@@ -446,15 +501,25 @@ AppointmentLogic.prototype.sendPromotions = function (user, conversationData, ca
 				});
 			});
 		} else {
+			self.clearSession();
 			callback(facebookResponse.getTextMessage("Ok boss"));
 		}
-
-		//clear conversation data
-		user.conversationData = null;
-		self.DBManager.saveUser(user).then(function () {
-			Util.log("conversation cleared!");
-		});
 	}
+};
+
+/**
+ * clear user session
+ */
+AppointmentLogic.prototype.clearSession = function () {
+	let self = this;
+	let user = self.user;
+
+	//clear conversation data
+	user.conversationData = null;
+	user.session = null;
+	self.DBManager.saveUser(user).then(function () {
+		Util.log("conversation cleared!");
+	});
 };
 
 module.exports = AppointmentLogic;

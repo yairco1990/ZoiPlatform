@@ -1,8 +1,10 @@
 /**
  * Created by Yair on 2/20/2017.
  */
-let fs = require('fs');
-let webshot = require('webshot');
+const Util = require('util');
+const fs = require('fs');
+const webshot = require('webshot');
+const moment = require('moment');
 
 let Utils = {
 
@@ -258,6 +260,21 @@ let Utils = {
 			}
 		});
 		return newArr;
+	},
+
+	convertToAcuityDate: function (time) {
+		if (time) {
+			return moment(time).format('YYYY-MM-DDTHH:mm:ss');
+		}
+		return moment().format('YYYY-MM-DDTHH:mm:ss');
+	},
+
+	getErrorMsg: function (onFinally) {
+		return function (err) {
+			Util.log("Error:");
+			Util.log(err);
+			onFinally && onFinally(err);
+		}
 	}
 };
 
