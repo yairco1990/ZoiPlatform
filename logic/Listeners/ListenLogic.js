@@ -44,6 +44,7 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 		response = response.getBody();
 		Util.log("Intent -> " + response.intent);
 		Util.log("Entities -> " + JSON.stringify(response.entities));
+		Util.log("MoreLikeThis -> " + JSON.stringify(response.moreLikeThis));
 
 		//save conversation data
 		let conversationData = {
