@@ -174,7 +174,7 @@ module.exports = {
 					// send reply
 					reply(rep, (err) => {
 						if (err) throw err;
-						console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
+						Util.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
 						if (isBotTyping) {
 							bot.sendSenderAction(payload.sender.id, "typing_on");
 						}
