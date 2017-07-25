@@ -109,7 +109,7 @@ module.exports = {
 					// send reply
 					reply(rep, (err) => {
 						if (err) throw err;
-						console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
+						Util.log(`Message returned to ${display_name} [id: ${sender_id}]`);
 						if (isBotTyping) {
 							bot.sendSenderAction(payload.sender.id, "typing_on");
 						}
@@ -125,6 +125,9 @@ module.exports = {
 			// get profile info
 			bot.getProfile(payload.sender.id, (err, profile) => {
 				if (err) throw err;
+
+				let display_name = profile.first_name + ' ' + profile.last_name;
+				Util.log("Got message from " + display_name);
 
 				if (payload.message.attachments &&
 					payload.message.attachments[0] &&
