@@ -180,7 +180,7 @@ GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, reque
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
 			reply(facebookResponse.getTextMessage("Thank you for helping Zoi become greater assistant! :)"), false, 1000);
-			self.clearSession(reply);
+			self.clearSession(reply, true);
 		});
 	}
 };
@@ -201,14 +201,16 @@ GeneralLogic.prototype.sayHey = function (entities, reply) {
 	}
 };
 
-GeneralLogic.prototype.clearSession = function (reply) {
+GeneralLogic.prototype.clearSession = function (reply, sendLastMessage) {
 	let self = this;
 	let user = self.user;
 
 	user.conversationData = null;
 	user.session = null;
 	self.DBManager.saveUser(user).then(function () {
-		(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false, delayTime))();
+		if (sendLastMessage) {
+			(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false, delayTime))();
+		}
 	});
 };
 
