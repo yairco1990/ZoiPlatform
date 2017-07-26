@@ -31,10 +31,10 @@ GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping,
 			self.sayHey(conversationData.entities, callback);
 			break;
 		case "general no thanks":
-			self.clearSession(callback);
+			self.clearSession(callback, true);
 			break;
 		case "general bye zoi":
-			self.clearSession(callback);
+			self.clearSession(callback, true);
 			break;
 		case "general leave review":
 			self.wishZoi(conversationData, setBotTyping, requestObj, callback);
@@ -180,7 +180,7 @@ GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, reque
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
 			reply(facebookResponse.getTextMessage("Thank you for helping Zoi become greater assistant! :)"), false, 1000);
-			self.clearSession(reply, true);
+			self.clearSession(reply, false);
 		});
 	}
 };
