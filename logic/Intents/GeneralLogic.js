@@ -120,12 +120,16 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 					}
 				});
 
-				async.series([
-					MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
-						facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
-					]), true, delayTime),
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime),
-				], function () {
+				let messages = [MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
+					facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
+				]), true, delayTime)];
+
+				//if there is next appointment - add another message about it.
+				if (nextAppointment) {
+					messages.push(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime));
+				}
+
+				async.series([messages], function () {
 					startSendPromotions();
 				});
 
