@@ -180,7 +180,7 @@ GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, reque
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
 			reply(facebookResponse.getTextMessage("Thank you for helping Zoi become greater assistant! :)"), false, 1000);
-			self.clearSession();
+			self.clearSession(reply);
 		});
 	}
 };
