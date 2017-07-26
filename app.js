@@ -37,8 +37,8 @@ function reqHandler(req, res) {
 		server = require('http').createServer(app);
 	} else {
 		const options = {
-			ca: fs.readFileSync('bundle.crt'),
-			pfx: fs.readFileSync('zoiaicom.pfx'),
+			ca: fs.readFileSync('../bundle.crt'),
+			pfx: fs.readFileSync('../zoiaicom.pfx'),
 			passphrase: 'ig180688'
 		};
 		server = require('https').createServer(options, app);

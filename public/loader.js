@@ -44,7 +44,7 @@ Promise.all([
 		//START OF NPM LIBRARIES
 		loadFile('node_modules/jquery/dist/jquery.min.js', 'js'),
 		loadFile('node_modules/angular-ui-router/release/angular-ui-router.min.js', 'js'),
-		loadFile('node_modules/angular-mocks/angular-mocks.js', 'js'),
+		// loadFile('node_modules/angular-mocks/angular-mocks.js', 'js'),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js', 'js', null, false),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js', 'js', null, false),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js', 'js', null, false),

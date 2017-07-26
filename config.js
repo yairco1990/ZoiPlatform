@@ -15,7 +15,7 @@ let Environments = {
 		clientUrl: CLIENT_LOCAL
 	}
 };
-let selectedEnvironment = Environments.Ngrok;
+let selectedEnvironment = Environments.Dev;
 
 ///////////////////////////////////////////////////////////////////////////////
 module.exports = {
