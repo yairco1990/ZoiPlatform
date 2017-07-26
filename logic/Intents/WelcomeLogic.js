@@ -98,6 +98,10 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 		});
 	} else {
 
+		if (conversationData.payload && conversationData.payload.id == 2) {
+			(MyUtils.onResolve(reply, facebookResponse.getTextMessage("OK! see you later... :)"), false))();
+			return;
+		}
 		if (!user.conversationData.lastQuestion) {
 
 			let currentQuestion = welcomeQuestions.nameQuestion;
@@ -222,6 +226,11 @@ WelcomeLogic.prototype.proceedWelcomeConversation = function (conversationData, 
 		} else {
 			reply(user.conversationData.lastQRResponse);
 		}
+
+		user.conversationData = null;
+		self.DBManager.saveUser(user).then(function () {
+			Util.log("User finished onboarding. userId = " + user._id);
+		});
 	}
 };
 

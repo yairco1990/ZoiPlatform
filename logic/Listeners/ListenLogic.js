@@ -76,8 +76,10 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 				conversationData.context = user.conversationData.context;
 				conversationData.intent = user.conversationData.intent;
 			} else if (!user.integrations || !user.integrations.Acuity) {//block user from proceed without integration with Acuity
-				conversationData.context = "WELCOME";
-				conversationData.intent = "welcome acuity integrated";
+				reply(facebookResponse.getButtonMessage("To start working together, I'll have to work with the tools you work with to run your business. Press on the link to help me integrate with Acuity Scheduling and Gmail.", [
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
+				]));
+				return;
 			}
 
 			//check the intent

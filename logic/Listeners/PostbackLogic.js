@@ -60,8 +60,8 @@ PostbackLogic.prototype.processAction = function (input, payload, setBotTyping, 
 		callback(facebookResponse.getButtonMessage("Watch your settings:", [
 			facebookResponse.getGenericButton("web_url", "My Settings", null, ZoiConfig.clientUrl + "/settings?userId=" + userId, "full")
 		]));
-	} else if (input && input.type == "WELCOME_CONVERSATION") {
-		self.listenLogic.processInput(setBotTyping, bot, requestObj, "reset", callback);
+	} else if (input == "POSTBACK_GET_STARTED") {
+		self.listenLogic.processInput("reset", payload, setBotTyping, bot, callback);
 	}
 };
 
