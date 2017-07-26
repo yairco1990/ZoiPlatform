@@ -1,0 +1,99 @@
+<div id="profile-page" class="boxed-page" ng-cloak>
+    <div class="boxed-area">
+
+        <div class="box-area-wrapper">
+            <div class="profile-header box-header">
+                {{vm.zoiUser.fullname}}'s profile
+            </div>
+            <div class="box-sub-header">
+                Your Zoi.ai profile page
+            </div>
+            <div class="box-body" style="  border-top: solid #f5ebeb 1px;  border-bottom: solid #f5ebeb 1px; padding-top:20px; padding-bottom: 40px">
+                <div class="text-center">
+                    {{vm.zoiUser.fullname}}, this month Zoi booked:
+                </div>
+                <div class="text-center stat-big">
+                    {{vm.zoiUser.profile[vm.actionTime].numOfAppointments}}
+                </div>
+                <div class="text-center box-sub-header" style="margin-bottom:20px">
+                    Meetings
+                </div>
+                <div class="text-center stat-big">
+                    {{vm.zoiUser.profile[vm.actionTime].profitFromAppointments}} {{vm.currency}}
+                </div>
+                <div class="text-center box-sub-header">
+                    Worth
+                </div>
+
+                <div class="text-center">
+                    Just for you!
+
+                </div>
+                <!--<div class="box-item">-->
+
+                <!--</div>-->
+            </div>
+
+            <div class="box-sub-header">
+                You Collected {{vm.badgesCounter}} Badges!
+            </div>
+
+            <div class="box-body" style="margin-bottom:40px">
+
+                <div class="row no-margin">
+                    <div class="col-xs-6 badge-wrapper">
+                        <div class="badge-image badge-integration image-center" ng-class="{'badge-unearned': !vm.integrationsOn}">
+                        </div>
+                        <div class="badge-text text-center">
+                            <b>Integrate</b> Zoi with one of your business tools
+                        </div>
+                    </div>
+                    <div class="col-xs-6 badge-wrapper">
+                        <div class="badge-image badge-influencer image-center" ng-class="{'badge-unearned': !vm.socialShareOn}">
+                        </div>
+                        <div class="badge-text text-center">
+                            <b>Share</b>  Zoi on social networks
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-margin">
+                    <div class="col-xs-6 badge-wrapper">
+                        <div class="badge-image badge-busy image-center" ng-class="{'badge-unearned': !vm.bookedMoreThanOn}">
+
+                        </div>
+                        <div class="badge-text text-center">
+                            Use Zoi to <b>book</b> {{vm.bookedMoreThan}} appointments
+                        </div>
+                    </div>
+                    <div class="col-xs-6 badge-wrapper">
+                        <div class="badge-image badge-money image-center" ng-class="{'badge-unearned': !vm.earnedMoreThanOn}">
+
+                        </div>
+                        <div class="badge-text text-center">
+                            Zoi helped you <b>earn</b> {{vm.earnedMoreThan}} {{vm.currency}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row no-margin">
+                    <div class="col-xs-6 badge-wrapper">
+                        <div class="badge-image badge-promotion image-center" ng-class="{'badge-unearned': !vm.promotedMoreThanOn}">
+                        </div>
+                        <div class="badge-text text-center">
+                            Asked Zoi to <b>promote</b> your services {{vm.promotedMoreThan}} times
+                        </div>
+                    </div>
+                    <div class="col-xs-6 badge-wrapper">
+                        <div class="badge-image badge-champion image-center" ng-class="{'badge-unearned': !vm.isChampion}">
+
+                        </div>
+                        <div class="badge-text text-center">
+                            <b>Earn</b> all the other badges. Get this one because <b>Zoi loves you</b>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

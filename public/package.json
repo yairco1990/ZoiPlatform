@@ -1,0 +1,37 @@
+{
+  "name": "ZoiChatBot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "karma start karma.conf.js",
+    "test_d": "karma start karma.conf.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "angular-mocks": "^1.6.1",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.4.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-cli": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-spec-reporter": "0.0.26"
+  },
+  "dependencies": {
+    "angular": "1.5.5",
+    "angular-resource": "1.5.5",
+    "angular-translate": "^2.13.1",
+    "angular-translate-loader-static-files": "^2.13.1",
+    "angular-ui-bootstrap": "^2.4.0",
+    "angular-ui-router": "^0.3.2",
+    "bootstrap": "3.3.7",
+    "bootstrap-rtl": "^3.3.4",
+    "font-awesome": "^4.7.0",
+    "ionicons": "^3.0.0",
+    "jquery": "^3.2.1",
+    "moment": "^2.17.1",
+    "moment-timezone": "^0.5.13"
+  }
+}

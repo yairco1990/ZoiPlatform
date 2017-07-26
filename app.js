@@ -1,43 +1,52 @@
 'use strict';
 const fs = require('fs');
-const ListenLogic = require('../logic/Listeners/ListenLogic');
-const Bot = require('./bot_framework');
+const ListenLogic = require('./logic/Listeners/ListenLogic');
+const Bot = require('./bot/bot_framework');
 const Util = require('util');
-const MyUtils = require('../interfaces/utils');
-const PostbackLogic = require('../logic/Listeners/PostbackLogic');
-const speechToText = require('../interfaces/SpeechToText');
-const facebookResponses = require('../interfaces/FacebookResponse');
+const MyUtils = require('./interfaces/utils');
+const PostbackLogic = require('./logic/Listeners/PostbackLogic');
+const speechToText = require('./interfaces/SpeechToText');
+const facebookResponses = require('./interfaces/FacebookResponse');
 const express = require('express');
 const app = express();
-const Services = require('./Services');
-const ApiRouting = require('./ApiRouting');
+const Services = require('./bot/Services');
+const ApiRouting = require('./bot/ApiRouting');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const EmailLib = require('../interfaces/EmailLib');
+const EmailLib = require('./interfaces/EmailLib');
 
 //load emails and database
 EmailLib.loadEmails();
-require('../dal/DBManager');
+require('./dal/DBManager');
 
 // Webhook port (facebook will access to https://myserver.com:3000)
 // Facebook doesn't work with http, only https allowed
-const PORT = 3000;
 let server;
 
-if (process.argv[2] == "local") {
-	server = require('http').createServer(app);
-} else {
-	const options = {
-		ca: fs.readFileSync('../bundle.crt'),
-		pfx: fs.readFileSync('../zoiaicom.pfx'),
-		passphrase: 'ig180688'
-	};
-	server = require('https').createServer(options, app);
+function reqHandler(req, res) {
+	console.log({
+		remoteAddress: req.socket.remoteAddress,
+		remotePort: req.socket.remotePort,
+		localAddress: req.socket.localAddress,
+		localPort: req.socket.localPort,
+	});
 }
 
-server.listen(PORT);
-server.listen(443);
-Util.log('Bot server running at port ' + PORT + ' and on port 443.');
+[3000, 443].forEach(function (port) {
+	if (process.argv[2] == "local") {
+		server = require('http').createServer(app);
+	} else {
+		const options = {
+			ca: fs.readFileSync('bundle.crt'),
+			pfx: fs.readFileSync('zoiaicom.pfx'),
+			passphrase: 'ig180688'
+		};
+		server = require('https').createServer(options, app);
+	}
+	server.listen(port);
+
+	Util.log('Bot server running at port ' + port + '.');
+});
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // initialize bot
@@ -65,6 +74,7 @@ app.use(function (req, res, next) {
 	next();
 });
 
+app.use('/p', express.static('public'));
 //parse body for every request
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));

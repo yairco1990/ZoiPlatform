@@ -1,0 +1,23 @@
+html, body {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+#appointment-page .details-list {
+    text-align: right !important;
+}
+
+#appointment-page .not-arrival-button-wrapper {
+    padding-left: 0;
+    padding-right: 5px;
+}
+
+#appointment-page .arrival-button-wrapper {
+    padding-left: 5px;
+    padding-right: 0;
+}
+
+#appointment-page .business-name-label {
+    align-self: center;
+    margin: 0 5px 0 0;
+    font-size: 40px;
+}

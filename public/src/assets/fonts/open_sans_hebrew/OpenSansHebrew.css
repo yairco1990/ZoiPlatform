@@ -1,0 +1,96 @@
+@font-face {
+  font-family: 'Open Sans Hebrew';
+  src: url('opensanshebrew-bold-webfont.eot'); /* IE9 Compat Modes */
+  src: url('opensanshebrew-bold-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensanshebrew-bold-webfont.woff') format('woff'), /* Modern Browsers */
+       url('opensanshebrew-bold-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('opensanshebrew-bold-webfont.svg#8b4b25a9e6dee2304c08fefb363a9190') format('svg'); /* Legacy iOS */
+       
+  font-style:   normal;
+  font-weight:  700;
+}
+
+@font-face {
+  font-family: 'Open Sans Hebrew';
+  src: url('opensanshebrew-bolditalic-webfont.eot'); /* IE9 Compat Modes */
+  src: url('opensanshebrew-bolditalic-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensanshebrew-bolditalic-webfont.woff') format('woff'), /* Modern Browsers */
+       url('opensanshebrew-bolditalic-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('opensanshebrew-bolditalic-webfont.svg#c21c03ab7080535ee57497eccfdf86e3') format('svg'); /* Legacy iOS */
+       
+  font-style:   italic;
+  font-weight:  700;
+}
+
+@font-face {
+  font-family: 'Open Sans Hebrew';
+  src: url('opensanshebrew-extrabold-webfont.eot'); /* IE9 Compat Modes */
+  src: url('opensanshebrew-extrabold-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensanshebrew-extrabold-webfont.woff') format('woff'), /* Modern Browsers */
+       url('opensanshebrew-extrabold-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('opensanshebrew-extrabold-webfont.svg#f7e80113069d64680d94be62885b159d') format('svg'); /* Legacy iOS */
+       
+  font-style:   normal;
+  font-weight:  900;
+}
+
+@font-face {
+  font-family: 'Open Sans Hebrew';
+  src: url('opensanshebrew-extrabolditalic-webfont.eot'); /* IE9 Compat Modes */
+  src: url('opensanshebrew-extrabolditalic-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensanshebrew-extrabolditalic-webfont.woff') format('woff'), /* Modern Browsers */
+       url('opensanshebrew-extrabolditalic-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('opensanshebrew-extrabolditalic-webfont.svg#0aa7139bf6d3c365c59c140c3c8e269e') format('svg'); /* Legacy iOS */
+       
+  font-style:   italic;
+  font-weight:  900;
+}
+
+@font-face {
+  font-family: 'Open Sans Hebrew';
+  src: url('opensanshebrew-italic-webfont.eot'); /* IE9 Compat Modes */
+  src: url('opensanshebrew-italic-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensanshebrew-italic-webfont.woff') format('woff'), /* Modern Browsers */
+       url('opensanshebrew-italic-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('opensanshebrew-italic-webfont.svg#c710e2592c6201f5dff5fe5ae74e9d58') format('svg'); /* Legacy iOS */
+       
+  font-style:   italic;
+  font-weight:  400;
+}
+
+@font-face {
+  font-family: 'Open Sans Hebrew';
+  src: url('opensanshebrew-light-webfont.eot'); /* IE9 Compat Modes */
+  src: url('opensanshebrew-light-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensanshebrew-light-webfont.woff') format('woff'), /* Modern Browsers */
+       url('opensanshebrew-light-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('opensanshebrew-light-webfont.svg#1e3cbe1d61c0f2b766b8aff35f09f556') format('svg'); /* Legacy iOS */
+       
+  font-style:   normal;
+  font-weight:  200;
+}
+
+@font-face {
+  font-family: 'Open Sans Hebrew';
+  src: url('opensanshebrew-lightitalic-webfont.eot'); /* IE9 Compat Modes */
+  src: url('opensanshebrew-lightitalic-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensanshebrew-lightitalic-webfont.woff') format('woff'), /* Modern Browsers */
+       url('opensanshebrew-lightitalic-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('opensanshebrew-lightitalic-webfont.svg#c137a74dd645478d57aebcd9a32af039') format('svg'); /* Legacy iOS */
+       
+  font-style:   italic;
+  font-weight:  200;
+}
+
+@font-face {
+  font-family: 'Open Sans Hebrew';
+  src: url('opensanshebrew-regular-webfont.eot'); /* IE9 Compat Modes */
+  src: url('opensanshebrew-regular-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensanshebrew-regular-webfont.woff') format('woff'), /* Modern Browsers */
+       url('opensanshebrew-regular-webfont.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('opensanshebrew-regular-webfont.svg#265e1bf8eadfa92b8d955acd546bd2c3') format('svg'); /* Legacy iOS */
+       
+  font-style:   normal;
+  font-weight:  400;
+}
+

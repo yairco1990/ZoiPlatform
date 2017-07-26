@@ -284,9 +284,9 @@ let Utils = {
 		return str.replace(new RegExp(find, 'g'), replace);
 	},
 
-	onResolve: function (reply, message, isBotTyping, delay, toSend) {
+	onResolve: function (reply, message, isBotTyping, delay) {
 		return function (cb) {
-			reply(message, isBotTyping, delay, toSend).then(() => {
+			reply(message, isBotTyping, delay).then(() => {
 				cb && cb();
 			}).catch((err) => {
 				console.error(err);

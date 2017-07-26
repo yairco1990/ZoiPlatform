@@ -1,0 +1,33 @@
+<div id="mail-page" class="boxed-page" ng-cloak>
+    <div class="mail-area boxed-area">
+        <div class="box-area-wrapper">
+            <div class="mail-header box-header">
+                Inbox
+            </div>
+            <div class="box-sub-header">
+                You have {{vm.emails.length}} unread messages
+            </div>
+            <div class="box-body">
+                <div class="mail-item box-item" ng-repeat="mail in vm.emails"
+                     ng-click="vm.moveToMail(mail.id)">
+
+                    <div class="mail-details-wrapper">
+                        <div class="user-image">
+                            {{mail.from.charAt(0) != '"' ? mail.from.charAt(0) : mail.from.charAt(1)}}
+                        </div>
+                        <div class="mail-details">
+                            <div class="mail-details-header">{{mail.from}}</div>
+                            <div class="mail-details-sub">{{mail.subject}}</div>
+                            <div class="mail-details-sub">{{mail.snippet}}</div>
+                        </div>
+                        <div class="mail-time-wrapper">
+                            {{moment(mail.date).isSame(moment(), 'day') ? moment(mail.date).format('HH:mm') :
+                            moment(mail.date).format('MMM DD')}}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

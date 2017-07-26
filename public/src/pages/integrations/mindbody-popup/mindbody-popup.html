@@ -1,0 +1,32 @@
+<div id="mindbody-popup">
+    <div style="padding: 20px">
+        <h4>
+            Integrate with Mindbody
+        </h4>
+
+        <md-input-container
+                style="margin-top: 40px"
+                class="md-prompt-input-container ng-scope md-input-has-placeholder md-default-theme md-input-has-value">
+            <input ng-model="vm.username" placeholder="Username" type="text"
+                   class="ng-pristine ng-valid md-autofocus md-input ng-not-empty ng-touched">
+            <div class="md-errors-spacer">
+
+            </div>
+        </md-input-container>
+
+        <md-input-container
+                class="md-prompt-input-container ng-scope md-input-has-placeholder md-default-theme md-input-has-value">
+            <input ng-model="vm.password" placeholder="Password" type="password"
+                   class="ng-pristine ng-valid md-autofocus md-input ng-not-empty ng-touched">
+            <div class="md-errors-spacer">
+
+            </div>
+        </md-input-container>
+
+        <div style="text-align: center">
+            <md-button class="md-raised md-primary" ng-click="vm.saveButtonClicked()">
+                Save
+            </md-button>
+        </div>
+    </div>
+</div>

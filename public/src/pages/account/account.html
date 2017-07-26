@@ -1,0 +1,43 @@
+<div id="account-page" class="boxed-page" ng-cloak>
+    <div class="boxed-area">
+
+        <div class="box-area-wrapper">
+            <div class="account-header box-header">
+              {{vm.zoiUser.fullname}}'s Account
+            </div>
+            <div class="box-sub-header">
+                Your Zoi.ai account details
+            </div>
+            <div class="box-body" style="  border-top: solid #f5ebeb 1px;  border-bottom: solid #f5ebeb 1px; padding-top:20px; padding-bottom: 40px">
+                <!--<div class="text-center">-->
+                    <!--Your plan:-->
+                <!--</div>-->
+                <div class="account-plan-image">
+                </div>
+                <div class="text-center">
+                   Free Plan (limited beta)
+                </div>
+                <div class="text-center box-sub-header" >
+                    Started at {{vm.zoiUser.startedAt}}
+                </div>
+                <!--<div class="box-item">-->
+
+                <!--</div>-->
+            </div>
+
+            <div class="box-sub-header">
+                Payment History
+            </div>
+
+            <div class="box-body" >
+                <div class="box-item " style="width: 100%;">
+                <div class="text-center" style="    width: 100%;    padding: 20px;    color: gray;">
+                    No payment history
+                </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

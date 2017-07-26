@@ -1,0 +1,160 @@
+<div id="integrations-page" class="boxed-page" ng-cloak>
+    <div class="integrations-area boxed-area" ng-if="vm.zoiUser">
+
+        <div class="box-area-wrapper">
+            <div class="box-header">
+                Integrations
+            </div>
+            <div class="box-sub-header">
+                <b>Add integrations to let Zoi to know your business better</b>
+            </div>
+            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
+                Utilities
+            </div>
+            <div class="box-body">
+                <div class="integration-elements">
+                    <integration-element
+                            ng-click="vm.onGmailClicked()"
+                            name="Gmail"
+                            is-associated="vm.isGmailAssociated"
+                            is-closed-for-beta="vm.isClosedForBeta"
+                            icon="src/assets/images/Integrations-logos/gmail.png">
+                    </integration-element>
+                    <integration-element
+                            ng-click=""
+                            name="Google Calendar"
+                            is-associated=""
+                            is-closed-for-beta="true"
+                            icon="src/assets/images/Integrations-logos/Google Calendar.png">
+                    </integration-element>
+                </div>
+            </div>
+
+            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
+                Social Media
+            </div>
+            <div class="box-body">
+                <div class="integration-elements">
+                    <integration-element
+                            ng-click=""
+                            name="Facebook"
+                            is-associated="true"
+                            is-closed-for-beta="vm.isClosedForBeta"
+                            icon="src/assets/images/Integrations-logos/Facebook.png">
+                    </integration-element>
+                    <integration-element
+                            ng-click=""
+                            name="Twitter"
+                            is-associated=""
+                            is-closed-for-beta="true"
+                            icon="src/assets/images/Integrations-logos/Twitter.png">
+                    </integration-element>
+                </div>
+            </div>
+            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
+                Scheduling
+            </div>
+            <div class="box-body">
+                <div class="integration-elements">
+
+                    <integration-element
+                            ng-click="vm.onAcuityClicked()"
+                            name="Acuity Scheduling"
+                            is-associated="vm.isAcuityAssociated"
+                            is-closed-for-beta="false"
+                            icon="src/assets/images/Integrations-logos/Acuity.png">
+                    </integration-element>
+
+                    <integration-element
+                            ng-click="vm.onMindbodyClicked($event)"
+                            name="Mindbody"
+                            is-associated="vm.isMindbodyAssociated"
+                            is-closed-for-beta="false"
+                            icon="src\assets\images\Integrations-logos\Mindbody.png">
+                    </integration-element>
+
+                    <integration-element
+                            ng-click=""
+                            name="Booker.com"
+                            is-associated=""
+                            is-closed-for-beta="true"
+                            icon="src\assets\images\Integrations-logos\Booker.png">
+                    </integration-element>
+                    <integration-element
+                            ng-click=""
+                            name="Appointy"
+                            is-associated=""
+                            is-closed-for-beta="true"
+                            icon="src\assets\images\Integrations-logos\Appointy.png">
+                    </integration-element>
+                    <integration-element
+                            ng-click=""
+                            name="SetMore"
+                            is-associated=""
+                            is-closed-for-beta="true"
+                            icon="src\assets\images\Integrations-logos\Setmore.png">
+                    </integration-element>
+                    <integration-element
+                            ng-click=""
+                            name="Timely"
+                            is-associated=""
+                            is-closed-for-beta="true"
+                            icon="src\assets\images\Integrations-logos\Timely.png">
+                    </integration-element>
+                    <integration-element
+                            ng-click=""
+                            name="Schedulicity"
+                            is-associated=""
+                            is-closed-for-beta="true"
+                            icon="src\assets\images\Integrations-logos\Schedulicity.png">
+                    </integration-element>
+
+
+                    <!--<integration-element-->
+                    <!--ng-click="vm.onFacebookClicked()"-->
+                    <!--name="Facebook"-->
+                    <!--is-associated="vm.isFacebookAssociated"-->
+                    <!--icon="https://images.seeklogo.net/2016/09/facebook-icon-preview-200x200.png">-->
+                    <!--</integration-element>-->
+                </div>
+
+                <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
+                    Marketing
+                </div>
+                <div class="box-body">
+                    <div class="integration-elements">
+
+                        <integration-element
+                                ng-click=""
+                                name="MailChimp"
+                                is-associated=""
+                                is-closed-for-beta="true"
+                                icon="src\assets\images\Integrations-logos\MailChimp.png">
+                        </integration-element>
+                        <integration-element
+                                ng-click=""
+                                name="Constant Contact"
+                                is-associated=""
+                                is-closed-for-beta="true"
+                                icon="src\assets\images\Integrations-logos\Constant Contact.gif">
+                        </integration-element>
+                        <integration-element
+                                ng-click=""
+                                name="SendGrid"
+                                is-associated=""
+                                is-closed-for-beta="true"
+                                icon="src\assets\images\Integrations-logos\SendGrid.png">
+                        </integration-element>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div ng-if="!vm.zoiUser">
+        404!
+    </div>
+</div>
+

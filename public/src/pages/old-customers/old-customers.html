@@ -1,0 +1,40 @@
+<div id="old-customers-page" ng-cloak>
+    <div class="old-customers-area">
+
+        <div class="old-customers-area-wrapper">
+            <div class="old-customers-header">
+                {{moment().format('lll')}}
+            </div>
+            <div class="count-wrap">
+                <div ng-show="vm.oldCustomers">
+                    You have {{vm.oldCustomers.length}} non-regulars
+                </div>
+                <div ng-hide="vm.oldCustomers">
+                    There are no old customer to preview
+                </div>
+            </div>
+            <div class="old-customers-body" ng-if="vm.oldCustomers.length">
+                <div class="old-customers-item" ng-repeat="customer in vm.oldCustomers">
+                    <md-checkbox aria-label="sendEmail Checkbox 1" ng-model="customer.sendEmail"
+                                 class="md-primary no-margin" style="padding-right: 10px;">
+                    </md-checkbox>
+                    <div class="old-customers-details-wrapper">
+                        <img ng-show="!customer.photoUrl" src="src/assets/images/profile-default.png"
+                             class="user-image"/>
+                        <img ng-show="customer.photoUrl" ng-src="{{customer.photoUrl}}" class="user-image"/>
+                        <div>
+                            <div class="old-customers-details-header">
+                                {{customer.firstName}} {{customer.lastName}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;margin: 15px 0;;" ng-show="vm.showSendButton()"
+                 ng-click="vm.sendButtonClicked()">
+                <md-button class="md-raised md-primary">Send email promotions</md-button>
+            </div>
+        </div>
+
+    </div>
+</div>

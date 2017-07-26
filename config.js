@@ -1,5 +1,5 @@
-let CLIENT_DEV = "http://zoiai.com/#";
-let CLIENT_LOCAL = "http://local.host:63343/ZoiClient/#";
+let CLIENT_DEV = "https://zoiai.com/p/#";
+let CLIENT_LOCAL = "http://local.host:443/p/#";
 
 let Environments = {
 	Local: {

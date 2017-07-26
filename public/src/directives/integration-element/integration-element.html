@@ -1,0 +1,25 @@
+<div class="row vertical-center no-margin" style="height: 60px;border-top: solid #d7d7d7 1px">
+    <div class="col-xs-2">
+        <img style="max-width: 35px;" ng-src="{{icon}}">
+    </div>
+    <div class="col-xs-5" style="text-align: left;padding: 0;margin-top: 1px">
+        <label>
+            {{name}}
+        </label>
+    </div>
+    <div class="col-xs-5" style="text-align: right">
+        <button class="btn btn-default" ng-hide="isAssociated || isClosedForBeta" style=" min-width: 85px">
+            <i class="fa fa-external-link-square" aria-hidden="true"></i>
+            Link
+        </button>
+        <button class="btn btn-success" ng-show="isAssociated && !isClosedForBeta" style=" min-width: 85px">
+            <i class="fa fa-link" aria-hidden="true"></i>
+            Linked
+        </button>
+        <button class="btn btn-default disabled" ng-show="isClosedForBeta" style="color: darkgray; min-width: 85px ">
+            <i class="fa fa-lock" aria-hidden="true"></i>
+            Locked
+        </button>
+
+    </div>
+</div>

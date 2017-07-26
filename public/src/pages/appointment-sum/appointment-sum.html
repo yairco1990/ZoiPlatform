@@ -1,0 +1,64 @@
+<div id="appointment-sum-page" class="boxed-page" ng-cloak>
+    <div class="boxed-area">
+
+        <div class="box-area-wrapper">
+            <img class="promo-image" src="src/assets/images/Headers/10precent.png">
+
+            </img>
+            <div class="appointment-header box-header">
+                {{vm.appointment.promotionTitle}}
+            </div>
+            <div class="box-sub-header">
+                {{vm.appointment.customer.firstname}} {{vm.appointment.customer.lastname}}, Book now to get
+                the special promotion.
+            </div>
+            <div class="box-body" style="  border-top: solid #f5ebeb 1px;  border-bottom: solid #f5ebeb 1px; padding-top:30px; padding-bottom: 30px">
+                <!--<div class="text-center">-->
+                <!--Your plan:-->
+                <!--</div>-->
+                <div class="account-plan-image">
+                </div>
+                <div class="text-center">
+                    {{vm.appointment.serviceName}}
+                    <div>
+                        {{vm.moment(vm.appointment.date).format('MMMM Do YYYY')}},
+                        {{vm.moment(vm.appointment.date).format('HH:mm')}}
+                    </div>
+                </div>
+                <div class="text-center box-sub-header">
+
+                    <div style="color:blue; cursor: pointer">
+                        Change
+                    </div>
+                </div>
+                <!--<div class="box-item">-->
+
+                <!--</div>-->
+            </div>
+
+            <div class="box-sub-header">
+                Please make sure the chosen date and time are correct before booking.
+            </div>
+
+            <div class="box-body">
+                <div class="box-item " style="width: 100%;">
+                    <div class="text-center" style="    width: 100%;    padding: 20px;    color: gray;">
+                        <button class="appointment-button btn btn-default" ng-click="vm.scheduleAppointment()">
+                            Schedule
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+

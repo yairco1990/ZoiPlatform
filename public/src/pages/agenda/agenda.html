@@ -1,0 +1,30 @@
+<div id="agenda-page" class="boxed-page" ng-cloak>
+    <div class="agenda-area boxed-area">
+
+        <div class="box-area-wrapper">
+            <div class="box-header">
+                {{moment().format('lll')}}
+            </div>
+            <div class="box-sub-header">
+                You have {{vm.appointments.length}} meetings today
+            </div>
+            <div class="box-body">
+                <div class="box-item" ng-repeat="appointment in vm.appointments">
+                    <div class="box-hour-wrapper">
+                        <!--{{moment(appointment.startTime).format('HH:mm')}}-->
+                        {{appointment.startTime}}
+                    </div>
+                    <div class="box-details-wrapper">
+                        <img ng-show="!appointment.sharedCustomer.photoUrl" src="src/assets/images/profile-default.png" class="user-image"/>
+                        <img ng-show="appointment.sharedCustomer.photoUrl" ng-src="{{appointment.sharedCustomer.photoUrl}}" class="user-image"/>
+                        <div>
+                            <div class="box-details-header">{{appointment.sharedCustomer.firstname}} {{appointment.sharedCustomer.lastname}}</div>
+                            <div class="box-details-sub">Appointment for {{appointment.serviceName}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
