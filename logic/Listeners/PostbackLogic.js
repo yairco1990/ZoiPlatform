@@ -40,6 +40,8 @@ PostbackLogic.prototype.processAction = function (input, payload, setBotTyping, 
 		]));
 	} else if (input == "POSTBACK_PROMOTIONS") {
 		self.listenLogic.processInput("send promotions", payload, setBotTyping, bot, callback);
+	} else if (input == "POSTBACK_OLD_CUSTOMERS") {
+		self.listenLogic.processInput("old customers", payload, setBotTyping, bot, callback);
 	} else if (input == "POSTBACK_PROFILE") {
 		callback(facebookResponse.getButtonMessage("Watch your profile:", [
 			facebookResponse.getGenericButton("web_url", "My Profile", null, ZoiConfig.clientUrl + "/profile?userId=" + userId, "full")

@@ -182,17 +182,47 @@ WelcomeLogic.prototype.proceedWelcomeConversation = function (conversationData, 
 	let self = this;
 	let user = self.user;
 
-	async.series([
+	if (!user.conversationData) {
+		//ask if he wants to proceed
+		let currentQuestion = welcomeQuestions.sawAbilities;
+		//save conversation to the user
+		user.conversationData = conversationData;
+		//save the service question
+		user.conversationData.lastQuestion = currentQuestion;
 
-		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Awesome! You made your first integration! 👏"), true),
-		MyUtils.onResolve(reply, facebookResponse.getTextMessage("So far, you are the best human I ever worked with! ( https://sc.mogicons.com/c/192.jpg)"), true, delayTime),
-		MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You are probably wondering what I can do for you. Well, take a look:", [
-			facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", "full")
-		]), true, delayTime),
-		MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with the morning brief. You can always press the menu button to see  my preset actions and settings."), true, delayTime),
-		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Can't wait to start getting more action to your business!  https://sc.mogicons.com/c/180.jpg"), false, delayTime),
+		//save the response
+		let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
+			[
+				facebookResponse.getQRButton('text', 'Ok', {id: 1})
+			]
+		);
+		user.conversationData.lastQRResponse = lastQRResponse;
 
-	], MyUtils.getErrorMsg());
+		self.DBManager.saveUser(user).then(function () {
+			async.series([
+
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Awesome! You made your first integration! 👏"), true),
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("So far, you are the best human I ever worked with! 😉"), true, delayTime),
+				MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You are probably wondering what I can do for you. Well, take a look:", [
+					facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", "full")
+				]), true, delayTime),
+				MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
+
+			], MyUtils.getErrorMsg());
+		});
+
+	} else if (user.conversationData.lastQuestion.id == welcomeQuestions.sawAbilities.id) {
+
+		if (conversationData.payload && conversationData.payload.id == 1) {
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with the morning brief. You can always press the menu button below (☰) to see my preset actions and settings."), true),
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Can't wait to start getting more action to your business!  💪"), false, delayTime),
+
+			], MyUtils.getErrorMsg());
+		} else {
+			reply(user.conversationData.lastQRResponse);
+		}
+	}
 };
 
 module.exports = WelcomeLogic;

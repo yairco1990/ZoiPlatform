@@ -5,9 +5,28 @@ angular.module('Zoi.controllers.appointment-sum', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
 		$stateProvider.state('appointment-sum', {
-			url: '/appointment-sum?{firstname}{lastname}{email}{userId}{notes}{date}{price}{serviceId}{serviceName}{promotionTitle}',
+			url: '/appointment-sum?{firstName}{lastName}{email}{userId}{date}{price}{serviceId}{serviceName}{promotionTitle}{promotionImage}{notes}',
 			controller: 'AppointmentSumCtrl as vm',
-			templateUrl: 'src/pages/appointment-sum/appointment-sum.html'
+			templateUrl: 'src/pages/appointment-sum/appointment-sum.html',
+			resolve: {
+				openings: function ($http, $log, $stateParams, zoiConfig) {
+					return $http({
+						url: zoiConfig.getServerUrl() + "/acuity/getAvailability",
+						method: "GET",
+						params: {
+							userId: $stateParams.userId,
+							date: $stateParams.date,
+							appointmentTypeId: $stateParams.serviceId
+						},
+						timeout: 5000
+					}).then(function (result) {
+						return result.data;
+					}, function (err) {
+						$log.error(err.data);
+						return err.data;
+					});
+				}
+			}
 		})
 	}]).controller('AppointmentSumCtrl', AppointmentSumCtrl);
 
@@ -16,7 +35,7 @@ angular.module('Zoi.controllers.appointment-sum', [])
  * page constructor
  * @constructor
  */
-function AppointmentSumCtrl($log, $rootScope, $timeout, $stateParams, $http, zoiConfig) {
+function AppointmentSumCtrl($log, $rootScope, $timeout, $stateParams, $http, zoiConfig, openings, $mdDialog) {
 
 	var vm = this;
 	vm.$log = $log;
@@ -26,6 +45,8 @@ function AppointmentSumCtrl($log, $rootScope, $timeout, $stateParams, $http, zoi
 	vm.moment = moment;
 	vm.$http = $http;
 	vm.zoiConfig = zoiConfig;
+	vm.openings = openings;
+	vm.$mdDialog = $mdDialog;
 
 	vm.$log.info("AppointmentSumCtrl loaded");
 }
@@ -40,37 +61,37 @@ AppointmentSumCtrl.prototype.$onInit = function () {
 	var vm = this;
 
 	//TODO change it and consider timezone
+	vm.selectedSlot = vm.openings[0].time;
 
-	var date;
-	if (vm.$stateParams.date) {
-		date = vm.$stateParams.date.substring(0, 19);
-	}
 	vm.appointment = {
 		customer: {
-			firstname: vm.$stateParams.firstname,
-			lastname: vm.$stateParams.lastname,
+			firstname: vm.$stateParams.firstName,
+			lastname: vm.$stateParams.lastName,
 			email: vm.$stateParams.email
 		},
 		userId: vm.$stateParams.userId,
-		date: date,
+		date: vm.$stateParams.date,
 		datetime: vm.$stateParams.date,
 		notes: vm.$stateParams.notes,
 		serviceId: vm.$stateParams.serviceId,
 		serviceName: vm.$stateParams.serviceName,
 		promotionTitle: vm.$stateParams.promotionTitle,
-		price: vm.$stateParams.price
+		price: vm.$stateParams.price,
+		promotionImage: vm.$stateParams.promotionImage
 	};
 };
 
-AppointmentSumCtrl.prototype.scheduleAppointment = function () {
+AppointmentSumCtrl.prototype.scheduleAppointment = function (ev) {
 	var vm = this;
+
+	MyUtils.addLoader();
 
 	vm.$http({
 		url: vm.zoiConfig.getServerUrl() + "/acuity/scheduleAppointment",
 		method: "GET",
 		params: {
 			userId: vm.appointment.userId,
-			datetime: vm.appointment.datetime,
+			datetime: vm.selectedSlot,
 			appointmentTypeID: vm.appointment.serviceId,
 			firstname: vm.appointment.customer.firstname,
 			lastname: vm.appointment.customer.lastname,
@@ -79,9 +100,20 @@ AppointmentSumCtrl.prototype.scheduleAppointment = function () {
 			price: vm.appointment.price
 		}
 	}).then(function (result) {
-		alert("Scheduled successfully");
+		MyUtils.removeLoader();
+		vm.$mdDialog.show(
+			vm.$mdDialog.alert()
+				.parent(angular.element(document.querySelector('#popupContainer')))
+				.clickOutsideToClose(true)
+				.title("You Got It!")
+				.textContent("Thank's for scheduling!")
+				.ariaLabel('Alert Dialog Demo')
+				.ok('OK')
+				.targetEvent(ev)
+		);
 		vm.$log.debug(result);
 	}, function (err) {
+		MyUtils.removeLoader();
 		alert("Failed to schedule");
 		vm.$log.error(err);
 	});

@@ -7,7 +7,25 @@ angular.module('Zoi.controllers.mail', [])
 		$stateProvider.state('mail', {
 			url: '/mail?{userId}',
 			controller: 'MailCtrl as vm',
-			templateUrl: 'src/pages/mail/mail.html'
+			templateUrl: 'src/pages/mail/mail.html',
+			resolve: {
+				emails: function ($log, $http, $stateParams, zoiConfig) {
+					return $http({
+						url: zoiConfig.getServerUrl() + "/acuity/getEmails?userId=" + $stateParams.userId,
+						method: "GET"
+					}).then(function (result) {
+						result.data.forEach(function (email) {
+							if (email.from.indexOf('<') > 0) {
+								email.from = email.from.substring(0, email.from.indexOf('<'));
+							}
+						});
+						return result.data;
+					}).catch(function (err) {
+						$log.error(err);
+						return [];
+					});
+				}
+			}
 		})
 	}]).controller('MailCtrl', MailCtrl);
 
@@ -16,7 +34,7 @@ angular.module('Zoi.controllers.mail', [])
  * page constructor
  * @constructor
  */
-function MailCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiApi, $window, zoiConfig, $http, $stateParams) {
+function MailCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiApi, $window, zoiConfig, $http, emails) {
 
 	var vm = this;
 
@@ -29,7 +47,7 @@ function MailCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiApi, $window
 	vm.$window = $window;
 	vm.zoiConfig = zoiConfig;
 	vm.$http = $http;
-	vm.$stateParams = $stateParams;
+	vm.emails = emails;
 
 	vm.$log.debug("MailCtrl loaded");
 }
@@ -40,20 +58,6 @@ function MailCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiApi, $window
 MailCtrl.prototype.$onInit = function () {
 
 	var vm = this;
-	vm.$http({
-		url: vm.zoiConfig.getServerUrl() + "/acuity/getEmails?userId=" + vm.$stateParams.userId,
-		method: "GET"
-	}).then(function (result) {
-		result.data.forEach(function (email) {
-			if (email.from.indexOf('<') > 0) {
-				email.from = email.from.substring(0, email.from.indexOf('<'));
-			}
-		});
-		vm.emails = result.data;
-	}).catch(function (err) {
-		vm.$log.error(err);
-		return [];
-	});
 };
 
 MailCtrl.prototype.moveToMail = function (emailId) {

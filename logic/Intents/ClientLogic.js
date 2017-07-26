@@ -79,7 +79,7 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hooray! 👏 " + user.session.newClient.firstName + " " + user.session.newClient.lastName + " scheduled an appointment for the first time"), true),
 				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's send a welcome email"), true, delayTime),
 				MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
-					facebookResponse.getGenericElement("Welcome Email", "http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg", "", null)
+					facebookResponse.getGenericElement("Welcome Email", EmailConfig.newCustomerEmail.bannerImage, "Send a friendly welcome email to your customer", null)
 				]), true, delayTime),
 				MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
 			], MyUtils.getErrorMsg());
@@ -90,7 +90,11 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 
 		//verify that this is payload
 		if (!conversationData.payload) {
-			reply(user.conversationData.lastQRResponse);
+			//send qr again
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+			], MyUtils.getErrorMsg());
 			return;
 		}
 
@@ -112,17 +116,17 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 				emailHtml = emailHtml.replace('{{bannerSrc}}', emailTemplate.bannerImage);
 
 				//parse the second part
-				emailHtml = emailHtml.replace('{{Business name}}', user.integrations.Acuity.userDetails.name);
-				emailHtml = emailHtml.replace('{{business_name}}', user.integrations.Acuity.userDetails.name);
-				emailHtml = emailHtml.replace('{{business name}}', user.integrations.Acuity.userDetails.name);
-				emailHtml = emailHtml.replace('{{firstName}}', firstName);
+				emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{firstName}}', firstName, emailHtml);
 				emailHtml = MyUtils.replaceAll('{{hoverColor}}', emailTemplate.hoverColor, emailHtml);
 				emailHtml = MyUtils.replaceAll('{{color}}', emailTemplate.color, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{href}}', user.integrations.Acuity.userDetails.schedulingPage, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.newCustomerEmail.buttonText, emailHtml);
 
 				EmailLib.sendEmail(emailHtml, [{
 					address: newCustomerEmail,
 					from: 'Zoi.AI <noreply@fobi.io>',
-					subject: 'Test Subject',
+					subject: EmailConfig.newCustomerEmail.subject,
 					alt: 'Test Alt'
 				}]);
 			}
@@ -157,7 +161,7 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 const promoteOldCustomersQuestions = {
 	toPromote: {
 		id: 1,
-		text: "I suggest we send a promotion to non-regular customers"
+		text: "What do you say?"
 	}
 };
 ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
@@ -251,9 +255,9 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 					//send messages
 					async.series([
 						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hey boss, I noticed that there are " + oldCustomers.length + " non-regular customers. These are customers that didn't visit for a while."), true),
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's send a welcome email"), true, delayTime),
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's send a promotion email"), true, delayTime),
 						MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
-							facebookResponse.getGenericElement("Welcome Email", "http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg", "", null)
+							facebookResponse.getGenericElement("10% Off", EmailConfig.oldCustomersEmail.bannerImage, "Send non-regular customers a promotion with 10% discount", null)
 						]), true),
 						MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
 					], MyUtils.getErrorMsg());
@@ -270,31 +274,36 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 	}
 	else if (lastQuestionId === promoteOldCustomersQuestions.toPromote.id) {
 
-		if (conversationData.payload) {
-			if (conversationData.payload.id == 1) {
-				user.conversationData = null;
-				//save the old customers to metadata
-				user.metadata.oldCustomers = user.session.oldCustomers;
+		if (!conversationData.payload) {
+			//send qr again
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+			], MyUtils.getErrorMsg());
+			return;
+		}
 
-				//save the user
-				self.DBManager.saveUser(user).then(function () {
+		if (conversationData.payload.id == 1) {
+			user.conversationData = null;
+			//save the old customers to metadata
+			user.metadata.oldCustomers = user.session.oldCustomers;
 
-					//send messages
-					async.series([
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Good!"), true),
-						MyUtils.onResolve(reply, facebookResponse.getButtonMessage("Let's pick some non-regulars and try to make them come back", [
-							facebookResponse.getGenericButton("web_url", "Non-regulars", null, ZoiConfig.clientUrl + "/old-customers?userId=" + user._id, "full")
-						]), false, delayTime),
-					], MyUtils.getErrorMsg());
+			//save the user
+			self.DBManager.saveUser(user).then(function () {
 
-					self.clearSession();
-				});
-			} else if (conversationData.payload.id == 2) {
-				reply(facebookResponse.getTextMessage("I will be here if you need me :)"));
+				//send messages
+				async.series([
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Good!"), true),
+					MyUtils.onResolve(reply, facebookResponse.getButtonMessage("Let's pick some non-regulars and encourage them to come back", [
+						facebookResponse.getGenericButton("web_url", "Non-regulars", null, ZoiConfig.clientUrl + "/old-customers?userId=" + user._id, "full")
+					]), false, delayTime),
+				], MyUtils.getErrorMsg());
+
 				self.clearSession();
-			}
-		} else {
-			reply(user.conversationData.lastQRResponse);
+			});
+		} else if (conversationData.payload.id == 2) {
+			reply(facebookResponse.getTextMessage("I will be here if you need me :)"));
+			self.clearSession();
 		}
 	}
 };

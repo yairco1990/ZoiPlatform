@@ -59,16 +59,13 @@ Promise.all([
 		//END OF NPM
 
 		// SERVICES
+		loadFile('src/utils/utils.js', 'js'),
 		loadFile('src/services/config.js', 'js'),
 		loadFile('src/services/ZoiApi.js', 'js'),
 		// END OF SERVICES
 
 		//DIRECTIVES
 		loadFile('src/directives/integration-element/integration-element.js', 'js'),
-
-		// UTILS
-		loadFile('src/utils/utils.js', 'js'),
-		// END OF UTILS
 
 		// CONTROLLERS
 		loadFile('src/pages/integrations/integrations.js', 'js'),

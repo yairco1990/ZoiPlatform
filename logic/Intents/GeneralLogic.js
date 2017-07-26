@@ -63,7 +63,7 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 		let queryString = "newer_than:7d is:unread";
 
 		//get unread emails from the user clients
-		GmailLogic.getEmailsList(tokens, queryString, 'me').then(function (messages) {
+		GmailLogic.getEmailsList(tokens, queryString, 'me', user).then(function (messages) {
 
 			let clientsMessages = _.filter(messages, function (item1) {
 				return _.some(this, function (item2) {
@@ -148,8 +148,7 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 
 const wishZoiQuestions = {
 	writeReview: {
-		id: 1,
-		text: "What you with that zoi will do?"
+		id: 1
 	}
 };
 /**
@@ -171,7 +170,7 @@ GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, reque
 
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
-			reply(facebookResponse.getTextMessage("What will you wish Zoi will do in the future?"), false, 1000);
+			reply(facebookResponse.getTextMessage("What do you wish I would do for you in the future?"), false, 1000);
 		});
 	} else if (user.conversationData.lastQuestion.id === wishZoiQuestions.writeReview.id) {
 
@@ -179,7 +178,7 @@ GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, reque
 
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
-			reply(facebookResponse.getTextMessage("Thank you for helping Zoi become greater assistant! :)"), false, 1000);
+			reply(facebookResponse.getTextMessage("Thank you for helping me become an even greater assistant!"), false, 1000);
 			self.clearSession(reply, false);
 		});
 	}

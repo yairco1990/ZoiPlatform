@@ -16,11 +16,37 @@ const EmailLib = require('../../interfaces/EmailLib');
 const EmailConfig = require('../../interfaces/assets/EmailsConfig');
 const WelcomeLogic = require('../Intents/WelcomeLogic');
 const deepcopy = require('deepcopy');
+const async = require('async');
 
 class AcuityLogic {
 
-	constructor() {
+	constructor(bot) {
 		this.DBManager = require('../../dal/DBManager');
+	}
+
+	getReplyFunction(bot, user) {
+		return function (rep, isBotTyping, delay, user) {
+			return new Promise(function (resolve, reject) {
+				delay = delay || 0;
+				setTimeout(() => {
+					//send reply
+					bot.sendMessage(user._id, rep, (err) => {
+						if (err) {
+							reject(err);
+							return;
+						}
+						if (isBotTyping) {
+							bot.sendSenderAction(user._id, "typing_on", () => {
+								resolve();
+							});
+						} else {
+							resolve();
+						}
+						Util.log(`Message returned ${user._id}] -> ${rep.text}`);
+					});
+				}, delay);
+			});
+		};
 	}
 
 	getClients(userId, callback) {
@@ -35,20 +61,20 @@ class AcuityLogic {
 		});
 	}
 
-	getAvailability(userId, callback) {
+	getAvailability(data, callback) {
 		let self = this;
 
-		self.DBManager.getUser({_id: userId}).then(function (user) {
+		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-			let options = [
-				{key: 'appointmentTypeID', value: 3581890},
-				{key: 'date', value: moment().add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')}
-			];
+			let options = {
+				appointmentTypeID: parseInt(data.appointmentTypeId),
+				date: moment(parseInt(data.date, 16)).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
+			};
 
 			acuityApi.getAvailability(options).then(function (result) {
 				callback(200, result);
-			})
+			}).catch(MyUtils.getErrorMsg());
 		});
 	}
 
@@ -129,14 +155,22 @@ class AcuityLogic {
 		});
 	}
 
-	promoteOldCustomers(data, callback) {
+	promoteOldCustomers(bot, data, callback) {
 		let self = this;
 
 		let customers = JSON.parse(data.customers);
 
-		self.DBManager.getUser({_id: data.userId}).then(function (user) {
+		let user;
+		self.DBManager.getUser({_id: data.userId}).then(function (_user) {
+			user = _user;
+			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+
+			return acuityApi.getAppointmentTypes();
+
+		}).then(function (appointmentTypes) {
 
 			let emailTemplate = EmailConfig.oldCustomersEmail;
+			let service = appointmentTypes[0];
 
 			customers.forEach(function (customer) {
 
@@ -150,17 +184,19 @@ class AcuityLogic {
 				emailHtml = emailHtml.replace('{{bannerSrc}}', emailTemplate.bannerImage);
 
 				//parse the second part
-				emailHtml = emailHtml.replace('{{Business name}}', user.integrations.Acuity.userDetails.name);
-				emailHtml = emailHtml.replace('{{business_name}}', user.integrations.Acuity.userDetails.name);
-				emailHtml = emailHtml.replace('{{business name}}', user.integrations.Acuity.userDetails.name);
-				emailHtml = emailHtml.replace('{{firstName}}', customer.firstName);
+				emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{firstName}}', customer.firstName, emailHtml);
 				emailHtml = MyUtils.replaceAll('{{hoverColor}}', emailTemplate.hoverColor, emailHtml);
 				emailHtml = MyUtils.replaceAll('{{color}}', emailTemplate.color, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{service}}', service.name, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{discount type}}', "10% Off", emailHtml);
+				emailHtml = MyUtils.replaceAll('{{href}}', user.integrations.Acuity.userDetails.schedulingPage, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.oldCustomersEmail.buttonText, emailHtml);
 
 				EmailLib.sendEmail(emailHtml, [{
 					address: customer.email,
 					from: 'Zoi.AI <noreply@fobi.io>',
-					subject: customer.firstName + ' ' + customer.lastName,
+					subject: EmailConfig.oldCustomersEmail.subject,
 					alt: 'Old Customers Promotions'
 				}]);
 			});
@@ -171,7 +207,13 @@ class AcuityLogic {
 			//remove the metadata
 			user.metadata.oldCustomers = null;
 			self.DBManager.saveUser(user).then(function () {
-				//old customers removed
+
+				let replyFunction = self.getReplyFunction(bot, user);
+				//send messages
+				async.series([
+					MyUtils.onResolve(replyFunction, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + customers.length + " of your customers."), true),
+					MyUtils.onResolve(replyFunction, facebookResponse.getTextMessage("Trust me, they will be regulars soon enough."), false, ZoiConfig.delayTime),
+				], MyUtils.getErrorMsg());
 			});
 
 		}).catch(function (err) {
@@ -182,9 +224,9 @@ class AcuityLogic {
 	scheduleAppointment(data, callback) {
 		let self = this;
 
-		let _user;
-		self.DBManager.getUser({_id: data.userId}).then(function (user) {
-			_user = user;
+		let user;
+		self.DBManager.getUser({_id: data.userId}).then(function (_user) {
+			user = _user;
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			// Create appointment:
@@ -212,18 +254,18 @@ class AcuityLogic {
 
 			//save appointment times
 			let actionTime = moment().format("YYYY/MM");
-			_user.profile = _user.profile || {};
-			if (_user.profile[actionTime]) {
-				_user.profile[actionTime].numOfAppointments = (_user.profile[actionTime].numOfAppointments || 0) + 1;
-				_user.profile[actionTime].profitFromAppointments = ((_user.profile[actionTime].profitFromAppointments || 0) + parseFloat(data.price)) || 0;
+			user.profile = user.profile || {};
+			if (user.profile[actionTime]) {
+				user.profile[actionTime].numOfAppointments = (user.profile[actionTime].numOfAppointments || 0) + 1;
+				user.profile[actionTime].profitFromAppointments = ((user.profile[actionTime].profitFromAppointments || 0) + parseFloat(data.price)) || 0;
 			} else {
-				_user.profile[actionTime] = {
+				user.profile[actionTime] = {
 					numOfAppointments: 1,
 					profitFromAppointments: parseFloat(data.price) || 0
 				}
 			}
 
-			self.DBManager.saveUser(_user).then(function () {
+			self.DBManager.saveUser(user).then(function () {
 			});
 		}).catch(function (err) {
 
@@ -235,8 +277,9 @@ class AcuityLogic {
 
 		let self = this;
 
-		let tokens, clients;
-		self.DBManager.getUser({_id: data.userId}).then(function (user) {
+		let tokens, clients, user;
+		self.DBManager.getUser({_id: data.userId}).then(function (_user) {
+			user = _user;
 
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 			tokens = user.integrations.Gmail;
@@ -248,7 +291,7 @@ class AcuityLogic {
 			let queryString = "newer_than:7d is:unread";
 
 			//get unread emails from the user clients
-			return GmailLogic.getEmailsList(tokens, queryString, 'me');
+			return GmailLogic.getEmailsList(tokens, queryString, 'me', user);
 
 		}).then(function (messages) {
 
@@ -269,11 +312,11 @@ class AcuityLogic {
 		let self = this;
 
 		let acuityApi;
-		let _user;
+		let user;
 		//get the user that wants to integrate
-		self.DBManager.getUser({_id: userId}).then(function (user) {
+		self.DBManager.getUser({_id: userId}).then(function (_user) {
 
-			_user = user;
+			user = _user;
 
 			acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
@@ -298,42 +341,21 @@ class AcuityLogic {
 					email: appointment.email,
 				};
 
-				if (!_user.conversationData) {
+				if (!user.conversationData) {
 
 					//save the new client to user
-					_user.session = {
+					user.session = {
 						newClient: newClient
 					};
-					self.DBManager.saveUser(_user).then(function () {
+					self.DBManager.saveUser(user).then(function () {
 
 						//start the conversation in the clientLogic class
-						let clientLogic = new ClientLogic(_user);
+						let clientLogic = new ClientLogic(user);
 						let conversationData = {
 							intent: "client new customer join",
 							context: "CLIENT"
 						};
-						let replyFunction = function (rep, isBotTyping, delay) {
-							return new Promise(function (resolve, reject) {
-								delay = delay || 0;
-								setTimeout(() => {
-									//send reply
-									bot.sendMessage(_user._id, rep, (err) => {
-										if (err) {
-											reject(err);
-											return;
-										}
-										if (isBotTyping) {
-											bot.sendSenderAction(_user._id, "typing_on", () => {
-												resolve();
-											});
-										} else {
-											resolve();
-										}
-										Util.log(`Message returned ${_user._id}] -> ${rep.text}`);
-									});
-								}, delay);
-							});
-						};
+						let replyFunction = self.getReplyFunction(bot, user);
 						clientLogic.processIntent(conversationData, null, null, replyFunction);
 					});
 				}
@@ -389,39 +411,19 @@ class AcuityLogic {
 
 				//proceed after user integrated for the first time only(if integrated more than once - skip it)
 				if (!isAlreadyConnectedWithAcuity) {
+					Util.log("Integrated with Acuity successfully");
+					Util.log(response);
 					//start the conversation in the welcomeLogic class
 					let welcomeLogic = new WelcomeLogic(user);
 					let conversationData = {
 						intent: "welcome acuity integrated",
 						context: "WELCOME_CONVERSATION"
 					};
-					let replyFunction = function (rep, isBotTyping, delay) {
-						return new Promise(function (resolve, reject) {
-							delay = delay || 0;
-							setTimeout(() => {
-								//send reply
-								bot.sendMessage(user._id, rep, (err) => {
-									if (err) {
-										reject(err);
-										return;
-									}
-									if (isBotTyping) {
-										bot.sendSenderAction(user._id, "typing_on", () => {
-											resolve();
-										});
-									} else {
-										resolve();
-									}
-									Util.log(`Message returned ${user._id}] -> ${rep.text}`);
-								});
-							}, delay);
-						});
-					};
+					let replyFunction = self.getReplyFunction(bot, user);
 					welcomeLogic.processIntent(conversationData, null, null, replyFunction);
+				} else {
+					Util.log("Already integrated with Acuity");
 				}
-
-				Util.log("Response");
-				Util.log(response);
 
 			}).catch(MyUtils.getErrorMsg());
 		});

@@ -85,7 +85,7 @@ module.exports = {
 		app.get('/acuity/getAvailability', function (req, res) {
 			Util.log(API_LOG + "getAvailability. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
-			acuityLogic.getAvailability(req.query.userId, function (status, data) {
+			acuityLogic.getAvailability(req.query, function (status, data) {
 				res.status(status).send(data);
 			});
 		});
@@ -148,7 +148,7 @@ module.exports = {
 		app.post('/acuity/promoteOldCustomers', function (req, res) {
 			Util.log(API_LOG + "promoteOldCustomers. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
-			acuityLogic.promoteOldCustomers(req.query, function (status, data) {
+			acuityLogic.promoteOldCustomers(bot, req.query, function (status, data) {
 				res.status(status).send(data);
 			});
 		});

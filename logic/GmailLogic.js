@@ -19,8 +19,16 @@ class GmailLogic {
 	 * @param callback
 	 */
 	static integrate(userId, callback) {
-		//redirect the user to his integrations page
-		callback(302, {'location': GmailLogic.getUrl(userId)});
+		DBManager.getUser({_id: userId}).then(function (user) {
+			if (user && user._id) {
+				//redirect the user to his integrations page
+				let authUrl = GmailLogic.getUrl(userId);
+				if (!user.integrations.Gmail || !user.integrations.Gmail.refresh_token) {
+					authUrl += "&prompt=consent";
+				}
+				callback(302, {'location': authUrl});
+			}
+		});
 	}
 
 	/**
@@ -30,7 +38,6 @@ class GmailLogic {
 	 * @param callback
 	 */
 	static getTokens(userId, code, callback) {
-		Util.log(code);
 
 		//get the auth object
 		let oauth2Client = GmailLogic.getAuthObject(userId);
@@ -42,7 +49,7 @@ class GmailLogic {
 				callback(400, err);
 				return;
 			}
-			Util.log(tokens);
+			Util.log("Got Gmail tokens");
 
 			//get user
 			DBManager.getUser({_id: userId}).then((user) => {
@@ -54,6 +61,7 @@ class GmailLogic {
 					user.integrations.Gmail.access_token = tokens.access_token;
 					user.integrations.Gmail.token_type = tokens.token_type;
 					user.integrations.Gmail.expiry_date = tokens.expiry_date;
+					user.integrations.Gmail.refresh_token = tokens.refresh_token || user.integrations.Gmail.refresh_token;
 				}
 
 				//save the user with the integrations
@@ -105,15 +113,12 @@ class GmailLogic {
 	 * @param userId
 	 * @returns {Promise}
 	 */
-	static getEmailsList(tokens, queryString, userId) {
-		//TODO handle with expiration token
+	static getEmailsList(tokens, queryString, userId, user) {
+
 		return new Promise((resolve, reject) => {
 
-			let oauthObject = GmailLogic.getAuthObject();
-			oauthObject.setCredentials(tokens);
+			let getEmails = function () {
 
-			//check token expiration date
-			if (tokens.expiry_date > new Date().valueOf()) {
 				let GBS = new GmailBatchStream(tokens.access_token);
 				const gmailGBS = GBS.gmail();
 				const messageIdStream = _h([gmailGBS.users.messages.list({userId: userId, q: queryString})])
@@ -140,9 +145,32 @@ class GmailLogic {
 						});
 					}).done(() => {
 					resolve(messages);
+					Util.log("Successfully got the user's emails");
 				});
+			};
+
+			//check token expiration date
+			if (tokens.expiry_date > new Date().valueOf()) {
+				getEmails();
 			} else {
-				reject("TOKEN_EXPIRED");
+				//renew the access token
+				let oauthObject = GmailLogic.getAuthObject();
+				oauthObject.setCredentials(tokens);
+				oauthObject.refreshAccessToken(function (err, tokens) {
+					if (err) {
+						console.error(err);
+						reject(err);
+						return;
+					}
+					user.integrations.Gmail.access_token = tokens.access_token;
+					user.integrations.Gmail.token_type = tokens.token_type;
+					user.integrations.Gmail.expiry_date = tokens.expiry_date;
+					user.integrations.Gmail.refresh_token = tokens.refresh_token || user.integrations.Gmail.refresh_token;
+
+					DBManager.saveUser(user).then(function () {
+						getEmails();
+					});
+				});
 			}
 
 		});

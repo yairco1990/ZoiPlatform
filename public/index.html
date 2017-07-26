@@ -6,10 +6,23 @@
 
     <title>Zoi</title>
 
+    <link rel="stylesheet" type="text/css" href="src/assets/css/loader.css"/>
 </head>
 <body ng-controller="AppCtrl" dir="ltr">
 
-<div class="page-container" ui-view ng-cloak></div>
+<div id="loader-wrapper" class="boxed-page animated">
+    <span style="margin:auto">
+        <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+        </div>
+        Loading...
+    </span>
+</div>
+<div id="page-container" class="page-container" ui-view ng-cloak>
+</div>
 
 <!--LOADER-->
 <script type="application/javascript" id="loader-file" src="loader.js" version="v1.0.0"></script>

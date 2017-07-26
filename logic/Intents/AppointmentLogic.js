@@ -224,7 +224,6 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 	if (!user.conversationData) {
 		//ask if he wants to promote
 		let question = sendPromotionsQuestions.toPromote;
-
 		//save conversation to the user
 		user.conversationData = conversationData;
 		//save the service question
@@ -303,7 +302,10 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 			}
 		} else {
 			//send qr again
-			reply(user.conversationData.lastQRResponse, false);
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+			], MyUtils.getErrorMsg());
 		}
 	}
 	else if (lastQuestionId === sendPromotionsQuestions.serviceName.id) {
@@ -331,9 +333,9 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 					MyUtils.onResolve(reply, facebookResponse.getTextMessage(currentQuestion.text), true),
 					MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
 						//coupon
-						facebookResponse.getGenericElement("10% off massage treatments",
+						facebookResponse.getGenericElement("10% discount",
 							"http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
-							"Book a massage now and get 10% off",
+							"Offer a discount of 10% to selected customer",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 1,
 								title: "10% Off",
@@ -343,9 +345,9 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 								hoverColor: "#F4771D"
 							})]),
 						//25% off
-						facebookResponse.getGenericElement("25% off massage treatments",
+						facebookResponse.getGenericElement("25% discount",
 							"http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
-							"Book a massage now and get 25% off",
+							"Offer a discount of 25% to selected customer",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 2,
 								title: "25% Off",
@@ -355,9 +357,9 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 								hoverColor: "#00a6db"
 							})]),
 						//1 plus 1
-						facebookResponse.getGenericElement("1 + 1 on face treatments",
+						facebookResponse.getGenericElement("1 + 1 deal",
 							"http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
-							"Get 2 treatments for the price of one. Book now to claim your reward.",
+							"Offer 1 + 1 deal to selected customer",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 3,
 								title: "1 + 1",
@@ -407,8 +409,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 		if (conversationData.payload) {
 			if (conversationData.payload && conversationData.payload.answer == "yes") {
 
-				let appointmentType = user.session['service'];
-				let template = user.session['template'];
+				let appointmentType = deepcopy(user.session['service']);
+				let template = deepcopy(user.session['template']);
 
 				//get the clients of the business
 				acuityLogic.getClients().then(function (clients) {
@@ -420,7 +422,7 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						let emailList = [{
 							address: client.email,
 							from: 'Zoi.AI <noreply@fobi.io>',
-							subject: 'Test Subject',
+							subject: EmailConfig.promotionsEmail.subject,
 							alt: 'Test Alt'
 						}];
 
@@ -434,18 +436,32 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						emailHtml = emailHtml.replace('{{bannerSrc}}', template.image);
 
 						//parse the second part
-						emailHtml = emailHtml.replace('{{Business name}}', user.integrations.Acuity.userDetails.name);
-						emailHtml = emailHtml.replace('{{business_name}}', user.integrations.Acuity.userDetails.name);
 						emailHtml = emailHtml.replace('{{firstName}}', client.firstName);
-						emailHtml = emailHtml.replace('{{business name}}', user.integrations.Acuity.userDetails.name);
 						emailHtml = emailHtml.replace('{{service}}', appointmentType.name);
 						emailHtml = emailHtml.replace('{{discount type}}', template.title);
+						emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);
 						emailHtml = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailHtml);
 						emailHtml = MyUtils.replaceAll('{{color}}', template.color, emailHtml);
+						emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.promotionsEmail.buttonText);
+
+						//set href
+						let appointmentParams = {
+							firstName: client.firstName,
+							lastName: client.lastName,
+							email: client.email,
+							userId: user._id,
+							serviceId: appointmentType.id,
+							serviceName: appointmentType.name,
+							notes: template.zoiCoupon,
+							date: (new Date().valueOf()).toString(16),
+							promotionTitle: template.title,
+							promotionImage: template.image
+						};
+						let iWantUrl = MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams).replace("%", "%25");
+						emailHtml = emailHtml.replace('{{href}}', iWantUrl);
 
 						//send the email to the client
 						EmailLib.sendEmail(emailHtml, emailList);
-
 					});
 
 					//save promotion times
@@ -475,7 +491,11 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 				reply(facebookResponse.getTextMessage("Ok boss"));
 			}
 		} else {
-			reply(user.conversationData.lastQRResponse);
+			//send qr again
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+			], MyUtils.getErrorMsg());
 		}
 	}
 };

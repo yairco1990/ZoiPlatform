@@ -74,7 +74,11 @@ class AcuitySchedulingLogic {
 
 			self.acuity.request('appointments?admin=true&noEmail=true', options, function (err, res, body) {
 
-				if (err || body.error) {
+				if (err) {
+					reject(err || body.error);
+					return console.error(err);
+				}
+				if(body.error){
 					reject(err || body.error);
 					return console.error(err);
 				}
