@@ -129,7 +129,7 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 					messages.push(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime));
 				}
 
-				async.series([messages], function () {
+				async.series(messages, function () {
 					startSendPromotions();
 				});
 
