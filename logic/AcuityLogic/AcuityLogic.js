@@ -400,19 +400,19 @@ class AcuityLogic {
 							delay = delay || 0;
 							setTimeout(() => {
 								//send reply
-								bot.sendMessage(_user._id, rep, (err) => {
+								bot.sendMessage(user._id, rep, (err) => {
 									if (err) {
 										reject(err);
 										return;
 									}
 									if (isBotTyping) {
-										bot.sendSenderAction(_user._id, "typing_on", () => {
+										bot.sendSenderAction(user._id, "typing_on", () => {
 											resolve();
 										});
 									} else {
 										resolve();
 									}
-									Util.log(`Message returned ${_user._id}] -> ${rep.text}`);
+									Util.log(`Message returned ${user._id}] -> ${rep.text}`);
 								});
 							}, delay);
 						});
