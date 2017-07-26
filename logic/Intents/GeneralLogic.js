@@ -10,6 +10,7 @@ const GmailLogic = require('../GmailLogic');
 const AcuityLogic = require('../ApiHandlers/AcuitySchedulingLogic');
 const AppointmentLogic = require('./AppointmentLogic');
 const _ = require('underscore');
+const async = require('async');
 const ZoiConfig = require('../../config');
 
 const delayTime = ZoiConfig.delayTime || 3000;
@@ -48,7 +49,7 @@ GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping,
 /**
  * send morning brief
  */
-GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTyping, requestObj, callback) {
+GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTyping, requestObj, reply) {
 	let self = this;
 	let user = self.user;
 
@@ -71,12 +72,16 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 			}, clients);
 
 			if (clientsMessages.length > 0) {
-				//emails
-				callback(facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
-					facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
-				]), true);
+				async.series([
+					//emails
+					MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
+						facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
+					]), true),
+				], MyUtils.getErrorMsg());
 			} else {
-				callback(facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true);
+				async.series([
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true),
+				], MyUtils.getErrorMsg());
 			}
 
 			//get appointments for today
@@ -92,49 +97,44 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 					intent: "appointment send promotions",
 					context: "APPOINTMENT",
 					skipHey: true
-				}, setBotTyping, requestObj, callback);
+				}, setBotTyping, requestObj, reply);
 			};
 
-			//some delay after the previous messages
-			setTimeout(function () {
 
-				if (appointments.length) {
+			if (appointments.length) {
 
-					callback(facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
-						facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
-					]), true);
-
-					//sort appointments
-					appointments.sort(function (q1, q2) {
-						if (moment(q1.datetime).isAfter(moment(q2.datetime))) {
-							return 1;
-						} else {
-							return -1;
-						}
-					});
-
-					//get the next appointment
-					let nextAppointment;
-					appointments.forEach(function (appointment) {
-						if (moment(appointment.datetime).isAfter(moment())) {
-							nextAppointment = appointment;
-							return;
-						}
-					});
-
-					if (nextAppointment) {
-						setTimeout(function () {
-							callback(facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true);
-						}, delayTime);
+				//sort appointments
+				appointments.sort(function (q1, q2) {
+					if (moment(q1.datetime).isAfter(moment(q2.datetime))) {
+						return 1;
+					} else {
+						return -1;
 					}
-					setTimeout(function () {
-						startSendPromotions();
-					}, delayTime);
-				} else {
-					callback(facebookResponse.getTextMessage("You don't have appointments today"));
+				});
+
+				//get the next appointment
+				let nextAppointment;
+				appointments.forEach(function (appointment) {
+					if (!nextAppointment && moment(appointment.datetime).isAfter(moment())) {
+						nextAppointment = appointment;
+					}
+				});
+
+				async.series([
+					MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
+						facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
+					]), true, delayTime),
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime),
+				], function () {
 					startSendPromotions();
-				}
-			}, delayTime);
+				});
+
+			} else {
+				(MyUtils.onResolve(reply, facebookResponse.getTextMessage("You don't have appointments today"), true, delayTime))().then(function () {
+					startSendPromotions();
+				});
+			}
+
 		}).catch(function (err) {
 			Util.log("Error:");
 			Util.log(err);
@@ -151,7 +151,7 @@ const wishZoiQuestions = {
 /**
  * send morning brief
  */
-GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, requestObj, callback) {
+GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, requestObj, reply) {
 
 	let self = this;
 	let user = self.user;
@@ -167,9 +167,7 @@ GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, reque
 
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
-
-			callback(facebookResponse.getTextMessage("What will you wish Zoi will do in the future?"));
-
+			reply(facebookResponse.getTextMessage("What will you wish Zoi will do in the future?"), false, 1000);
 		});
 	} else if (user.conversationData.lastQuestion.id === wishZoiQuestions.writeReview.id) {
 
@@ -177,9 +175,7 @@ GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, reque
 
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
-
-			callback(facebookResponse.getTextMessage("Thank you for helping Zoi become greater assistant! :)"));
-
+			reply(facebookResponse.getTextMessage("Thank you for helping Zoi become greater assistant! :)"), false, 1000);
 			self.clearSession();
 		});
 	}
@@ -188,27 +184,27 @@ GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, reque
 /**
  * say hey
  * @param entities
- * @param callback
+ * @param reply
  */
-GeneralLogic.prototype.sayHey = function (entities, callback) {
+GeneralLogic.prototype.sayHey = function (entities, reply) {
 	let self = this;
 
 	let randomNumber = Math.random();
 	if (randomNumber < 0.5) {
-		callback(facebookResponse.getTextMessage("Hey boss! What can I do for you?"));
+		(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hey boss! What can I do for you?"), false, delayTime))();
 	} else {
-		callback(facebookResponse.getTextMessage("Hey Chief! What can I do for you?"));
+		(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hey Chief! What can I do for you?"), false, delayTime))();
 	}
 };
 
-GeneralLogic.prototype.clearSession = function (callback) {
+GeneralLogic.prototype.clearSession = function (reply) {
 	let self = this;
 	let user = self.user;
 
 	user.conversationData = null;
 	user.session = null;
 	self.DBManager.saveUser(user).then(function () {
-		callback && callback(facebookResponse.getTextMessage("I'll be right here if you need me ☺"));
+		(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false, delayTime))();
 	});
 };
 

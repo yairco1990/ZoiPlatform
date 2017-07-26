@@ -7,6 +7,7 @@ const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const ZoiConfig = require('../../config');
+const async = require('async');
 
 const delayTime = ZoiConfig.delayTime || 3000;
 
@@ -60,7 +61,7 @@ const welcomeQuestions = {
 /**
  * welcome dialog - first dialog
  */
-WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId, callback) {
+WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId, reply) {
 
 	let self = this;
 	let user = self.user;
@@ -81,28 +82,23 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 			});
 
 		}).then(function () {
-			callback(facebookResponse.getTextMessage("Hi there my new boss! 😁"), true);
 
-			setTimeout(function () {
-				callback(facebookResponse.getTextMessage("My Name is Zoi, Your own AI personal assistant."), true);
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hi there my new boss! 😁"), true),
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("My Name is Zoi, Your own AI personal assistant."), true, delayTime),
+				MyUtils.onResolve(reply, facebookResponse.getQRElement("May I ask you some questions before we start our journey?", [
+					facebookResponse.getQRButton("text", "Yes, lets start!", {id: 1}),
+					facebookResponse.getQRButton("text", "Not now", {id: 2}),
+				]), false, delayTime)
+			], MyUtils.getErrorMsg());
 
-				setTimeout(function () {
-					callback(facebookResponse.getQRElement("May I ask you some questions before we start our journey?", [
-						facebookResponse.getQRButton("text", "Yes, lets start!", {id: 1}),
-						facebookResponse.getQRButton("text", "Not now", {id: 2}),
-					]));
-				}, delayTime);
-
-			}, delayTime);
 		}).catch(function (err) {
 			Util.log(err);
-			callback(facebookResponse.getTextMessage("I am on a break right now, please send me message later..Thank's! :)(This is an error..yeah?)"));
+			(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I am on a break right now, please send me message later..Thank's! :)"), false))();
 		});
 	} else {
 
 		if (!user.conversationData.lastQuestion) {
-			//ask about the full name
-			callback(facebookResponse.getTextMessage("WEEEPI! Let's start! 😍"), true);
 
 			let currentQuestion = welcomeQuestions.nameQuestion;
 			user.conversationData = conversationData;
@@ -111,9 +107,10 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 			//save the name question to the user
 			self.DBManager.saveUser(user).then(function () {
 
-				setTimeout(function () {
-					callback(facebookResponse.getTextMessage(currentQuestion.text));
-				}, delayTime);
+				async.series([
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage("WEEEPI! Let's start! 😍"), true),
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage(currentQuestion.text), false, delayTime)
+				], MyUtils.getErrorMsg());
 
 			}).catch(function (err) {
 				Util.log(err);
@@ -124,54 +121,51 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 			//save the data to the user object
 			user[user.conversationData.lastQuestion.field] = conversationData.input;
 
-			callback(facebookResponse.getTextMessage("Hi " + conversationData.input + " :)"), true);
+			//ask for the user email
+			let currentQuestion = welcomeQuestions.emailQuestion;
+			user.conversationData.lastQuestion = currentQuestion;
 
-			setTimeout(function () {
+			//save user with the email message
+			self.DBManager.saveUser(user).then(function () {
+				async.series([
 
-				//ask for the user email
-				let currentQuestion = welcomeQuestions.emailQuestion;
-				user.conversationData.lastQuestion = currentQuestion;
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hi " + conversationData.input + " :)"), true),
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage(currentQuestion.text), false, delayTime)
 
-				//save user with the email message
-				self.DBManager.saveUser(user).then(function () {
-					callback(facebookResponse.getTextMessage(currentQuestion.text));
-				}).catch(function (err) {
-					callback(facebookResponse.getTextMessage("Zoi got an error - ask Yair what to do."));
-					Util.log(err);
-				});
+				], MyUtils.getErrorMsg());
+			}).catch(function (err) {
+				Util.log(err);
+			});
 
-			}, delayTime);
 
 		} else if (user.conversationData.lastQuestion.id == welcomeQuestions.emailQuestion.id) {
 
 			//check email is valid
 			if (!MyUtils.validateEmail(conversationData.input)) {
+				async.series([
 
-				//message about email is not valid
-				callback(facebookResponse.getTextMessage("Lol..This is not an email..:D"));
-				setTimeout(function () {
-					callback(facebookResponse.getTextMessage("Try again"));
-				}, delayTime);
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Lol..This is not an email..:D"), true),
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Try again"), false, delayTime),
+
+				], MyUtils.getErrorMsg());
 			} else {
 
 				//save the data to the user object
 				user[user.conversationData.lastQuestion.field] = conversationData.input;
 
-				callback(facebookResponse.getTextMessage("OK! That's all I need for now."), true);
+				//clear conversation data for this user
+				user.conversationData = null;
+				self.DBManager.saveUser(user).then(function () {
 
-				setTimeout(function () {
+					async.series([
 
-					//clear conversation data for this user
-					user.conversationData = null;
-					self.DBManager.saveUser(user).then(function () {
-
-						//send integration page
-						callback(facebookResponse.getButtonMessage("The best way to use my abilities is to let me integrate with other tools you use:", [
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("OK! That's all I need for now."), true),
+						MyUtils.onResolve(reply, facebookResponse.getButtonMessage("The best way to use my abilities is to let me integrate with other tools you use:", [
 							facebookResponse.getGenericButton("web_url", "Zoi Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
-						]));
-					});
+						]), false, delayTime),
 
-				}, delayTime);
+					], MyUtils.getErrorMsg());
+				});
 			}
 		}
 	}
@@ -181,39 +175,24 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
  * proceed with welcome conversation - usually, after the user integrated with Acuity
  * @param conversationData
  * @param senderId
- * @param callback
+ * @param reply
  */
-WelcomeLogic.prototype.proceedWelcomeConversation = function (conversationData, senderId, callback) {
+WelcomeLogic.prototype.proceedWelcomeConversation = function (conversationData, senderId, reply) {
 
 	let self = this;
 	let user = self.user;
 
-	setTimeout(function () {
+	async.series([
 
-		callback(facebookResponse.getTextMessage("Awesome! You made your first integration! 👏"));
+		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Awesome! You made your first integration! 👏"), true),
+		MyUtils.onResolve(reply, facebookResponse.getTextMessage("So far, you are the best human I ever worked with! ( https://sc.mogicons.com/c/192.jpg)"), true, delayTime),
+		MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You are probably wondering what I can do for you. Well, take a look:", [
+			facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", "full")
+		]), true, delayTime),
+		MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with the morning brief. You can always press the menu button to see  my preset actions and settings."), true, delayTime),
+		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Can't wait to start getting more action to your business!  https://sc.mogicons.com/c/180.jpg"), false, delayTime),
 
-		setTimeout(function () {
-			callback(facebookResponse.getTextMessage("So far, you are the best human I ever worked with! ( https://sc.mogicons.com/c/192.jpg)"));
-
-			setTimeout(function () {
-				//show abilities
-				callback(facebookResponse.getButtonMessage("You are probably wondering what I can do for you. Well, take a look:", [
-					facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", "full")
-				]));
-
-				setTimeout(function () {
-					//show abilities
-					callback(facebookResponse.getTextMessage("I'll ping you tomorrow with the morning brief. You can always press the menu button to see  my preset actions and settings."));
-					setTimeout(function () {
-
-						//show abilities
-						callback(facebookResponse.getTextMessage("Can't wait to start getting more action to your business!  https://sc.mogicons.com/c/180.jpg"));
-
-					}, delayTime);
-				}, delayTime);
-			}, delayTime);
-		}, delayTime);
-	}, delayTime);
+	], MyUtils.getErrorMsg());
 };
 
 module.exports = WelcomeLogic;

@@ -47,7 +47,14 @@ class GmailLogic {
 			//get user
 			DBManager.getUser({_id: userId}).then((user) => {
 
-				user.integrations.Gmail = tokens;
+				//if there is no integration with gmail before
+				if (!user.integrations.Gmail) {
+					user.integrations.Gmail = tokens;
+				} else {
+					user.integrations.Gmail.access_token = tokens.access_token;
+					user.integrations.Gmail.token_type = tokens.token_type;
+					user.integrations.Gmail.expiry_date = tokens.expiry_date;
+				}
 
 				//save the user with the integrations
 				DBManager.saveUser(user).then(() => {
@@ -91,37 +98,6 @@ class GmailLogic {
 		return new OAuth2("514803140347-utj3lmcijoj5flqo2i5c393m0gf8sq6r.apps.googleusercontent.com", "N7WGFdSUY02RqdhaEm-BbVia", ZoiConfig.serverUrl + "/gmail/oauthcallback");
 	}
 
-	static refreshToken(userId, force){
-		//You can refresh only if it needs to happen because the token is expired
-		//if force is set to true, refreshing will occur anyway
-		let perform
-
-        //get user
-        DBManager.getUser({_id: userId}).then((user) => {
-			let userHasIntegrations = user.integrations;
-			let userHasGmailIntegration = user.integrations.Gmail;
-
-			//Forcing or no integration with google or expired
-            if(force || !userHasIntegrations || !userHasGmailIntegration || user.integrations.Gmail.expiry_date < new Date().getTime()  ) {
-                let oauth2Client = GmailLogic.getAuthObject(userId);
-                oauth2Client.refreshAccessToken(function(err, tokens) {
-                    user.integrations.Gmail = tokens;
-
-                    //save the user with the integrations
-                    DBManager.saveUser(user).then(() => {
-                        callback(302, {'location': ZoiConfig.clientUrl + '/integrations?userId=' + userId});
-                    });
-                });
-            }
-        });
-	}
-
-	//Check if the token is valid
-    static refreshToken(tokens){
-
-    }
-
-
 	/**
 	 * get emails list
 	 * @param tokens
@@ -130,10 +106,6 @@ class GmailLogic {
 	 * @returns {Promise}
 	 */
 	static getEmailsList(tokens, queryString, userId) {
-		//Check if token is valid
-
-
-
 		//TODO handle with expiration token
 		return new Promise((resolve, reject) => {
 

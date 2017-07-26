@@ -12,6 +12,7 @@ const EmailLib = require('../../interfaces/EmailLib');
 const ZoiConfig = require('../../config');
 const deepcopy = require('deepcopy');
 const EmailConfig = require('../../interfaces/assets/EmailsConfig');
+const async = require('async');
 
 const delayTime = ZoiConfig.delayTime || 3000;
 
@@ -25,24 +26,20 @@ function AppointmentLogic(user) {
 /**
  * process the user input
  */
-AppointmentLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, callback) {
+AppointmentLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, reply) {
 	let self = this;
 
 	switch (conversationData.intent) {
 		case "appointment what is my schedule":
-			self.getAppointments(conversationData, callback);
+			self.getAppointments(conversationData, reply);
 			break;
 		case "appointment bring next free slot":
 			setBotTyping();
-			self.getNextFreeSlot(conversationData, callback);
-			break;
-		case "appointment book for customer":
-			setBotTyping();
-			self.bookForCustomer(conversationData, callback);
+			self.getNextFreeSlot(conversationData, reply);
 			break;
 		case "appointment send promotions":
 			setBotTyping();
-			self.sendPromotions(conversationData, callback);
+			self.sendPromotions(conversationData, reply);
 			break;
 	}
 };
@@ -50,23 +47,18 @@ AppointmentLogic.prototype.processIntent = function (conversationData, setBotTyp
 /**
  * get appointments
  */
-AppointmentLogic.prototype.getAppointments = function (conversationData, callback) {
+AppointmentLogic.prototype.getAppointments = function (conversationData, reply) {
 	let self = this;
 	let user = self.user;
 
-	callback(facebookResponse.getTextMessage("Let me see..."), true);
-
-	setTimeout(function () {
-
-		callback(facebookResponse.getButtonMessage("This is your schedule for today sir:", [
+	async.series([
+		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let me see..."), true),
+		MyUtils.onResolve(reply, facebookResponse.getButtonMessage("This is your schedule for today sir:", [
 			facebookResponse.getGenericButton("web_url", "Watch your schedule", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
-		]));
+		]), true, delayTime),
+		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
+	], MyUtils.getErrorMsg());
 
-		setTimeout(function () {
-			callback(facebookResponse.getTextMessage("Anything else?"));
-		}, delayTime);
-
-	}, delayTime);
 };
 
 const nextFreeSlotQuestions = {
@@ -79,7 +71,7 @@ const nextFreeSlotQuestions = {
 /**
  * get next free slot
  */
-AppointmentLogic.prototype.getNextFreeSlot = function (conversationData, callback) {
+AppointmentLogic.prototype.getNextFreeSlot = function (conversationData, reply) {
 	let self = this;
 	let user = self.user;
 
@@ -96,7 +88,7 @@ AppointmentLogic.prototype.getNextFreeSlot = function (conversationData, callbac
 		// user.session = {};
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
-			callback(facebookResponse.getTextMessage(question.text));
+			reply(facebookResponse.getTextMessage(question.text), true);
 		});
 	}
 	else if (user.conversationData.lastQuestion.id === nextFreeSlotQuestions.serviceQuestion.id) {
@@ -125,11 +117,10 @@ AppointmentLogic.prototype.getNextFreeSlot = function (conversationData, callbac
 				user.conversationData = null;
 
 				self.DBManager.saveUser(user).then(function () {
-					callback(facebookResponse.getTextMessage(responseText));
-
-					setTimeout(function () {
-						callback(facebookResponse.getTextMessage("Is there another thing you want to do sir?"))
-					}, delayTime);
+					async.series([
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage(responseText), true),
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Is there another thing you want to do sir?"), false, delayTime)
+					], MyUtils.getErrorMsg());
 				});
 			});
 		});
@@ -140,63 +131,63 @@ AppointmentLogic.prototype.getNextFreeSlot = function (conversationData, callbac
  * book for customer for free slot
  * the session must contains details about free slot!
  * @param conversationData
- * @param callback
+ * @param reply
  */
-AppointmentLogic.prototype.bookForCustomer = function (conversationData, callback) {
-	let self = this;
-	let user = self.user;
-
-	//validate request
-	if (!conversationData.entities.CUSTOMER && !conversationData.entities.person) {
-		callback(facebookResponse.getTextMessage("Need details about the customer"));
-		return;
-	}
-	if (!user.session || !user.session.nextFreeSlot) {
-		callback(facebookResponse.getTextMessage("Need details about the required slot"));
-		return;
-	}
-
-	self.mindbodyLogic.getClients(conversationData.entities).then(function (customers) {
-		if (!customers.length) {
-			callback(facebookResponse.getTextMessage("Didn't found customer with this name"));
-			return;
-		}
-
-		let customer = customers[0];
-		let slot = user.session.nextFreeSlot;
-
-		let appointmentObject = {
-			Appointments: {
-				Appointment: {
-					Location: {
-						ID: slot.Location.ID
-					},
-					Staff: {
-						ID: slot.Staff.ID
-					},
-					Client: {
-						ID: customer.ID
-					},
-					SessionType: {
-						ID: slot.SessionType.ID
-					},
-					StartDateTime: moment(slot.StartDateTime).format('YYYY-MM-DDTHH:mm:ss')
-				}
-			},
-			UpdateAction: "AddNew"
-		};
-		self.mindbodyLogic.bookAppointment(appointmentObject).then(function (result) {
-			console.log(result);
-			callback(facebookResponse.getTextMessage("Booked successfully for " + customer.FirstName + " " + customer.LastName));
-		}).catch(function (err) {
-			if (err.errorReason) {
-				callback(facebookResponse.getTextMessage(err.errorReason));
-			} else {
-				callback(facebookResponse.getTextMessage("Try to book for " + customer.FirstName));
-			}
-		});
-	});
-};
+// AppointmentLogic.prototype.bookForCustomer = function (conversationData, callback) {
+// 	let self = this;
+// 	let user = self.user;
+//
+// 	//validate request
+// 	if (!conversationData.entities.CUSTOMER && !conversationData.entities.person) {
+// 		callback(facebookResponse.getTextMessage("Need details about the customer"));
+// 		return;
+// 	}
+// 	if (!user.session || !user.session.nextFreeSlot) {
+// 		callback(facebookResponse.getTextMessage("Need details about the required slot"));
+// 		return;
+// 	}
+//
+// 	self.mindbodyLogic.getClients(conversationData.entities).then(function (customers) {
+// 		if (!customers.length) {
+// 			callback(facebookResponse.getTextMessage("Didn't found customer with this name"));
+// 			return;
+// 		}
+//
+// 		let customer = customers[0];
+// 		let slot = user.session.nextFreeSlot;
+//
+// 		let appointmentObject = {
+// 			Appointments: {
+// 				Appointment: {
+// 					Location: {
+// 						ID: slot.Location.ID
+// 					},
+// 					Staff: {
+// 						ID: slot.Staff.ID
+// 					},
+// 					Client: {
+// 						ID: customer.ID
+// 					},
+// 					SessionType: {
+// 						ID: slot.SessionType.ID
+// 					},
+// 					StartDateTime: moment(slot.StartDateTime).format('YYYY-MM-DDTHH:mm:ss')
+// 				}
+// 			},
+// 			UpdateAction: "AddNew"
+// 		};
+// 		self.mindbodyLogic.bookAppointment(appointmentObject).then(function (result) {
+// 			console.log(result);
+// 			callback(facebookResponse.getTextMessage("Booked successfully for " + customer.FirstName + " " + customer.LastName));
+// 		}).catch(function (err) {
+// 			if (err.errorReason) {
+// 				callback(facebookResponse.getTextMessage(err.errorReason));
+// 			} else {
+// 				callback(facebookResponse.getTextMessage("Try to book for " + customer.FirstName));
+// 			}
+// 		});
+// 	});
+// };
 
 
 const sendPromotionsQuestions = {
@@ -222,7 +213,7 @@ const sendPromotionsQuestions = {
 /**
  * send promotions
  */
-AppointmentLogic.prototype.sendPromotions = function (conversationData, callback) {
+AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 	let self = this;
 	let user = self.user;
 
@@ -260,24 +251,20 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 
 			//save the user
 			self.DBManager.saveUser(user).then(function () {
-				setTimeout(function () {
-					let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
-					if (!conversationData.skipHey) {
-						firstText = "Hey boss, I" + firstText;
-					} else {
-						firstText = "I also" + firstText;
-					}
-					callback(facebookResponse.getTextMessage(firstText), true);
 
-					setTimeout(function () {
-						callback(facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true);
+				let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
+				if (!conversationData.skipHey) {
+					firstText = "Hey boss, I" + firstText;
+				} else {
+					firstText = "I also" + firstText;
+				}
 
-						setTimeout(function () {
-							callback(lastQRResponse);
+				async.series([
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage(firstText), true),
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true, delayTime),
+					MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
+				], MyUtils.getErrorMsg());
 
-						}, delayTime);
-					}, delayTime);
-				}, delayTime);
 			});
 		});
 	}
@@ -286,8 +273,6 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 		if (conversationData.payload) {
 
 			if (conversationData.payload.id == 1) {
-
-				callback(facebookResponse.getTextMessage("Great! 😊"), true);
 
 				//ask which service
 				let question = sendPromotionsQuestions.serviceName;
@@ -298,9 +283,13 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 
 				//save the user
 				self.DBManager.saveUser(user).then(function () {
-					setTimeout(function () {
-						callback(facebookResponse.getTextMessage(question.text));
-					}, delayTime);
+
+					//send messages
+					async.series([
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage(question.text), false, delayTime),
+					], MyUtils.getErrorMsg());
+
 				});
 			} else {
 
@@ -309,11 +298,12 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 
 				//save the user
 				self.DBManager.saveUser(user).then(function () {
-					callback(facebookResponse.getTextMessage("I'll be right here if you need me ☺"));
+					reply(facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false);
 				});
 			}
 		} else {
-			callback(user.conversationData.lastQRResponse);
+			//send qr again
+			reply(user.conversationData.lastQRResponse, false);
 		}
 	}
 	else if (lastQuestionId === sendPromotionsQuestions.serviceName.id) {
@@ -336,10 +326,10 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 			//save the user
 			self.DBManager.saveUser(user).then(function () {
 
-				callback(facebookResponse.getTextMessage(currentQuestion.text), true);
-
-				setTimeout(function () {
-					callback(facebookResponse.getGenericTemplate([
+				//send messages
+				async.series([
+					MyUtils.onResolve(reply, facebookResponse.getTextMessage(currentQuestion.text), true),
+					MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
 						//coupon
 						facebookResponse.getGenericElement("10% off massage treatments",
 							"http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
@@ -376,8 +366,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 								color: "#d1dd25",
 								hoverColor: "#c3c62f"
 							})])
-					]));
-				}, delayTime);
+					]), false, delayTime),
+				], MyUtils.getErrorMsg());
 			});
 		});
 	} else if (lastQuestionId === sendPromotionsQuestions.whichTemplate.id) {
@@ -401,9 +391,15 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 		]);
 		//set current question
 		user.conversationData.lastQuestion = currentQuestion;
+
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
-			callback(user.conversationData.lastQRResponse);
+
+			//send messages
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+			], MyUtils.getErrorMsg());
 		});
 
 	} else if (lastQuestionId === sendPromotionsQuestions.areYouSure.id) {
@@ -417,76 +413,69 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, callback
 				//get the clients of the business
 				acuityLogic.getClients().then(function (clients) {
 
-					//get email file
-					EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailFileSource) {
+					//iterate clients
+					clients.forEach(function (client) {
 
-						//iterate clients
-						clients.forEach(function (client) {
+						//send single email every loop
+						let emailList = [{
+							address: client.email,
+							from: 'Zoi.AI <noreply@fobi.io>',
+							subject: 'Test Subject',
+							alt: 'Test Alt'
+						}];
 
-							//send single email every loop
-							let emailList = [{
-								address: client.email,
-								from: 'Zoi.AI <noreply@fobi.io>',
-								subject: 'Test Subject',
-								alt: 'Test Alt'
-							}];
+						let emailHtml = EmailLib.getEmailByName('promotionsMail');
 
-							let emailFile = deepcopy(emailFileSource);
+						//parse the first part
+						emailHtml = emailHtml.replace('{{line1}}', EmailConfig.promotionsEmail.line1);
+						emailHtml = emailHtml.replace('{{line2}}', EmailConfig.promotionsEmail.line2);
+						emailHtml = emailHtml.replace('{{line3}}', EmailConfig.promotionsEmail.line3);
+						emailHtml = emailHtml.replace('{{line4}}', EmailConfig.promotionsEmail.line4);
+						emailHtml = emailHtml.replace('{{bannerSrc}}', template.image);
 
-							//parse the first part
-							emailFile = emailFile.replace('{{line1}}', EmailConfig.promotionsEmail.line1);
-							emailFile = emailFile.replace('{{line2}}', EmailConfig.promotionsEmail.line2);
-							emailFile = emailFile.replace('{{line3}}', EmailConfig.promotionsEmail.line3);
-							emailFile = emailFile.replace('{{line4}}', EmailConfig.promotionsEmail.line4);
-							emailFile = emailFile.replace('{{bannerSrc}}', template.image);
+						//parse the second part
+						emailHtml = emailHtml.replace('{{Business name}}', user.integrations.Acuity.userDetails.name);
+						emailHtml = emailHtml.replace('{{business_name}}', user.integrations.Acuity.userDetails.name);
+						emailHtml = emailHtml.replace('{{firstName}}', client.firstName);
+						emailHtml = emailHtml.replace('{{business name}}', user.integrations.Acuity.userDetails.name);
+						emailHtml = emailHtml.replace('{{service}}', appointmentType.name);
+						emailHtml = emailHtml.replace('{{discount type}}', template.title);
+						emailHtml = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailHtml);
+						emailHtml = MyUtils.replaceAll('{{color}}', template.color, emailHtml);
 
-							//parse the second part
-							emailFile = emailFile.replace('{{Business name}}', user.integrations.Acuity.userDetails.name);
-							emailFile = emailFile.replace('{{business_name}}', user.integrations.Acuity.userDetails.name);
-							emailFile = emailFile.replace('{{firstName}}', client.firstName);
-							emailFile = emailFile.replace('{{business name}}', user.integrations.Acuity.userDetails.name);
-							emailFile = emailFile.replace('{{service}}', appointmentType.name);
-							emailFile = emailFile.replace('{{discount type}}', template.title);
-							emailFile = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailFile);
-							emailFile = MyUtils.replaceAll('{{color}}', template.color, emailFile);
-
-							//send the email to the client
-							EmailLib.sendEmail(emailFile, emailList);
-
-						});
-
-						//save promotion times
-						let actionTime = moment().format("YYYY/MM");
-						user.profile = user.profile || {};
-						if (user.profile[actionTime]) {
-							user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
-						} else {
-							user.profile[actionTime] = {
-								numOfPromotions: 1
-							}
-						}
-
-						//clear the session and the conversation data
-						self.clearSession();
-						callback(facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"));
-						setTimeout(function () {
-							callback(facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."));
-							setTimeout(function () {
-								callback(facebookResponse.getTextMessage("Your calendar is going to be full in no time"));
-							}, delayTime);
-						}, delayTime);
+						//send the email to the client
+						EmailLib.sendEmail(emailHtml, emailList);
 
 					});
-				}).catch(function (err) {
-					Util.log("Error:");
-					Util.log(err);
+
+					//save promotion times
+					let actionTime = moment().format("YYYY/MM");
+					user.profile = user.profile || {};
+					if (user.profile[actionTime]) {
+						user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
+					} else {
+						user.profile[actionTime] = {
+							numOfPromotions: 1
+						}
+					}
+
+					//clear the session and the conversation data
+					self.clearSession();
+
+					//send messages
+					async.series([
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"), true),
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
+					], MyUtils.getErrorMsg());
+
 				});
 			} else {
 				self.clearSession();
-				callback(facebookResponse.getTextMessage("Ok boss"));
+				reply(facebookResponse.getTextMessage("Ok boss"));
 			}
 		} else {
-			callback(user.conversationData.lastQRResponse);
+			reply(user.conversationData.lastQRResponse);
 		}
 	}
 };

@@ -29,9 +29,9 @@ const delayTime = ZoiConfig.delayTime || 3000;
  * @param bot - the bot object
  * @param payload - request object, contains sender details, message and other stuff
  * @param input - the user input
- * @param callback - what to send to the user
+ * @param reply - send message to the user function
  */
-ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot, callback) {
+ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot, reply) {
 
 	let self = this;
 
@@ -84,25 +84,25 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 			switch (conversationData.context) {
 				case "WELCOME":
 					let welcomeLogic = new WelcomeLogic(user);
-					welcomeLogic.processIntent(conversationData, setBotTyping, payload, callback);
+					welcomeLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "APPOINTMENT":
 					let appointmentLogic = new AppointmentLogic(user);
-					appointmentLogic.processIntent(conversationData, setBotTyping, payload, callback);
+					appointmentLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "CLIENT":
 					let clientLogic = new ClientLogic(user);
-					clientLogic.processIntent(conversationData, setBotTyping, payload, callback);
+					clientLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERAL":
 					let generalLogic = new GeneralLogic(user);
-					generalLogic.processIntent(conversationData, setBotTyping, payload, callback);
+					generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERIC":
-					callback(facebookResponse.getTextMessage(conversationData.intent));
+					(MyUtils.onResolve(reply, facebookResponse.getTextMessage(conversationData.intent), false))();
 					break;
 				default:
-					callback(facebookResponse.getTextMessage("What is the intent Yair?"));
+					(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I can't understand what you are saying..."), false))();
 					break;
 			}
 		}).catch(function (err) {
@@ -113,18 +113,17 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 				self.DBManager.saveUser(user).then(function () {
 					Util.log("user session deleted after error. userId -> " + user._id);
 
-					callback(facebookResponse.getTextMessage("I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu."));
+					(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu."), false))();
 				});
 
 			}).catch(function () {
-				callback(facebookResponse.getTextMessage("Zoi is confused..."));
+				(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Zoi is confused..."), false))();
 			});
 
 			Util.log(err);
 		});
 	}).catch(function (err) {
 		Util.log(err);
-		callback(facebookResponse.getTextMessage("Zoi brain error..."));
 	});
 };
 

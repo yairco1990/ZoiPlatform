@@ -13,6 +13,10 @@ const Services = require('./Services');
 const ApiRouting = require('./ApiRouting');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const EmailLib = require('../interfaces/EmailLib');
+
+//load emails and database
+EmailLib.loadEmails();
 require('../dal/DBManager');
 
 // Webhook port (facebook will access to https://myserver.com:3000)
@@ -73,10 +77,6 @@ app.use(function (req, res, next) {
 // 	saveUninitialized: true,
 // 	resave: false
 // }));
-
-//save zoi emails
-const ZoiEmails = {};
-
 
 //set the routing
 Services.setRouting(app, bot);

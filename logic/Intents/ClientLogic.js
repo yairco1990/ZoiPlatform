@@ -8,9 +8,12 @@ const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
 const EmailLib = require('../../interfaces/EmailLib');
+const EmailConfig = require('../../interfaces/assets/EmailsConfig');
 const AcuityLogic = require('../ApiHandlers/AcuitySchedulingLogic');
 const _ = require('underscore');
+const async = require('async');
 const ZoiConfig = require('../../config');
+const deepcopy = require('deepcopy');
 
 const delayTime = ZoiConfig.delayTime || 3000;
 
@@ -24,19 +27,16 @@ function ClientLogic(user) {
 /**
  * process the user input
  */
-ClientLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, callback) {
+ClientLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, reply) {
 
 	let self = this;
 
 	switch (conversationData.intent) {
-		case "client show customer card":
-			self.getCustomer(conversationData, callback);
-			break;
 		case "client new customer join":
-			self.newCustomerJoin(conversationData, callback);
+			self.newCustomerJoin(conversationData, reply);
 			break;
 		case "client old customers":
-			self.promoteOldCustomers(conversationData, callback);
+			self.promoteOldCustomers(conversationData, reply);
 			break;
 	}
 };
@@ -51,7 +51,7 @@ const newCustomerJoinQuestions = {
 		text: "Which template to use?"
 	}
 };
-ClientLogic.prototype.newCustomerJoin = function (conversationData, callback) {
+ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 
 	let self = this;
 	let user = self.user;
@@ -74,65 +74,81 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, callback) {
 		//save the user
 		self.DBManager.saveUser(user).then(function () {
 
-			callback(facebookResponse.getTextMessage("Hooray! 👏 " + user.session.newClient.firstName + " " + user.session.newClient.lastName + " scheduled an appointment for the first time"), true);
+			//send messages
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hooray! 👏 " + user.session.newClient.firstName + " " + user.session.newClient.lastName + " scheduled an appointment for the first time"), true),
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's send a welcome email"), true, delayTime),
+				MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
+					facebookResponse.getGenericElement("Welcome Email", "http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg", "", null)
+				]), true, delayTime),
+				MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
+			], MyUtils.getErrorMsg());
 
-			setTimeout(function () {
-				callback(facebookResponse.getTextMessage("Let's send a welcome email"), true);
-
-				setTimeout(function () {
-					callback(facebookResponse.getGenericTemplate([
-						facebookResponse.getGenericElement("Welcome Email", "http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg", "", null)
-					]), null, function () {
-						setTimeout(function () {
-							callback(lastQRResponse);
-						}, delayTime);
-					});
-				}, delayTime);
-			}, delayTime);
 		});
 	}
 	else if (user.conversationData.lastQuestion.id === newCustomerJoinQuestions.sendEmail.id) {
 
-		if (conversationData.payload) {
-			if (conversationData.payload.id == 1) {
+		//verify that this is payload
+		if (!conversationData.payload) {
+			reply(user.conversationData.lastQRResponse);
+			return;
+		}
 
-				if (user.session && user.session.newClient && user.session.newClient.email) {
-					EmailLib.getEmailFile(__dirname + "/../../interfaces/assets/promotionsMail.html").then(function (emailHtml) {
-						EmailLib.sendEmail(emailHtml, [{
-							address: user.session.newClient.email,
-							from: 'Zoi.AI <noreply@fobi.io>',
-							subject: 'Test Subject',
-							alt: 'Test Alt'
-						}]);
-					}).catch(MyUtils.getErrorMsg);
-				}
+		if (conversationData.payload.id == 1) {
 
-				callback(facebookResponse.getTextMessage("Done 😎"), true);
-				setTimeout(function () {
-					callback(facebookResponse.getTextMessage("Greeting a new customer makes a good first step for retention"), true);
-					setTimeout(function () {
-						callback(facebookResponse.getTextMessage("I'll be here if you will need anything else"));
-					}, delayTime);
-				}, delayTime);
+			if (user.session && user.session.newClient && user.session.newClient.email) {
 
-				//clear conversation data
-				user.conversationData = null;
-				user.session = null;
-				//save the user
-				self.DBManager.saveUser(user).then(function () {
-				}).catch(MyUtils.getErrorMsg);
+				let newCustomerEmail = user.session.newClient.email;
+				let firstName = user.session.newClient.firstName;
+				let emailTemplate = EmailConfig.newCustomerEmail;
 
-			} else {
-				user.conversationData = null;
-				user.session = null;
+				let emailHtml = EmailLib.getEmailByName('promotionsMail');
 
-				//save the user
-				self.DBManager.saveUser(user).then(function () {
-					callback(facebookResponse.getTextMessage("Ok boss.."));
-				});
+				//parse the first part
+				emailHtml = emailHtml.replace('{{line1}}', emailTemplate.line1);
+				emailHtml = emailHtml.replace('{{line2}}', emailTemplate.line2);
+				emailHtml = emailHtml.replace('{{line3}}', emailTemplate.line3);
+				emailHtml = emailHtml.replace('{{line4}}', emailTemplate.line4);
+				emailHtml = emailHtml.replace('{{bannerSrc}}', emailTemplate.bannerImage);
+
+				//parse the second part
+				emailHtml = emailHtml.replace('{{Business name}}', user.integrations.Acuity.userDetails.name);
+				emailHtml = emailHtml.replace('{{business_name}}', user.integrations.Acuity.userDetails.name);
+				emailHtml = emailHtml.replace('{{business name}}', user.integrations.Acuity.userDetails.name);
+				emailHtml = emailHtml.replace('{{firstName}}', firstName);
+				emailHtml = MyUtils.replaceAll('{{hoverColor}}', emailTemplate.hoverColor, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{color}}', emailTemplate.color, emailHtml);
+
+				EmailLib.sendEmail(emailHtml, [{
+					address: newCustomerEmail,
+					from: 'Zoi.AI <noreply@fobi.io>',
+					subject: 'Test Subject',
+					alt: 'Test Alt'
+				}]);
 			}
+
+			//send messages
+			async.series([
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Done 😎"), true),
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Greeting a new customer makes a good first step for retention"), true, delayTime),
+				MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll be here if you will need anything else"), false, delayTime),
+			], MyUtils.getErrorMsg());
+
+			//clear conversation data
+			user.conversationData = null;
+			user.session = null;
+			//save the user
+			self.DBManager.saveUser(user).then(function () {
+			}).catch(MyUtils.getErrorMsg());
+
 		} else {
-			callback(user.conversationData.lastQRResponse);
+			user.conversationData = null;
+			user.session = null;
+
+			//save the user
+			self.DBManager.saveUser(user).then(function () {
+				reply(facebookResponse.getTextMessage("Ok boss!"));
+			});
 		}
 	}
 };
@@ -144,7 +160,7 @@ const promoteOldCustomersQuestions = {
 		text: "I suggest we send a promotion to non-regular customers"
 	}
 };
-ClientLogic.prototype.promoteOldCustomers = function (conversationData, callback) {
+ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 
 	let self = this;
 	let user = self.user;
@@ -162,7 +178,7 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, callback
 		user.conversationData.lastQuestion = currentQuestion;
 
 		//TODO config it
-		let dayRange = 5;
+		let dayRange = 7;
 
 		//search old customers
 		acuityLogic.getAppointments({
@@ -232,22 +248,18 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, callback
 			self.DBManager.saveUser(user).then(function () {
 
 				if (oldCustomers.length) {
-					callback(facebookResponse.getTextMessage("Hey boss, I noticed that there are " + oldCustomers.length + " non-regular customers. These are customers that didn't visit for a while."), true);
-					setTimeout(function () {
-						callback(facebookResponse.getTextMessage("Let's send a welcome email"), true);
+					//send messages
+					async.series([
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hey boss, I noticed that there are " + oldCustomers.length + " non-regular customers. These are customers that didn't visit for a while."), true),
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's send a welcome email"), true, delayTime),
+						MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
+							facebookResponse.getGenericElement("Welcome Email", "http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg", "", null)
+						]), true),
+						MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
+					], MyUtils.getErrorMsg());
 
-						setTimeout(function () {
-							callback(facebookResponse.getGenericTemplate([
-								facebookResponse.getGenericElement("Welcome Email", "http://www.designsbykayla.net/wp-content/uploads/2016/03/Welcome_large.jpg", "", null)
-							]), true, function () {
-								setTimeout(function () {
-									callback(lastQRResponse);
-								}, delayTime);
-							});
-						}, delayTime);
-					}, delayTime);
 				} else {
-					callback(facebookResponse.getTextMessage("There are no old customers to show today."));
+					reply(facebookResponse.getTextMessage("There are no old customers to show today."), false, delayTime);
 					self.clearSession();
 				}
 
@@ -267,25 +279,22 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, callback
 				//save the user
 				self.DBManager.saveUser(user).then(function () {
 
-					callback(facebookResponse.getTextMessage("Good!"), true);
-
-					setTimeout(function () {
-
-						callback(facebookResponse.getButtonMessage("Let's pick some non-regulars and try to make them come back", [
+					//send messages
+					async.series([
+						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Good!"), true),
+						MyUtils.onResolve(reply, facebookResponse.getButtonMessage("Let's pick some non-regulars and try to make them come back", [
 							facebookResponse.getGenericButton("web_url", "Non-regulars", null, ZoiConfig.clientUrl + "/old-customers?userId=" + user._id, "full")
-						]));
+						]), false, delayTime),
+					], MyUtils.getErrorMsg());
 
-						//TODO after he sent the emails, send him message about - "WOOHOO! We will turn these non-regulars to big fans in no time!"
-						self.clearSession();
-
-					}, delayTime);
+					self.clearSession();
 				});
 			} else if (conversationData.payload.id == 2) {
-				callback(facebookResponse.getTextMessage("I will be here if you need me :)"));
+				reply(facebookResponse.getTextMessage("I will be here if you need me :)"));
 				self.clearSession();
 			}
 		} else {
-			callback(user.conversationData.lastQRResponse);
+			reply(user.conversationData.lastQRResponse);
 		}
 	}
 };
@@ -293,25 +302,25 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, callback
 /**
  * get customer
  */
-ClientLogic.prototype.getCustomer = function (entities, callback) {
-
-	let self = this;
-
-	self.mindbodyLogic.getClients(entities).then(function (clients) {
-
-		//choose the first one we found
-		let customer = clients[0];
-
-		callback(facebookResponse.getGenericTemplate([
-			facebookResponse.getGenericElement(customer.FirstName + " " + customer.LastName, customer.PhotoURL, "Status: " + customer.Status)
-		]));
-
-	}).catch(function (err) {
-
-		Util.log(err);
-		callback(facebookResponse.getTextMessage("Error on getting clients"));
-	});
-};
+// ClientLogic.prototype.getCustomer = function (entities, reply) {
+//
+// 	let self = this;
+//
+// 	self.mindbodyLogic.getClients(entities).then(function (clients) {
+//
+// 		//choose the first one we found
+// 		let customer = clients[0];
+//
+// 		reply(facebookResponse.getGenericTemplate([
+// 			facebookResponse.getGenericElement(customer.FirstName + " " + customer.LastName, customer.PhotoURL, "Status: " + customer.Status)
+// 		]));
+//
+// 	}).catch(function (err) {
+//
+// 		Util.log(err);
+// 		reply(facebookResponse.getTextMessage("Error on getting clients"));
+// 	});
+// };
 
 /**
  * clear user session

@@ -271,15 +271,27 @@ let Utils = {
 
 	getErrorMsg: function (onFinally) {
 		return function (err) {
-			Util.log("Error:");
-			Util.log(err);
-			onFinally && onFinally(err);
+			if (err) {
+				Util.log("Error:");
+				Util.log(err);
+				onFinally && onFinally(err);
+			}
 		}
 	},
 
 	replaceAll: function (find, replace, str) {
 		find = find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 		return str.replace(new RegExp(find, 'g'), replace);
+	},
+
+	onResolve: function (reply, message, isBotTyping, delay) {
+		return function (cb) {
+			reply(message, isBotTyping, delay).then(() => {
+				cb && cb();
+			}).catch((err) => {
+				console.error(err);
+			})
+		};
 	}
 };
 

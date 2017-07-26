@@ -12,6 +12,7 @@
     "@google-cloud/speech": "0.9.3",
     "@google-cloud/storage": "1.1.1",
     "acuityscheduling": "^0.1.7",
+    "async": "^2.5.0",
     "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
     "deepcopy": "^0.6.3",

@@ -2,8 +2,23 @@ const fs = require('fs');
 const ses = require('node-ses');
 const ZoiConfig = require('../config');
 const Util = require('util');
+const deepcopy = require('deepcopy');
+
+//save zoi emails
+const ZoiEmails = {};
 
 class EmailLib {
+
+	static loadEmails() {
+		EmailLib.getEmailFile(__dirname + "/assets/promotionsMail.html").then(function (emailHtml) {
+			ZoiEmails.promotionsMail = emailHtml;
+		});
+	}
+
+	static getEmailByName(name) {
+		return deepcopy(ZoiEmails[name]);
+	}
+
 	/**
 	 * get email html file
 	 * @param path - to the email file

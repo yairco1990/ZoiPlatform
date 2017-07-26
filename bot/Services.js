@@ -105,15 +105,26 @@ module.exports = {
 				let setTypingFunction = function () {
 					bot.sendSenderAction(payload.sender.id, "typing_on");
 				};
-				let replyFunction = function (rep, isBotTyping, syncFunction) {
-					// send reply
-					reply(rep, (err) => {
-						if (err) throw err;
-						Util.log(`Message returned to ${display_name} [id: ${sender_id}]`);
-						if (isBotTyping) {
-							bot.sendSenderAction(payload.sender.id, "typing_on");
-						}
-						syncFunction && syncFunction();
+				let replyFunction = function (rep, isBotTyping, delay) {
+					return new Promise(function (resolve, reject) {
+						delay = delay || 0;
+						setTimeout(() => {
+							//send reply
+							reply(rep, (err) => {
+								if (err) {
+									reject();
+									return;
+								}
+								if (isBotTyping) {
+									bot.sendSenderAction(payload.sender.id, "typing_on", () => {
+										resolve();
+									});
+								} else {
+									resolve();
+								}
+								Util.log(`Message returned to ${display_name} [id: ${sender_id}] -> ${rep.text}`);
+							});
+						}, delay);
 					});
 				};
 				let textMessage = payload.message.text;
@@ -170,14 +181,26 @@ module.exports = {
 				let setTypingFunction = function () {
 					bot.sendSenderAction(payload.sender.id, "typing_on");
 				};
-				let replyFunction = function (rep, isBotTyping) {
-					// send reply
-					reply(rep, (err) => {
-						if (err) throw err;
-						Util.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
-						if (isBotTyping) {
-							bot.sendSenderAction(payload.sender.id, "typing_on");
-						}
+				let replyFunction = function (rep, isBotTyping, delay) {
+					return new Promise(function (resolve, reject) {
+						delay = delay || 0;
+						setTimeout(() => {
+							//send reply
+							reply(rep, (err) => {
+								if (err) {
+									reject(err);
+									return;
+								}
+								if (isBotTyping) {
+									bot.sendSenderAction(payload.sender.id, "typing_on", () => {
+										resolve();
+									});
+								} else {
+									resolve();
+								}
+								Util.log(`Message returned to ${display_name} [id: ${sender_id}]`);
+							});
+						}, delay);
 					});
 				};
 				let postbackPayload = payload.postback.payload;

@@ -13,7 +13,9 @@ const requestify = require('requestify');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const ClientLogic = require('../Intents/ClientLogic');
 const EmailLib = require('../../interfaces/EmailLib');
+const EmailConfig = require('../../interfaces/assets/EmailsConfig');
 const WelcomeLogic = require('../Intents/WelcomeLogic');
+const deepcopy = require('deepcopy');
 
 class AcuityLogic {
 
@@ -134,20 +136,37 @@ class AcuityLogic {
 
 		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 
-			let emailList = [];
+			let emailTemplate = EmailConfig.oldCustomersEmail;
 
 			customers.forEach(function (customer) {
-				emailList.push({
+
+				let emailHtml = EmailLib.getEmailByName('promotionsMail');
+
+				//parse the first part
+				emailHtml = emailHtml.replace('{{line1}}', emailTemplate.line1);
+				emailHtml = emailHtml.replace('{{line2}}', emailTemplate.line2);
+				emailHtml = emailHtml.replace('{{line3}}', emailTemplate.line3);
+				emailHtml = emailHtml.replace('{{line4}}', emailTemplate.line4);
+				emailHtml = emailHtml.replace('{{bannerSrc}}', emailTemplate.bannerImage);
+
+				//parse the second part
+				emailHtml = emailHtml.replace('{{Business name}}', user.integrations.Acuity.userDetails.name);
+				emailHtml = emailHtml.replace('{{business_name}}', user.integrations.Acuity.userDetails.name);
+				emailHtml = emailHtml.replace('{{business name}}', user.integrations.Acuity.userDetails.name);
+				emailHtml = emailHtml.replace('{{firstName}}', customer.firstName);
+				emailHtml = MyUtils.replaceAll('{{hoverColor}}', emailTemplate.hoverColor, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{color}}', emailTemplate.color, emailHtml);
+
+				EmailLib.sendEmail(emailHtml, [{
 					address: customer.email,
 					from: 'Zoi.AI <noreply@fobi.io>',
 					subject: customer.firstName + ' ' + customer.lastName,
 					alt: 'Old Customers Promotions'
-				})
+				}]);
 			});
 
-			EmailLib.sendEmail(null, emailList);
-
 			callback(200, "SUCCESS");
+			Util.log("Old customers promotions sent successfully");
 
 			//remove the metadata
 			user.metadata.oldCustomers = null;
@@ -189,6 +208,7 @@ class AcuityLogic {
 		}).then(function () {
 
 			callback(200, {});
+			Util.log("Appointment scheduled successfully");
 
 			//save appointment times
 			let actionTime = moment().format("YYYY/MM");
@@ -215,31 +235,31 @@ class AcuityLogic {
 
 		let self = this;
 
+		let tokens, clients;
 		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
-			let tokens = user.integrations.Gmail;
+			tokens = user.integrations.Gmail;
 
-			acuityApi.getClients().then(function (clients) {
+			return acuityApi.getClients();
 
-				let queryString = "newer_than:7d is:unread";
+		}).then(function (_clients) {
+			clients = _clients;
+			let queryString = "newer_than:7d is:unread";
 
-				//get unread emails from the user clients
-				GmailLogic.getEmailsList(tokens, queryString, 'me').then(function (messages) {
+			//get unread emails from the user clients
+			return GmailLogic.getEmailsList(tokens, queryString, 'me');
 
-					let clientsMessages = _.filter(messages, function (item1) {
-						return _.some(this, function (item2) {
-							return item1.from.includes(item2.email) && item2.email;
-						});
-					}, clients);
+		}).then(function (messages) {
 
-					callback(200, clientsMessages);
-				}).catch(function (err) {
-					callback(401, err);
+			let clientsMessages = _.filter(messages, function (item1) {
+				return _.some(this, function (item2) {
+					return item1.from.includes(item2.email) && item2.email;
 				});
-			}).catch(function (err) {
-				callback(401, err);
-			});
+			}, clients);
+
+			callback(200, clientsMessages);
+
 		}).catch(function (err) {
 			callback(401, err);
 		});
@@ -292,14 +312,29 @@ class AcuityLogic {
 							intent: "client new customer join",
 							context: "CLIENT"
 						};
-						clientLogic.processIntent(conversationData, null, null, function (msg, setTyping, syncFunction) {
-							bot.sendMessage(_user._id, msg, function () {
-								if (setTyping) {
-									bot.sendSenderAction(_user._id, "typing_on");
-								}
+						let replyFunction = function (rep, isBotTyping, delay) {
+							return new Promise(function (resolve, reject) {
+								delay = delay || 0;
+								setTimeout(() => {
+									//send reply
+									bot.sendMessage(_user._id, rep, (err) => {
+										if (err) {
+											reject(err);
+											return;
+										}
+										if (isBotTyping) {
+											bot.sendSenderAction(_user._id, "typing_on", () => {
+												resolve();
+											});
+										} else {
+											resolve();
+										}
+										Util.log(`Message returned ${_user._id}] -> ${rep.text}`);
+									});
+								}, delay);
 							});
-							syncFunction && syncFunction();
-						});
+						};
+						clientLogic.processIntent(conversationData, null, null, replyFunction);
 					});
 				}
 
@@ -359,14 +394,29 @@ class AcuityLogic {
 						intent: "welcome acuity integrated",
 						context: "WELCOME_CONVERSATION"
 					};
-					welcomeLogic.processIntent(conversationData, null, null, function (msg, setBotTyping, syncFunction) {
-						bot.sendMessage(user._id, msg, function () {
-							if (setBotTyping) {
-								bot.sendSenderAction(user._id, "typing_on");
-							}
-							syncFunction && syncFunction();
+					let replyFunction = function (rep, isBotTyping, delay) {
+						return new Promise(function (resolve, reject) {
+							delay = delay || 0;
+							setTimeout(() => {
+								//send reply
+								bot.sendMessage(_user._id, rep, (err) => {
+									if (err) {
+										reject(err);
+										return;
+									}
+									if (isBotTyping) {
+										bot.sendSenderAction(_user._id, "typing_on", () => {
+											resolve();
+										});
+									} else {
+										resolve();
+									}
+									Util.log(`Message returned ${_user._id}] -> ${rep.text}`);
+								});
+							}, delay);
 						});
-					});
+					};
+					welcomeLogic.processIntent(conversationData, null, null, replyFunction);
 				}
 
 				Util.log("Response");
