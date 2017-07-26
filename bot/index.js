@@ -36,7 +36,8 @@ if (process.argv[2] == "local") {
 }
 
 server.listen(PORT);
-Util.log('Bot server running at port ' + PORT + '.');
+server.listen(443);
+Util.log('Bot server running at port ' + PORT + ' and on port 443.');
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // initialize bot

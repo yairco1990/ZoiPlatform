@@ -374,12 +374,13 @@ class AcuityLogic {
 
 				let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
+				let targetUrl = ZoiConfig.serverUrl + "/acuity/webhook/" + userId + "/scheduled";
 				//register for Acuity webhooks
 				let options = {
 					method: 'POST',
 					body: {
 						event: "appointment.scheduled",
-						target: ZoiConfig.serverUrl + "/acuity/webhook/" + userId + "/scheduled"
+						target: targetUrl.replace(":3000", "") //we want to listen on 443 due to Acuity rules
 					}
 				};
 				return acuityApi.setWebhooks(options);
