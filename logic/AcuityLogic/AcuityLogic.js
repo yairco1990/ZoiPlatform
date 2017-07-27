@@ -417,7 +417,7 @@ class AcuityLogic {
 					let welcomeLogic = new WelcomeLogic(user);
 					let conversationData = {
 						intent: "welcome acuity integrated",
-						context: "WELCOME_CONVERSATION"
+						context: "WELCOME"
 					};
 					let replyFunction = self.getReplyFunction(bot, user);
 					welcomeLogic.processIntent(conversationData, null, null, replyFunction);
