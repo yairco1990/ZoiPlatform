@@ -442,7 +442,7 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);
 						emailHtml = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailHtml);
 						emailHtml = MyUtils.replaceAll('{{color}}', template.color, emailHtml);
-						emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.promotionsEmail.buttonText);
+						emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.promotionsEmail.buttonText, emailHtml);
 
 						//set href
 						let appointmentParams = {
