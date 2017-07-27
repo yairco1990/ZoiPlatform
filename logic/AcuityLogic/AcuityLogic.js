@@ -25,7 +25,7 @@ class AcuityLogic {
 	}
 
 	getReplyFunction(bot, user) {
-		return function (rep, isBotTyping, delay, user) {
+		return function (rep, isBotTyping, delay) {
 			return new Promise(function (resolve, reject) {
 				delay = delay || 0;
 				setTimeout(() => {
