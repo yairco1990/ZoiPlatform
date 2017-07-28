@@ -5,6 +5,8 @@ const Util = require('util');
 const fs = require('fs');
 const webshot = require('webshot');
 const moment = require('moment');
+const SmallTalk = require('./assets/SmallTalk');
+const _ = require('underscore');
 
 let Utils = {
 
@@ -292,6 +294,20 @@ let Utils = {
 				console.error(err);
 			})
 		};
+	},
+
+	getResponseByIntent: function (intent) {
+		try {
+			let intentObj = _.findWhere(SmallTalk, {intent: intent});
+			if (intentObj) {
+				let responses = intentObj.responses;
+				return responses[Math.floor(Math.random() * responses.length)];
+			}
+			return null;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
 	}
 };
 

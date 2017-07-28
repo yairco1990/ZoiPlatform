@@ -22,6 +22,7 @@ function ListenLogic() {
 }
 
 const delayTime = ZoiConfig.delayTime || 3000;
+const fallbackText = "I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu.";
 
 /**
  * process intent with NLP and return response
@@ -101,10 +102,17 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 					generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERIC":
-					(MyUtils.onResolve(reply, facebookResponse.getTextMessage(conversationData.intent), false))();
+					//get response from small talk object
+					let responseText = MyUtils.getResponseByIntent(conversationData.intent);
+					//if found response for this intent - send it.
+					if (responseText) {
+						reply(facebookResponse.getTextMessage(responseText));
+					} else {//if it didn't find response - send default response.
+						reply(facebookResponse.getTextMessage(fallbackText));
+					}
 					break;
 				default:
-					(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I can't understand what you are saying..."), false))();
+					reply(facebookResponse.getTextMessage(fallbackText));
 					break;
 			}
 		}).catch(function (err) {
@@ -115,11 +123,11 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 				self.DBManager.saveUser(user).then(function () {
 					Util.log("user session deleted after error. userId -> " + user._id);
 
-					(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu."), false))();
+					(MyUtils.onResolve(reply, facebookResponse.getTextMessage(fallbackText), false))();
 				});
 
 			}).catch(function () {
-				(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Zoi is confused..."), false))();
+				(MyUtils.onResolve(reply, facebookResponse.getTextMessage(fallbackText), false))();
 			});
 
 			Util.log(err);

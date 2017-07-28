@@ -149,8 +149,8 @@ class GmailLogic {
 				});
 			};
 
-			//check token expiration date
-			if (tokens.expiry_date > new Date().valueOf()) {
+			//check token expiration date()
+			if (tokens.expiry_date - (60 * 1000) > new Date().valueOf()) {
 				getEmails();
 			} else {
 				//renew the access token
