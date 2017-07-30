@@ -3,20 +3,20 @@ let CLIENT_LOCAL = "http://local.host:443/p/#";
 let CLIENT_NGROK = "https://c871b6cd.ngrok.io/p/#";
 
 let Environments = {
-	Local: {
+	LOCAL: {
 		serverUrl: "http://localhost:3000",
 		clientUrl: CLIENT_LOCAL
 	},
-	Dev: {
+	DEV: {
 		serverUrl: "https://zoiai.com:3000",
 		clientUrl: CLIENT_DEV
 	},
-	Ngrok: {
+	NGROK: {
 		serverUrl: "https://c871b6cd.ngrok.io",
 		clientUrl: CLIENT_NGROK
 	}
 };
-let selectedEnvironment = Environments.Ngrok;
+let selectedEnvironment = Environments.DEV;
 
 ///////////////////////////////////////////////////////////////////////////////
 module.exports = {

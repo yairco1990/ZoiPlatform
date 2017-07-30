@@ -59,7 +59,8 @@ class EmailLib {
 						from: email.from,// 'Zoi.AI <noreply@fobi.io>',
 						subject: email.subject, //'Your brand new bot',
 						message: emailHtml,
-						altText: email.alt
+						altText: email.alt,
+						replyTo: email.replyTo
 					}, function (err) {
 						if (err) {
 							Util.log("Error:");

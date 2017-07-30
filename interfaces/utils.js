@@ -244,13 +244,21 @@ let Utils = {
 		return newUrl;
 	},
 
-	isExist: function (newArr, key, value) {
+	isExist: function (arr, key, value) {
 		let isExist = false;
-		newArr.forEach(function (item) {
-			if (item[key] == value) {
-				isExist = true;
-			}
-		});
+		if (key) {
+			arr.forEach(function (item) {
+				if (item[key] == value) {
+					isExist = true;
+				}
+			});
+		} else {
+			arr.forEach(function (item) {
+				if (item == value) {
+					isExist = true;
+				}
+			});
+		}
 		return isExist;
 	},
 

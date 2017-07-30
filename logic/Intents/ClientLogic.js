@@ -132,7 +132,8 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 					address: newCustomerEmail,
 					from: 'Zoi.AI <noreply@fobi.io>',
 					subject: newCustomerSubject,
-					alt: 'New Customer Joined'
+					alt: 'New Customer Joined',
+					replyTo: user.integrations.Acuity.userDetails.email
 				}]);
 			}
 

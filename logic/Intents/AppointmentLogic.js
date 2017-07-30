@@ -13,6 +13,7 @@ const ZoiConfig = require('../../config');
 const deepcopy = require('deepcopy');
 const EmailConfig = require('../../interfaces/assets/EmailsConfig');
 const async = require('async');
+const _ = require('underscore');
 
 const delayTime = ZoiConfig.delayTime || 3000;
 
@@ -411,9 +412,29 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 
 				let appointmentType = deepcopy(user.session['service']);
 				let template = deepcopy(user.session['template']);
+				let clients;
 
 				//get the clients of the business
-				acuityLogic.getClients().then(function (clients) {
+				acuityLogic.getClients().then(function (_clients) {
+					clients = _clients;
+
+					//get black list
+					return self.DBManager.getBlackList({
+						'_id': {
+							$in: _.map(clients, function (obj) {
+								return obj.email;
+							})
+						}
+					});
+				}).then(function (blackList) {
+
+					//remove black list emails
+					blackList = _.map(blackList, function (obj) {
+						return obj._id;
+					});
+					clients = clients.filter(function (client) {
+						return blackList.indexOf(client.email) === -1;
+					});
 
 					//iterate clients
 					clients.forEach(function (client) {
@@ -423,7 +444,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 							address: client.email,
 							from: 'Zoi.AI <noreply@fobi.io>',
 							subject: EmailConfig.promotionsEmail.subject,
-							alt: 'Test Alt'
+							alt: 'Test Alt',
+							replyTo: user.integrations.Acuity.userDetails.email
 						}];
 
 						let emailHtml = EmailLib.getEmailByName('promotionsMail');
@@ -453,11 +475,12 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 							userId: user._id,
 							serviceId: appointmentType.id,
 							serviceName: appointmentType.name,
-							notes: template.zoiCoupon,
+							price: appointmentType.price,
+							timezone: user.integrations.Acuity.userDetails.timezone,
 							date: (new Date().valueOf()).toString(16),
+							notes: template.zoiCoupon,
 							promotionTitle: template.title,
-							promotionImage: template.image,
-							price: appointmentType.price
+							promotionImage: template.image
 						};
 						let iWantUrl = MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams).replace("%", "%25");
 						emailHtml = emailHtml.replace('{{href}}', iWantUrl);
@@ -486,7 +509,6 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
 						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
 					], MyUtils.getErrorMsg());
-
 				});
 			} else {
 				self.clearSession();

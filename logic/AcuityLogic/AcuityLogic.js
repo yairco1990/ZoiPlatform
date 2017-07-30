@@ -198,7 +198,8 @@ class AcuityLogic {
 					address: customer.email,
 					from: user.integrations.Acuity.userDetails.name + ' <noreply@zoi.ai>',
 					subject: EmailConfig.oldCustomersEmail.subject,
-					alt: 'Old Customers Promotions'
+					alt: 'Old Customers Promotions',
+					replyTo: user.integrations.Acuity.userDetails.email
 				}]);
 			});
 
@@ -435,7 +436,7 @@ class AcuityLogic {
 		let self = this;
 
 		self.DBManager.addEmailToUnsubscribe({_id: data.email}).then(function () {
-			callback(302, {'location': ZoiConfig.clientUrl + '/unsubscribe?email=' + data.email});
+			callback(200, "Successfully unsubscribed\n" + data.email);
 		});
 	}
 }
