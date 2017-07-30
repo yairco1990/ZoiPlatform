@@ -130,7 +130,7 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 
 				EmailLib.sendEmail(emailHtml, [{
 					address: newCustomerEmail,
-					from: 'Zoi.AI <noreply@fobi.io>',
+					from: user.integrations.Acuity.userDetails.name + ' <noreply@zoi.ai>',
 					subject: newCustomerSubject,
 					alt: 'New Customer Joined',
 					replyTo: user.integrations.Acuity.userDetails.email

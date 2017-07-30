@@ -442,9 +442,9 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						//send single email every loop
 						let emailList = [{
 							address: client.email,
-							from: 'Zoi.AI <noreply@fobi.io>',
+							from: user.integrations.Acuity.userDetails.name + ' <noreply@zoi.ai>',
 							subject: EmailConfig.promotionsEmail.subject,
-							alt: 'Test Alt',
+							alt: 'Appointments Promotions',
 							replyTo: user.integrations.Acuity.userDetails.email
 						}];
 
