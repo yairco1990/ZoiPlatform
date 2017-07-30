@@ -122,6 +122,7 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 				emailHtml = MyUtils.replaceAll('{{color}}', emailTemplate.color, emailHtml);
 				emailHtml = MyUtils.replaceAll('{{href}}', user.integrations.Acuity.userDetails.schedulingPage, emailHtml);
 				emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.newCustomerEmail.buttonText, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/unsubscribe?email=" + newCustomerEmail, emailHtml);
 
 				//parse subject
 				let newCustomerSubject = EmailConfig.newCustomerEmail.subject;

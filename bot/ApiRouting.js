@@ -38,6 +38,15 @@ module.exports = {
 		// 	appointmentApiLogic.getAppointments(res);
 		// });
 
+		//unsubscribe from zoi
+		app.get('/unsubscribe', function (req, res) {
+			Util.log(API_LOG + "unsubscribe. email = " + req.query.email);
+			let acuityLogic = new AcuityLogic();
+			acuityLogic.unsubscribe(req.query, function (status, data) {
+				res.status(status).send(data);
+			});
+		});
+
 		//integrate with gmail
 		app.get('/gmail/auth', function (req, res) {
 			Util.log(API_LOG + "integrateWithGmail. userId = " + req.query.userId);

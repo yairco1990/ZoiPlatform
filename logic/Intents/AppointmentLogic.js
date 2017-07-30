@@ -443,6 +443,7 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						emailHtml = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailHtml);
 						emailHtml = MyUtils.replaceAll('{{color}}', template.color, emailHtml);
 						emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.promotionsEmail.buttonText, emailHtml);
+						emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/unsubscribe?email=" + client.email, emailHtml);
 
 						//set href
 						let appointmentParams = {

@@ -192,6 +192,7 @@ class AcuityLogic {
 				emailHtml = MyUtils.replaceAll('{{discount type}}', "10% Off", emailHtml);
 				emailHtml = MyUtils.replaceAll('{{href}}', user.integrations.Acuity.userDetails.schedulingPage, emailHtml);
 				emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.oldCustomersEmail.buttonText, emailHtml);
+				emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/unsubscribe?email=" + customer.email, emailHtml);
 
 				EmailLib.sendEmail(emailHtml, [{
 					address: customer.email,
@@ -426,6 +427,15 @@ class AcuityLogic {
 				}
 
 			}).catch(MyUtils.getErrorMsg());
+		});
+	}
+
+	unsubscribe(data, callback) {
+
+		let self = this;
+
+		self.DBManager.addEmailToUnsubscribe({_id: data.email}).then(function () {
+			callback(302, {'location': ZoiConfig.clientUrl + '/unsubscribe?email=' + data.email});
 		});
 	}
 }

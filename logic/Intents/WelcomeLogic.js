@@ -29,7 +29,10 @@ WelcomeLogic.prototype.processIntent = function (conversationData, setBotTyping,
 
 	switch (conversationData.intent) {
 		case "welcome acuity integrated":
-			self.proceedWelcomeConversation(conversationData, senderId, callback);
+			//wait a little bit before continue with the conversation
+			setTimeout(function () {
+				self.proceedWelcomeConversation(conversationData, senderId, callback);
+			}, 5000);
 			break;
 		default:
 			self.sendWelcomeDialog(conversationData, senderId, callback);

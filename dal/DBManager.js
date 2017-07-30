@@ -30,9 +30,14 @@ function DBManager() {
 		// 	}
 		// }
 		//profile - {number of integrations, is did share, number of appointments, amount of money from appointments, number of promotions}
-	}, { minimize: false });
+	}, {minimize: false});
+
+	let blackListSchema = new Schema({
+		_id: String
+	});
 
 	this.User = mongoose.model('User', userSchema);
+	this.BlackList = mongoose.model('BlackList', blackListSchema);
 
 	Util.log("DB synced");
 }
@@ -101,6 +106,47 @@ DBManager.prototype.deleteUser = function (where) {
 				resolve();
 			}
 		});
+	});
+};
+
+/**
+ * get black list
+ * @param where
+ */
+DBManager.prototype.getBlackList = function (where) {
+
+	let self = this;
+
+	return new Promise(function (resolve, reject) {
+
+		self.BlackList.find(where, function (err, user) {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(user);
+			}
+		});
+	});
+};
+
+/**
+ * save email to unsubscribe
+ * @param email
+ */
+DBManager.prototype.addEmailToUnsubscribe = function (email) {
+
+	let self = this;
+
+	return new Promise(function (resolve, reject) {
+
+		self.BlackList.create(email, function (err, doc) { // callback
+				if (err && err.code != 11000) {
+					reject(err);
+				} else {
+					resolve(doc);
+				}
+			}
+		);
 	});
 };
 
