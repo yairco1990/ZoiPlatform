@@ -22,8 +22,8 @@
                 <div class="text-center">
                     {{vm.appointment.serviceName}}
                     <div>
-                        {{vm.moment(vm.selectedSlot).format('MMMM Do YYYY')}},
-                        {{vm.moment(vm.selectedSlot).format('HH:mm')}}
+                        {{vm.moment(vm.selectedSlot).tz(vm.timezone).format('MMMM Do YYYY')}},
+                        {{vm.moment(vm.selectedSlot).tz(vm.timezone).format('HH:mm')}}
                     </div>
                 </div>
                 <div class="text-center box-sub-header">
@@ -32,7 +32,7 @@
                         <label>Time</label>
                         <md-select ng-model="vm.selectedSlot">
                             <md-option ng-repeat="slot in vm.openings" ng-value="slot.time">
-                                {{moment(slot.time).format('HH:mm')}}
+                                {{moment(slot.time).tz(vm.timezone).format('HH:mm')}}
                             </md-option>
                         </md-select>
                     </md-input-container>

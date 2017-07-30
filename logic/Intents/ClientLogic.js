@@ -123,11 +123,15 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 				emailHtml = MyUtils.replaceAll('{{href}}', user.integrations.Acuity.userDetails.schedulingPage, emailHtml);
 				emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.newCustomerEmail.buttonText, emailHtml);
 
+				//parse subject
+				let newCustomerSubject = EmailConfig.newCustomerEmail.subject;
+				newCustomerSubject = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, newCustomerSubject);
+
 				EmailLib.sendEmail(emailHtml, [{
 					address: newCustomerEmail,
 					from: 'Zoi.AI <noreply@fobi.io>',
-					subject: EmailConfig.newCustomerEmail.subject,
-					alt: 'Test Alt'
+					subject: newCustomerSubject,
+					alt: 'New Customer Joined'
 				}]);
 			}
 
@@ -263,7 +267,7 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 					], MyUtils.getErrorMsg());
 
 				} else {
-					reply(facebookResponse.getTextMessage("There are no old customers to show today."), false, delayTime);
+					reply(facebookResponse.getTextMessage("I didn't find relevant customers for the promotion. Try again tomorrow and I will check again."), false, delayTime);
 					self.clearSession();
 				}
 

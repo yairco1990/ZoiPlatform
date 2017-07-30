@@ -54,7 +54,7 @@ AppointmentLogic.prototype.getAppointments = function (conversationData, reply) 
 	async.series([
 		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let me see..."), true),
 		MyUtils.onResolve(reply, facebookResponse.getButtonMessage("This is your schedule for today sir:", [
-			facebookResponse.getGenericButton("web_url", "Watch your schedule", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
+			facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
 		]), true, delayTime),
 		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
 	], MyUtils.getErrorMsg());
@@ -335,7 +335,7 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						//coupon
 						facebookResponse.getGenericElement("10% discount",
 							"http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
-							"Offer a discount of 10% to selected customer",
+							"Offer a discount of 10% to selected customers",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 1,
 								title: "10% Off",
@@ -347,7 +347,7 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						//25% off
 						facebookResponse.getGenericElement("25% discount",
 							"http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
-							"Offer a discount of 25% to selected customer",
+							"Offer a discount of 25% to selected customers",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 2,
 								title: "25% Off",
@@ -359,7 +359,7 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 						//1 plus 1
 						facebookResponse.getGenericElement("1 + 1 deal",
 							"http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
-							"Offer 1 + 1 deal to selected customer",
+							"Offer 1 + 1 deal to selected customers",
 							[facebookResponse.getGenericButton("postback", "I like it", {
 								id: 3,
 								title: "1 + 1",
@@ -455,7 +455,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 							notes: template.zoiCoupon,
 							date: (new Date().valueOf()).toString(16),
 							promotionTitle: template.title,
-							promotionImage: template.image
+							promotionImage: template.image,
+							price: appointmentType.price
 						};
 						let iWantUrl = MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams).replace("%", "%25");
 						emailHtml = emailHtml.replace('{{href}}', iWantUrl);

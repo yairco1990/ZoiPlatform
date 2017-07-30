@@ -5,7 +5,7 @@ angular.module('Zoi.controllers.appointment-sum', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
 		$stateProvider.state('appointment-sum', {
-			url: '/appointment-sum?{firstName}{lastName}{email}{userId}{date}{price}{serviceId}{serviceName}{promotionTitle}{promotionImage}{notes}',
+			url: '/appointment-sum?{firstName}{lastName}{email}{userId}{date}{price}{serviceId}{serviceName}{promotionTitle}{promotionImage}{notes}{timezone}',
 			controller: 'AppointmentSumCtrl as vm',
 			templateUrl: 'src/pages/appointment-sum/appointment-sum.html',
 			resolve: {
@@ -59,6 +59,9 @@ AppointmentSumCtrl.inject = ['$log', '$rootScope', '$timeout', '$stateParams'];
 AppointmentSumCtrl.prototype.$onInit = function () {
 
 	var vm = this;
+
+	//set timezone
+	vm.timezone = vm.$stateParams.timezone;
 
 	//TODO change it and consider timezone
 	vm.selectedSlot = vm.openings[0].time;

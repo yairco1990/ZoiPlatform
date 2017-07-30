@@ -54,8 +54,9 @@ Promise.all([
 		loadFile('node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js', 'js'),
 		loadFile('node_modules/angular-resource/angular-resource.min.js', 'js'),
 		loadFile('node_modules/moment/min/moment.min.js', 'js'),
-		loadFile('node_modules/moment-timezone/builds/moment-timezone.min.js', 'js'),
+		loadFile('node_modules/moment-timezone/builds/moment-timezone-with-data-2012-2022.js', 'js'),
 		loadFile('node_modules/moment/locale/he.js', 'js'),
+		loadFile('node_modules/iso-currency/dist/isoCurrency.min.js', 'js'),
 		//END OF NPM
 
 		// SERVICES

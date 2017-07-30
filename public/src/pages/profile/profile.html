@@ -8,7 +8,8 @@
             <div class="box-sub-header">
                 Your Zoi.ai profile page
             </div>
-            <div class="box-body" style="  border-top: solid #f5ebeb 1px;  border-bottom: solid #f5ebeb 1px; padding-top:20px; padding-bottom: 40px">
+            <div class="box-body"
+                 style="  border-top: solid #f5ebeb 1px;  border-bottom: solid #f5ebeb 1px; padding-top:20px; padding-bottom: 40px">
                 <div class="text-center">
                     {{vm.zoiUser.fullname}}, this month Zoi booked:
                 </div>
@@ -19,7 +20,7 @@
                     Meetings
                 </div>
                 <div class="text-center stat-big">
-                    {{vm.zoiUser.profile[vm.actionTime].profitFromAppointments}} {{vm.currency}}
+                    {{ vm.zoiUser.profile[vm.actionTime].profitFromAppointments | isoCurrency:vm.currency }}
                 </div>
                 <div class="text-center box-sub-header">
                     Worth
@@ -42,23 +43,26 @@
 
                 <div class="row no-margin">
                     <div class="col-xs-6 badge-wrapper">
-                        <div class="badge-image badge-integration image-center" ng-class="{'badge-unearned': !vm.integrationsOn}">
+                        <div class="badge-image badge-integration image-center"
+                             ng-class="{'badge-unearned': !vm.integrationsOn}">
                         </div>
                         <div class="badge-text text-center">
                             <b>Integrate</b> Zoi with one of your business tools
                         </div>
                     </div>
                     <div class="col-xs-6 badge-wrapper">
-                        <div class="badge-image badge-influencer image-center" ng-class="{'badge-unearned': !vm.socialShareOn}">
+                        <div class="badge-image badge-influencer image-center"
+                             ng-class="{'badge-unearned': !vm.socialShareOn}">
                         </div>
                         <div class="badge-text text-center">
-                            <b>Share</b>  Zoi on social networks
+                            <b>Share</b> Zoi on social networks
                         </div>
                     </div>
                 </div>
                 <div class="row no-margin">
                     <div class="col-xs-6 badge-wrapper">
-                        <div class="badge-image badge-busy image-center" ng-class="{'badge-unearned': !vm.bookedMoreThanOn}">
+                        <div class="badge-image badge-busy image-center"
+                             ng-class="{'badge-unearned': !vm.bookedMoreThanOn}">
 
                         </div>
                         <div class="badge-text text-center">
@@ -66,24 +70,27 @@
                         </div>
                     </div>
                     <div class="col-xs-6 badge-wrapper">
-                        <div class="badge-image badge-money image-center" ng-class="{'badge-unearned': !vm.earnedMoreThanOn}">
+                        <div class="badge-image badge-money image-center"
+                             ng-class="{'badge-unearned': !vm.earnedMoreThanOn}">
 
                         </div>
                         <div class="badge-text text-center">
-                            Zoi helped you <b>earn</b> {{vm.earnedMoreThan}} {{vm.currency}}
+                            Zoi helped you <b>earn</b> {{ vm.earnedMoreThan | isoCurrency:vm.currency }}
                         </div>
                     </div>
                 </div>
                 <div class="row no-margin">
                     <div class="col-xs-6 badge-wrapper">
-                        <div class="badge-image badge-promotion image-center" ng-class="{'badge-unearned': !vm.promotedMoreThanOn}">
+                        <div class="badge-image badge-promotion image-center"
+                             ng-class="{'badge-unearned': !vm.promotedMoreThanOn}">
                         </div>
                         <div class="badge-text text-center">
                             Asked Zoi to <b>promote</b> your services {{vm.promotedMoreThan}} times
                         </div>
                     </div>
                     <div class="col-xs-6 badge-wrapper">
-                        <div class="badge-image badge-champion image-center" ng-class="{'badge-unearned': !vm.isChampion}">
+                        <div class="badge-image badge-champion image-center"
+                             ng-class="{'badge-unearned': !vm.isChampion}">
 
                         </div>
                         <div class="badge-text text-center">

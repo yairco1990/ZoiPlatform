@@ -53,9 +53,9 @@ ProfileCtrl.prototype.$onInit = function () {
 
 	//init values
 	vm.actionTime = moment().format("YYYY/MM");
-	vm.bookedMoreThan = 2;
-	vm.earnedMoreThan = 1;
-	vm.promotedMoreThan = 1;
+	vm.bookedMoreThan = 5;
+	vm.earnedMoreThan = 1000;
+	vm.promotedMoreThan = 10;
 
 	if (vm.zoiUser != "NO_SUCH_USER") {
 
@@ -64,9 +64,9 @@ ProfileCtrl.prototype.$onInit = function () {
 		vm.integrationsOn = vm.zoiUser.integrations && Object.keys(vm.zoiUser.integrations).length;
 		if (vm.zoiUser.profile[vm.actionTime]) {
 			vm.socialShareOn = vm.zoiUser.profile[vm.actionTime].shared;
-			vm.bookedMoreThanOn = vm.zoiUser.profile[vm.actionTime].numOfAppointments > vm.bookedMoreThan;
-			vm.earnedMoreThanOn = vm.zoiUser.profile[vm.actionTime].profitFromAppointments > vm.earnedMoreThan;
-			vm.promotedMoreThanOn = vm.zoiUser.profile[vm.actionTime].numOfPromotions > vm.promotedMoreThan;
+			vm.bookedMoreThanOn = vm.zoiUser.profile[vm.actionTime].numOfAppointments >= vm.bookedMoreThan;
+			vm.earnedMoreThanOn = vm.zoiUser.profile[vm.actionTime].profitFromAppointments >= vm.earnedMoreThan;
+			vm.promotedMoreThanOn = vm.zoiUser.profile[vm.actionTime].numOfPromotions >= vm.promotedMoreThan;
 		}
 
 		vm.badgesCounter = 0;

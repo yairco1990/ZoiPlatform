@@ -42,7 +42,7 @@ module.exports = function (audioSource) {
 
 
 		stream.on('error', function (err) {
-			console.log(err);
+			console.error(err);
 			reject(err);
 		});
 		stream.on('data', function (data) {

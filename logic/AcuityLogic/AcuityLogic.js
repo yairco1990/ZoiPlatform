@@ -195,7 +195,7 @@ class AcuityLogic {
 
 				EmailLib.sendEmail(emailHtml, [{
 					address: customer.email,
-					from: 'Zoi.AI <noreply@fobi.io>',
+					from: user.integrations.Acuity.userDetails.name + ' <noreply@zoi.ai>',
 					subject: EmailConfig.oldCustomersEmail.subject,
 					alt: 'Old Customers Promotions'
 				}]);
