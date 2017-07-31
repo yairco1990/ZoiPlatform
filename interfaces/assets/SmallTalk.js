@@ -1,6 +1,6 @@
 let SmallTalk = [
 	{
-		intent: "generic hello",
+		intent: "generic say hello",
 		responses: [
 			'Hey boss! ☺',
 			'Holla chief!',
@@ -10,7 +10,7 @@ let SmallTalk = [
 		]
 	},
 	{
-		intent: "generic goodbye",
+		intent: "generic say goodbye",
 		responses: [
 			'Smell you later alligator'
 		]
@@ -50,7 +50,7 @@ let SmallTalk = [
 		]
 	},
 	{
-		intent: "generic looks",
+		intent: "generic appearance",
 		responses: [
 			"I look like Brad Pitt and Jennifer Aniston had a baby",
 			"I look like a text conversation"
