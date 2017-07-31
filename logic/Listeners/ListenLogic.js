@@ -44,15 +44,19 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 		method: 'GET'
 	}).then(function (response) {
 		response = response.getBody();
-		Util.log("Intent -> " + response.intent.name);
-		Util.log("Entities -> " + response.entities);
+
+		let intent = MyUtils.replaceAll("-", " ", response.intent.name);
+		let entities = response.entities;
+
+		Util.log("Intent -> " + intent);
+		Util.log("Entities -> " + entities);
 
 		//save conversation data
 		let conversationData = {
 			input: input,
-			intent: response.intent.name,
-			entities: response.entities,
-			context: response.intent.name.split(' ')[0].toUpperCase()//the type is the first word in the intent
+			intent: intent.name,
+			entities: entities,
+			context: intent.split(' ')[0].toUpperCase()//the type is the first word in the intent
 		};
 
 		//check if this is a button of quick replay
