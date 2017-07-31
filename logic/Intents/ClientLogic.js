@@ -21,7 +21,6 @@ function ClientLogic(user) {
 	this.user = user;
 	//get the single instance of DBManager
 	this.DBManager = require('../../dal/DBManager');
-	this.mindbodyLogic = new MindbodyLogic({});
 }
 
 /**
