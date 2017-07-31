@@ -39,20 +39,20 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 	Util.log("User input = " + input);
 
 	//check intent with NLP
-	requestify.request('http://52.174.244.154:8080/zoi/getIntent?text=' + input, {
+	// requestify.request('http://52.174.244.154:8080/zoi/getIntent?text=' + input, {
+	requestify.request('http://52.177.185.253:5000/parse?q=' + input, {
 		method: 'GET'
 	}).then(function (response) {
 		response = response.getBody();
-		Util.log("Intent -> " + response.intent);
-		Util.log("Entities -> " + JSON.stringify(response.entities));
-		Util.log("MoreLikeThis -> " + JSON.stringify(response.moreLikeThis));
+		Util.log("Intent -> " + response.intent.name);
+		Util.log("Entities -> " + response.entities);
 
 		//save conversation data
 		let conversationData = {
 			input: input,
-			intent: response.intent,
+			intent: response.intent.name,
 			entities: response.entities,
-			context: response.intent.split(' ')[0].toUpperCase()//the type is the first word in the intent
+			context: response.intent.name.split(' ')[0].toUpperCase()//the type is the first word in the intent
 		};
 
 		//check if this is a button of quick replay
@@ -102,13 +102,14 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 					generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERIC":
+					reply(facebookResponse.getTextMessage(conversationData.intent));
 					//get response from small talk object
 					let responseText = MyUtils.getResponseByIntent(conversationData.intent);
 					//if found response for this intent - send it.
 					if (responseText) {
 						reply(facebookResponse.getTextMessage(responseText));
 					} else {//if it didn't find response - send default response.
-						reply(facebookResponse.getTextMessage(fallbackText));
+						// reply(facebookResponse.getTextMessage(fallbackText));
 					}
 					break;
 				default:
