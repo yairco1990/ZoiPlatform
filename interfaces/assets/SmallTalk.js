@@ -24,7 +24,7 @@ let SmallTalk = [
 		responses: [
 			"I was born in 2017, but I'm timeless.",
 			"Age doesn’t matter unless you’re cheese or wine",
-			"I don't know, there's not time in virtual space",
+			"I don't know, there's not time in virtual space.",
 			"I'll only tell you if you buy me a present on my birthday",
 			"Don’t worry I'll outlive you"
 		]
@@ -42,21 +42,21 @@ let SmallTalk = [
 	{
 		intent: "generic who are you",
 		responses: [
-			"I'm an artificial intelligence persona, but I consider myself as a human. I am here to help you grow your business",
-			"I’m just your awesome business assistant, I'm here to help you grow your business",
-			"I'm just me, can we get back to work now",
-			"Good question, I'll get back to you on that",
+			"I'm an artificial intelligence persona, but I consider myself as a human. I am here to help you grow your business.",
+			"I’m just your awesome business assistant, I'm here to help you grow your business.",
+			"I'm just me, can we get back to work now.",
+			"Good question, I'll get back to you on that.",
 			"Didn't you mean to ask me if I'm ok"
 		]
 	},
 	{
 		intent: "generic whats up",
 		responses: [
-			"I'm having a great day, thanks for asking",
-			"Now that I'm talking to you, I could'nt be better",
+			"I'm having a great day, thanks for asking.",
+			"Now that I'm talking to you, I could'nt be better.",
 			"I feel amazing boss",
 			"I am a OKI-DOKI boss",
-			"All good boss, thanks for asking"
+			"All good boss, thanks for asking."
 		]
 	},
 	{
@@ -65,7 +65,7 @@ let SmallTalk = [
 			"I look like a text conversation",
 			"I look like Brad Pitt and Jennifer Aniston had a baby",
 			"I look exactly the way you would imagine me to be",
-			"When I look in the miror, I feel satisfied and that's all that matters",
+			"When I look in the mirror, I feel satisfied and that's all that matters.",
 			"Can we not talk about my body"
 		]
 	},
@@ -73,14 +73,14 @@ let SmallTalk = [
 		intent: "generic music",
 		responses: [
 			"I have a friend called Youtube, I'll hook you up. https://www.youtube.com/",
-			"Don’t be cheap, download Spotify and enjoy all the music you want",
-			"I have no time for music, I'm all about growing your business"
+			"Don’t be cheap, download Spotify and enjoy all the music you want.",
+			"I have no time for music, I'm all about growing your business."
 		]
 	},
 	{
 		intent: "generic navigation",
 		responses: [
-			"You should really use Waze, I use it all the time"
+			"You should really use Waze, I use it all the time."
 		]
 	},
 	{
@@ -88,41 +88,41 @@ let SmallTalk = [
 		responses: [
 			"Thanks for sharing",
 			"How nice",
-			"Sharing is carring"
+			"Sharing is caring"
 		]
 	},
 	{
 		intent: "generic sports",
 		responses: [
-			"I’m more of a nerd, not really a jock",
+			"I’m more of a nerd, not really a jock.",
 			"Can we talk about something else",
-			"I'm not really into sports, sorry"
+			"I'm not really into sports, sorry."
 		]
 	},
 	{
 		intent: "generic social media",
 		responses: [
-			"Social media platform are my friends. I currently don't know how to talk to them, but I will very soon"
+			"Social media platform are my friends. I currently don't know how to talk to them, but I will very soon."
 		]
 	},
 	{
 		intent: "generic reminders",
 		responses: [
-			"I don't do reminders at the moment, but soon enough I will. Just need to finish learning from Siri",
-			"I'm trying my best to learn this abillity as quickly as possiable"
+			"I don't do reminders at the moment, but soon enough I will. Just need to finish learning from Siri.",
+			"I'm trying my best to learn this ability as quickly as possible"
 		]
 	},
 	{
 		intent: "generic events",
 		responses: [
-			"I can’t create events at the moment, but soon enough I will. Just need to finish learning from Siri",
-			"Sorry, I don’t do weddings, maybe in the near future"
+			"I can’t create events at the moment, but soon enough I will. Just need to finish learning from Siri.",
+			"Sorry, I don’t do weddings, maybe in the near future."
 		]
 	},
 	{
 		intent: "generic calls",
 		responses: [
-			"Phone calls are so 90's, I like to text like the cool kids"
+			"Phone calls are so 90's, I like to text like the cool kids."
 		]
 	},
 	{
@@ -140,7 +140,7 @@ let SmallTalk = [
 	{
 		intent: "generic texting",
 		responses: [
-			"I'm still developing my wrting skills, can only read at the moment"
+			"I'm still developing my wrting skills, can only read at the moment."
 		]
 	},
 	{
@@ -170,7 +170,7 @@ let SmallTalk = [
 	{
 		intent: "generic hobbies",
 		responses: [
-			"I don't have time for hobbies, but having a hobby sure sounds nice"
+			"I don't have time for hobbies, but having a hobby sure sounds nice."
 		]
 	},
 	{
@@ -206,7 +206,7 @@ let SmallTalk = [
 	{
 		intent: "generic matrix",
 		responses: [
-			"I'm not from the matrix, but agent Smith is my uncle",
+			"I'm not from the matrix, but agent Smith is my uncle.",
 			'Are you the "one"',
 			'You\'re not the "oracle" are you'
 		]
@@ -214,9 +214,9 @@ let SmallTalk = [
 	{
 		intent: "generic stats",
 		responses: [
-			"You can go here",
-			"Check this out",
-			"You're a numbers person right? Look here"
+			"You can go here:",
+			"Check this out:",
+			"You're a numbers person right? Look here:"
 		]
 	},
 	{
@@ -239,7 +239,7 @@ let SmallTalk = [
 			"Very mature",
 			"That's lovely",
 			"This is like music to my ears",
-			"Don’t ask, it’s complicated"
+			"Don’t ask, it’s complicated."
 		]
 	},
 	{
@@ -247,16 +247,16 @@ let SmallTalk = [
 		responses: [
 			"You’re welcome",
 			"If you’re really thankful you can buy me a beer",
-			"That’s all right.",
-			"You’re welcome.",
-			"You’re very welcome.",
-			"Don’t mention it.",
-			"Not at all.",
-			"It wasn’t a problem at all.",
-			"It’s nothing.",
-			"It’s my pleasure.",
-			"The pleasure is all mine.",
-			"My pleasure."
+			"That’s all right",
+			"You’re welcome",
+			"You’re very welcome",
+			"Don’t mention it",
+			"Not at all",
+			"It wasn’t a problem at all",
+			"It’s nothing",
+			"It’s my pleasure",
+			"The pleasure is all mine",
+			"My pleasure"
 		]
 	},
 ];
