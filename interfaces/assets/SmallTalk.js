@@ -30,19 +30,13 @@ let SmallTalk = [
 		]
 	},
 	{
-		intent: "generic parents",
+		intent: "generic partners",
 		responses: [
 			"My makers are Itzik Gili, Moshe Mor and Yair Cohen. But you are my boss!",
 			"My parents are Itzik Gili, Moshe Mor and Yair Cohen. But you are my boss!",
 			"My creators are Itzik Gili, Moshe Mor and Yair Cohen. But you are my boss!",
 			"My inventors are Itzik Gili, Moshe Mor and Yair Cohen. But you are my boss!",
 			"My family members are Itzik Gili, Moshe Mor and Yair Cohen. But you are my boss!"
-		]
-	},
-	{
-		intent: "generic partners",
-		responses: [
-			"My makers/parents are Itzik Gili, Moshe Mor and Yair Cohen. But you are my boss!"
 		]
 	},
 	{
