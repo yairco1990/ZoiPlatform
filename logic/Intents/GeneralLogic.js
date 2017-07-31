@@ -14,6 +14,7 @@ const async = require('async');
 const ZoiConfig = require('../../config');
 
 const delayTime = ZoiConfig.delayTime || 3000;
+const fallbackText = "I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu.";
 
 function GeneralLogic(user) {
 	this.user = user;
@@ -23,25 +24,28 @@ function GeneralLogic(user) {
 /**
  * process the user input
  */
-GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, callback) {
+GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, reply) {
 	let self = this;
 
 	switch (conversationData.intent) {
 		case "general hi zoi":
-			self.sayHey(conversationData.entities, callback);
+			self.sayHey(conversationData.entities, reply);
 			break;
 		case "general no thanks":
-			self.clearSession(callback, true);
+			self.clearSession(reply, true);
 			break;
 		case "general bye zoi":
-			self.clearSession(callback, true);
+			self.clearSession(reply, true);
 			break;
 		case "general leave review":
-			self.wishZoi(conversationData, setBotTyping, requestObj, callback);
+			self.wishZoi(conversationData, setBotTyping, requestObj, reply);
 			break;
 		case "general morning brief":
 			setBotTyping();
-			self.sendMorningBrief(conversationData, setBotTyping, requestObj, callback);
+			self.sendMorningBrief(conversationData, setBotTyping, requestObj, reply);
+			break;
+		default:
+			reply(facebookResponse.getTextMessage(fallbackText));
 			break;
 	}
 };
