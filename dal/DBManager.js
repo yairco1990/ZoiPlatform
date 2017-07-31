@@ -44,7 +44,8 @@ function DBManager() {
 		},
 		userId: String,
 		input: String,
-		intent: String
+		intent: String,
+		score: Number
 	}, {minimize: false});
 
 	this.User = mongoose.model('User', userSchema);

@@ -47,15 +47,18 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 
 		let intent = MyUtils.replaceAll("-", " ", response.intent.name);
 		let entities = response.entities;
+		let intentScore = response.confidence;
 
 		Util.log("Intent -> " + intent);
 		Util.log("Entities -> " + entities);
+		Util.log("Score -> " + intentScore);
 
 		//save conversation data
 		let conversationData = {
 			input: input,
 			intent: intent,
 			entities: entities,
+			score: intentScore,
 			context: intent.split(' ')[0].toUpperCase()//the type is the first word in the intent
 		};
 
@@ -73,7 +76,8 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 			self.DBManager.addInput({
 				userId: user._id,
 				input: input,
-				intent: conversationData.intent
+				intent: intent,
+				score: intentScore
 			});
 
 			//if the user have no email or full name - go the complete the "welcome conversation"
