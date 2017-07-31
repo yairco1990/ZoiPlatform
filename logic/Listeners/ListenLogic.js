@@ -67,7 +67,15 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 		}
 
 		//get the user
-		self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {//
+		self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {
+
+			//add input and intention to DB
+			self.DBManager.addInput({
+				userId: user._id,
+				input: input,
+				intent: conversationData.intent
+			});
+
 			//if the user have no email or full name - go the complete the "welcome conversation"
 			if (!user || input.toLowerCase() == "reset") {
 				conversationData.context = "WELCOME";
@@ -86,7 +94,10 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 				]));
 				return;
 			}
+
+			//TODO test the intent
 			reply(facebookResponse.getTextMessage(conversationData.intent));
+
 			//check the intent
 			switch (conversationData.context) {
 				case "WELCOME":

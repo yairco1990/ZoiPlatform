@@ -32,7 +32,7 @@ function reqHandler(req, res) {
 	});
 }
 
-[3000, 443].forEach(function (port) {
+[443, 3000].forEach(function (port) {
 	if (process.argv[2] == "local") {
 		server = require('http').createServer(app);
 	} else {

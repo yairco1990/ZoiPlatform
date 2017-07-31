@@ -1,6 +1,6 @@
 let CLIENT_DEV = "https://zoiai.com/p/#";
 let CLIENT_LOCAL = "http://local.host:443/p/#";
-let CLIENT_NGROK = "https://c871b6cd.ngrok.io/p/#";
+let CLIENT_NGROK = "https://43349ecb.ngrok.io/p/#";
 
 let Environments = {
 	LOCAL: {
@@ -12,7 +12,7 @@ let Environments = {
 		clientUrl: CLIENT_DEV
 	},
 	NGROK: {
-		serverUrl: "https://c871b6cd.ngrok.io",
+		serverUrl: "https://43349ecb.ngrok.io",
 		clientUrl: CLIENT_NGROK
 	}
 };

@@ -36,8 +36,20 @@ function DBManager() {
 		_id: String
 	});
 
+	let inputsSchema = new Schema({
+		_id: {
+			type: Schema.ObjectId, default: function () {
+				return new mongoose.Types.ObjectId()
+			}
+		},
+		userId: String,
+		input: String,
+		intent: String
+	}, {minimize: false});
+
 	this.User = mongoose.model('User', userSchema);
 	this.BlackList = mongoose.model('BlackList', blackListSchema);
+	this.Inputs = mongoose.model('Inputs', inputsSchema);
 
 	Util.log("DB synced");
 }
@@ -141,6 +153,27 @@ DBManager.prototype.addEmailToUnsubscribe = function (email) {
 
 		self.BlackList.create(email, function (err, doc) { // callback
 				if (err && err.code != 11000) {
+					reject(err);
+				} else {
+					resolve(doc);
+				}
+			}
+		);
+	});
+};
+
+
+/**
+ * save input and intention
+ */
+DBManager.prototype.addInput = function (inputObj) {
+
+	let self = this;
+
+	return new Promise(function (resolve, reject) {
+
+		self.Inputs.create(inputObj, function (err, doc) { // callback
+				if (err) {
 					reject(err);
 				} else {
 					resolve(doc);
