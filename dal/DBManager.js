@@ -5,7 +5,7 @@ let mongoose = require('mongoose');
 let Util = require('util');
 
 function DBManager() {
-	mongoose.connect('mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db');
+	mongoose.connect('mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db', {useMongoClient: true});
 
 	let Schema = mongoose.Schema;
 
