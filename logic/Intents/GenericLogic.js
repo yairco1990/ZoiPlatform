@@ -54,3 +54,5 @@ GenericLogic.prototype.processIntent = function (conversationData, setBotTyping,
 			break;
 	}
 };
+
+module.exports = GenericLogic;
