@@ -74,13 +74,13 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 			if (clientsMessages.length > 0) {
 				async.series([
 					//emails
-					MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
+					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
 						facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
 					]), true),
 				], MyUtils.getErrorMsg());
 			} else {
 				async.series([
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true),
 				], MyUtils.getErrorMsg());
 			}
 
@@ -120,13 +120,13 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 					}
 				});
 
-				let messages = [MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
+				let messages = [MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
 					facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
 				]), true, delayTime)];
 
 				//if there is next appointment - add another message about it.
 				if (nextAppointment) {
-					messages.push(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime));
+					messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime));
 				}
 
 				async.series(messages, function () {
@@ -134,7 +134,7 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 				});
 
 			} else {
-				(MyUtils.onResolve(reply, facebookResponse.getTextMessage("You don't have appointments today"), true, delayTime))().then(function () {
+				(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have appointments today"), true, delayTime))().then(function () {
 					startSendPromotions();
 				});
 			}
@@ -194,9 +194,9 @@ GeneralLogic.prototype.sayHey = function (entities, reply) {
 
 	let randomNumber = Math.random();
 	if (randomNumber < 0.5) {
-		(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hey boss! What can I do for you?"), false, delayTime))();
+		(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hey boss! What can I do for you?"), false, delayTime))();
 	} else {
-		(MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hey Chief! What can I do for you?"), false, delayTime))();
+		(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hey Chief! What can I do for you?"), false, delayTime))();
 	}
 };
 
@@ -208,7 +208,7 @@ GeneralLogic.prototype.clearSession = function (reply, sendLastMessage) {
 	user.session = null;
 	self.DBManager.saveUser(user).then(function () {
 		if (sendLastMessage) {
-			(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false, delayTime))();
+			(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false, delayTime))();
 		}
 	});
 };

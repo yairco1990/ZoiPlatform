@@ -56,11 +56,11 @@ AppointmentLogic.prototype.getAppointments = function (conversationData, reply) 
 	let user = self.user;
 
 	async.series([
-		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let me see..."), true),
-		MyUtils.onResolve(reply, facebookResponse.getButtonMessage("This is your schedule for today sir:", [
+		MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
+		MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("This is your schedule for today sir:", [
 			facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
 		]), true, delayTime),
-		MyUtils.onResolve(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
+		MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
 	], MyUtils.getErrorMsg());
 
 };
@@ -122,8 +122,8 @@ AppointmentLogic.prototype.getNextFreeSlot = function (conversationData, reply) 
 
 				self.DBManager.saveUser(user).then(function () {
 					async.series([
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage(responseText), true),
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Is there another thing you want to do sir?"), false, delayTime)
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(responseText), true),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Is there another thing you want to do sir?"), false, delayTime)
 					], MyUtils.getErrorMsg());
 				});
 			});
@@ -263,9 +263,9 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 				}
 
 				async.series([
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage(firstText), true),
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true, delayTime),
-					MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true, delayTime),
+					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 				], MyUtils.getErrorMsg());
 
 			});
@@ -289,8 +289,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 
 					//send messages
 					async.series([
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Great! 😊"), true),
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage(question.text), false, delayTime),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(question.text), false, delayTime),
 					], MyUtils.getErrorMsg());
 
 				});
@@ -307,8 +307,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 		} else {
 			//send qr again
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
-				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			], MyUtils.getErrorMsg());
 		}
 	}
@@ -334,8 +334,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 
 				//send messages
 				async.series([
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage(currentQuestion.text), true),
-					MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(currentQuestion.text), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getGenericTemplate([
 						//coupon
 						facebookResponse.getGenericElement("10% discount",
 							"http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
@@ -403,8 +403,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 
 			//send messages
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Great! 😊"), true),
-				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			], MyUtils.getErrorMsg());
 		});
 
@@ -508,9 +508,9 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 
 					//send messages
 					async.series([
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"), true),
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"), true),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
 					], MyUtils.getErrorMsg());
 				});
 			} else {
@@ -520,8 +520,8 @@ AppointmentLogic.prototype.sendPromotions = function (conversationData, reply) {
 		} else {
 			//send qr again
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
-				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			], MyUtils.getErrorMsg());
 		}
 	}

@@ -1,18 +1,13 @@
 /**
  * Created by Yair on 7/3/2017.
  */
-const fs = require('fs');
 const ListenLogic = require('../logic/Listeners/ListenLogic');
 const Util = require('util');
 const MyUtils = require('../interfaces/utils');
 const PostbackLogic = require('../logic/Listeners/PostbackLogic');
 const speechToText = require('../interfaces/SpeechToText');
 const facebookResponses = require('../interfaces/FacebookResponse');
-const GeneralTest = require('../tests/general');
-const RequestLogic = require('../logic/Listeners/RequestLogic');
-const crypto = require('crypto');
-
-//TODO here we decide if mock or real world
+//here we decide if mock or real world
 const logicType = MyUtils.logicType.REAL_WORLD;
 
 module.exports = {
@@ -30,23 +25,6 @@ module.exports = {
 			Util.log("Status request");
 			res.end(JSON.stringify({status: 'ok'}));
 		});
-
-		// //test mindbody api
-		// app.get('/test/mindbody', function (req, res) {
-		// 	GeneralTest.index(req, res);
-		// });
-		//
-		// //getImage request
-		// app.get('/getImage', function (req, res) {
-		// 	MyUtils.getScreenShot(res, req.url.substring(10));
-		// });
-		//
-		// //test mindbody api
-		// app.get('/mock/openings', function (req, res) {
-		// 	let requestLogic = new RequestLogic();
-		// 	requestLogic.processMock(bot, {id: 1}, req.query.senderId);
-		// 	res.end("Message sent!");
-		// });
 
 		//verify bot
 		app.get('/', function (req, res) {
@@ -220,3 +198,20 @@ module.exports = {
 		});
 	}
 };
+
+// //test mindbody api
+// app.get('/test/mindbody', function (req, res) {
+// 	GeneralTest.index(req, res);
+// });
+//
+// //getImage request
+// app.get('/getImage', function (req, res) {
+// 	MyUtils.getScreenShot(res, req.url.substring(10));
+// });
+//
+// //test mindbody api
+// app.get('/mock/openings', function (req, res) {
+// 	let requestLogic = new RequestLogic();
+// 	requestLogic.processMock(bot, {id: 1}, req.query.senderId);
+// 	res.end("Message sent!");
+// });

@@ -47,7 +47,7 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 
 		let intent = MyUtils.replaceAll("-", " ", response.intent.name);
 		let entities = response.entities;
-		let intentScore = response.confidence;
+		let intentScore = response.intent.confidence;
 
 		Util.log("Intent -> " + intent);
 		Util.log("Entities -> " + entities);
@@ -142,11 +142,11 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 				self.DBManager.saveUser(user).then(function () {
 					Util.log("user session deleted after error. userId -> " + user._id);
 
-					(MyUtils.onResolve(reply, facebookResponse.getTextMessage(fallbackText), false))();
+					(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(fallbackText), false))();
 				});
 
 			}).catch(function () {
-				(MyUtils.onResolve(reply, facebookResponse.getTextMessage(fallbackText), false))();
+				(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(fallbackText), false))();
 			});
 
 			Util.log(err);

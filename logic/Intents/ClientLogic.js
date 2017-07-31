@@ -76,12 +76,12 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 
 			//send messages
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hooray! 👏 " + user.session.newClient.firstName + " " + user.session.newClient.lastName + " scheduled an appointment for the first time"), true),
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's send a welcome email"), true, delayTime),
-				MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hooray! 👏 " + user.session.newClient.firstName + " " + user.session.newClient.lastName + " scheduled an appointment for the first time"), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's send a welcome email"), true, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getGenericTemplate([
 					facebookResponse.getGenericElement("Welcome Email", EmailConfig.newCustomerEmail.bannerImage, "Send a friendly welcome email to your customer", null)
 				]), true, delayTime),
-				MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
+				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 			], MyUtils.getErrorMsg());
 
 		});
@@ -92,8 +92,8 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 		if (!conversationData.payload) {
 			//send qr again
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
-				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			], MyUtils.getErrorMsg());
 			return;
 		}
@@ -139,9 +139,9 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 
 			//send messages
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Done 😎"), true),
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Greeting a new customer makes a good first step for retention"), true, delayTime),
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll be here if you will need anything else"), false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done 😎"), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Greeting a new customer makes a good first step for retention"), true, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be here if you will need anything else"), false, delayTime),
 			], MyUtils.getErrorMsg());
 
 			//clear conversation data
@@ -260,12 +260,12 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 				if (oldCustomers.length) {
 					//send messages
 					async.series([
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hey boss, I noticed that there are " + oldCustomers.length + " non-regular customers. These are customers that didn't visit for a while."), true),
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's send a promotion email"), true, delayTime),
-						MyUtils.onResolve(reply, facebookResponse.getGenericTemplate([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hey boss, I noticed that there are " + oldCustomers.length + " non-regular customers. These are customers that didn't visit for a while."), true),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's send a promotion email"), true, delayTime),
+						MyUtils.resolveMessage(reply, facebookResponse.getGenericTemplate([
 							facebookResponse.getGenericElement("10% Off", EmailConfig.oldCustomersEmail.bannerImage, "Send non-regular customers a promotion with 10% discount", null)
 						]), true),
-						MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
+						MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 					], MyUtils.getErrorMsg());
 
 				} else {
@@ -283,8 +283,8 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 		if (!conversationData.payload) {
 			//send qr again
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
-				MyUtils.onResolve(reply, user.conversationData.lastQRResponse, false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			], MyUtils.getErrorMsg());
 			return;
 		}
@@ -299,8 +299,8 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 
 				//send messages
 				async.series([
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Good!"), true),
-					MyUtils.onResolve(reply, facebookResponse.getButtonMessage("Let's pick some non-regulars and encourage them to come back", [
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Good!"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Let's pick some non-regulars and encourage them to come back", [
 						facebookResponse.getGenericButton("web_url", "Non-regulars", null, ZoiConfig.clientUrl + "/old-customers?userId=" + user._id, "full")
 					]), false, delayTime),
 				], MyUtils.getErrorMsg());

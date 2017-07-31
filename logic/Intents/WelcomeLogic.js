@@ -87,9 +87,9 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 		}).then(function () {
 
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hi there my new boss! 😁"), true),
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("My Name is Zoi, Your own AI personal assistant."), true, delayTime),
-				MyUtils.onResolve(reply, facebookResponse.getQRElement("May I ask you some questions before we start our journey?", [
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hi there my new boss! 😁"), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("My Name is Zoi, Your own AI personal assistant."), true, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getQRElement("May I ask you some questions before we start our journey?", [
 					facebookResponse.getQRButton("text", "Yes, lets start!", {id: 1}),
 					facebookResponse.getQRButton("text", "Not now", {id: 2}),
 				]), false, delayTime)
@@ -97,12 +97,12 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 
 		}).catch(function (err) {
 			Util.log(err);
-			(MyUtils.onResolve(reply, facebookResponse.getTextMessage("I am on a break right now, please send me message later..Thank's! :)"), false))();
+			(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I am on a break right now, please send me message later..Thank's! :)"), false))();
 		});
 	} else {
 
 		if (conversationData.payload && conversationData.payload.id == 2) {
-			(MyUtils.onResolve(reply, facebookResponse.getTextMessage("OK! see you later... :)"), false))();
+			(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("OK! see you later... :)"), false))();
 			return;
 		}
 		if (!user.conversationData.lastQuestion) {
@@ -115,8 +115,8 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 			self.DBManager.saveUser(user).then(function () {
 
 				async.series([
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage("WEEEPI! Let's start! 😍"), true),
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage(currentQuestion.text), false, delayTime)
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("WEEEPI! Let's start! 😍"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(currentQuestion.text), false, delayTime)
 				], MyUtils.getErrorMsg());
 
 			}).catch(function (err) {
@@ -136,8 +136,8 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 			self.DBManager.saveUser(user).then(function () {
 				async.series([
 
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Hi " + conversationData.input + " :)"), true),
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage(currentQuestion.text), false, delayTime)
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hi " + conversationData.input + " :)"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(currentQuestion.text), false, delayTime)
 
 				], MyUtils.getErrorMsg());
 			}).catch(function (err) {
@@ -151,8 +151,8 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 			if (!MyUtils.validateEmail(conversationData.input)) {
 				async.series([
 
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Lol..This is not an email..:D"), true),
-					MyUtils.onResolve(reply, facebookResponse.getTextMessage("Try again"), false, delayTime),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Lol..This is not an email..:D"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Try again"), false, delayTime),
 
 				], MyUtils.getErrorMsg());
 			} else {
@@ -166,8 +166,8 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 
 					async.series([
 
-						MyUtils.onResolve(reply, facebookResponse.getTextMessage("OK! That's all I need for now."), true),
-						MyUtils.onResolve(reply, facebookResponse.getButtonMessage("The best way to use my abilities is to let me integrate with other tools you use:", [
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("OK! That's all I need for now."), true),
+						MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("The best way to use my abilities is to let me integrate with other tools you use:", [
 							facebookResponse.getGenericButton("web_url", "Zoi Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
 						]), false, delayTime),
 
@@ -208,12 +208,12 @@ WelcomeLogic.prototype.proceedWelcomeConversation = function (conversationData, 
 		self.DBManager.saveUser(user).then(function () {
 			async.series([
 
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Awesome! You made your first integration! 👏"), true),
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("So far, you are the best human I ever worked with! 😉"), true, delayTime),
-				MyUtils.onResolve(reply, facebookResponse.getButtonMessage("You are probably wondering what I can do for you. Well, take a look:", [
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Awesome! You made your first integration! 👏"), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("So far, you are the best human I ever worked with! 😉"), true, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You are probably wondering what I can do for you. Well, take a look:", [
 					facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", "full")
 				]), true, delayTime),
-				MyUtils.onResolve(reply, lastQRResponse, false, delayTime),
+				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 
 			], MyUtils.getErrorMsg());
 		});
@@ -222,8 +222,8 @@ WelcomeLogic.prototype.proceedWelcomeConversation = function (conversationData, 
 
 		if (conversationData.payload && conversationData.payload.id == 1) {
 			async.series([
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with the morning brief. You can always press the menu button below (☰) to see my preset actions and settings."), true),
-				MyUtils.onResolve(reply, facebookResponse.getTextMessage("Can't wait to start getting more action to your business!  💪"), false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with the morning brief. You can always press the menu button below (☰) to see my preset actions and settings."), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Can't wait to start getting more action to your business!  💪"), false, delayTime),
 
 			], MyUtils.getErrorMsg());
 		} else {

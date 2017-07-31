@@ -213,8 +213,8 @@ class AcuityLogic {
 				let replyFunction = self.getReplyFunction(bot, user);
 				//send messages
 				async.series([
-					MyUtils.onResolve(replyFunction, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + customers.length + " of your customers."), true),
-					MyUtils.onResolve(replyFunction, facebookResponse.getTextMessage("Trust me, they will be regulars soon enough."), false, ZoiConfig.delayTime),
+					MyUtils.resolveMessage(replyFunction, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + customers.length + " of your customers."), true),
+					MyUtils.resolveMessage(replyFunction, facebookResponse.getTextMessage("Trust me, they will be regulars soon enough."), false, ZoiConfig.delayTime),
 				], MyUtils.getErrorMsg());
 			});
 
