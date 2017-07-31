@@ -34,6 +34,9 @@ AppointmentLogic.prototype.processIntent = function (conversationData, setBotTyp
 		case "appointment what is my schedule":
 			self.getAppointments(conversationData, reply);
 			break;
+		case "appointment show my schedule":
+			self.getAppointments(conversationData, reply);
+			break;
 		case "appointment bring next free slot":
 			setBotTyping();
 			self.getNextFreeSlot(conversationData, reply);

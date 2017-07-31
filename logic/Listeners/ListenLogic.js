@@ -82,7 +82,7 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 				]));
 				return;
 			}
-
+			reply(facebookResponse.getTextMessage(conversationData.intent));
 			//check the intent
 			switch (conversationData.context) {
 				case "WELCOME":
@@ -102,7 +102,6 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 					generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERIC":
-					reply(facebookResponse.getTextMessage(conversationData.intent));
 					//get response from small talk object
 					let responseText = MyUtils.getResponseByIntent(conversationData.intent);
 					//if found response for this intent - send it.
