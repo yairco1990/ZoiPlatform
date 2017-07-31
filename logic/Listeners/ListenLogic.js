@@ -75,7 +75,7 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 			//add input and intention to DB
 			self.DBManager.addInput({
 				userId: user._id,
-				input: input,
+				input: input || "Voice Recognition Error Probably",
 				intent: intent,
 				score: intentScore
 			});
