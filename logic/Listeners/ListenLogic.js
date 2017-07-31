@@ -92,15 +92,14 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 			else if (user && user.conversationData && conversationData.intent != "general bye zoi" && conversationData.intent != "general no thanks") {
 				conversationData.context = user.conversationData.context;
 				conversationData.intent = user.conversationData.intent;
-			} else if (!user.integrations || !user.integrations.Acuity) {//block user from proceed without integration with Acuity
+			}
+			//block user from proceed without integration with Acuity
+			else if (!user.integrations || !user.integrations.Acuity) {
 				reply(facebookResponse.getButtonMessage("To start working together, I'll have to work with the tools you work with to run your business. Press on the link to help me integrate with Acuity Scheduling and Gmail.", [
 					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
 				]));
 				return;
 			}
-
-			//TODO test the intent
-			reply(facebookResponse.getTextMessage(conversationData.intent));
 
 			//check the intent
 			switch (conversationData.context) {
