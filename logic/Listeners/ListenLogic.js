@@ -54,7 +54,7 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 		//save conversation data
 		let conversationData = {
 			input: input,
-			intent: intent.name,
+			intent: intent,
 			entities: entities,
 			context: intent.split(' ')[0].toUpperCase()//the type is the first word in the intent
 		};
