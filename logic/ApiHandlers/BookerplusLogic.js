@@ -212,24 +212,7 @@ BookerplusLogic.prototype.getQueues = function (entities, params, callback) {
 		    queuesList.push({
 		        "title": "Appointment for " + queue.customer.firstname + " " + queue.customer.lastname + " at " + moment(queue.estimatedServiceTime).format('lll'),
 		        "image_url": "http://pngimg.com/uploads/clock/clock_PNG6641.png",
-		        "subtitle": "Service: " + queue.branchService.name + ". For employee: " + queue.forEmployee.firstname + " " + queue.forEmployee.lastname + "\n",
-		        // "default_action": {
-		        //  "type": "web_url",
-		        // "url": "https://peterssendreceiveapp.ngrok.io/shop_collection",
-		        // "messenger_extensions": true,
-		        // "webview_height_ratio": "tall",
-		        // "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-		        // },
-		        // "buttons": [
-		        //  {
-		        //      "title": "View",
-		        // "type": "web_url",
-		        // "url": "https://peterssendreceiveapp.ngrok.io/collection",
-		        // "messenger_extensions": true,
-		        // "webview_height_ratio": "tall",
-		        // "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
-		        // }
-		        // ]
+		        "subtitle": "Service: " + queue.branchService.name + ". For employee: " + queue.forEmployee.firstname + " " + queue.forEmployee.lastname + "\n"
 		    });
 		}
 
