@@ -126,21 +126,23 @@ class BackgroundLogic {
 		//iterate the users
 		oldCustomersUsers.forEach(async (user) => {
 
-			//save the last message time
-			user.lastMessageTime = new Date().valueOf();
-			//start the conversation in the GeneralLogic class
-			let clientLogic = new ClientLogic(user);
-			let conversationData = {
-				intent: "client old customers",
-				context: "CLIENT",
-				automated: true
-			};
+			if (user.integrations && user.integrations.Acuity) {
+				//save the last message time
+				user.lastMessageTime = new Date().valueOf();
+				//start the conversation in the GeneralLogic class
+				let clientLogic = new ClientLogic(user);
+				let conversationData = {
+					intent: "client old customers",
+					context: "CLIENT",
+					automated: true
+				};
 
-			let replyFunction = BackgroundLogic.getBotReplyFunction(bot, user);
-			let botWritingFunction = BackgroundLogic.getBotWritingFunction(bot, user);
+				let replyFunction = BackgroundLogic.getBotReplyFunction(bot, user);
+				let botWritingFunction = BackgroundLogic.getBotWritingFunction(bot, user);
 
-			//start convo
-			clientLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
+				//start convo
+				clientLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
+			}
 		});
 	}
 
@@ -165,26 +167,29 @@ class BackgroundLogic {
 		//iterate the users
 		morningBriefUsers.forEach(async (user) => {
 
-			//set next time of morning brief for this user
-			user.nextMorningBriefDate = new Date().valueOf() + ZoiConfig.oneDay;
-			//save the last message time
-			user.lastMessageTime = new Date().valueOf();
-			//save the user
-			await DBManager.saveUser(user);
+			//morning brief only for Acuity users for now
+			if (user.integrations && user.integrations.Acuity) {
+				//set next time of morning brief for this user
+				user.nextMorningBriefDate = new Date().valueOf() + ZoiConfig.oneDay;
+				//save the last message time
+				user.lastMessageTime = new Date().valueOf();
+				//save the user
+				await DBManager.saveUser(user);
 
-			//start the conversation in the GeneralLogic class
-			let generalLogic = new GeneralLogic(user);
-			let conversationData = {
-				intent: "general morning brief",
-				context: "GENERAL",
-				automated: true
-			};
+				//start the conversation in the GeneralLogic class
+				let generalLogic = new GeneralLogic(user);
+				let conversationData = {
+					intent: "general morning brief",
+					context: "GENERAL",
+					automated: true
+				};
 
-			let replyFunction = BackgroundLogic.getBotReplyFunction(bot, user);
-			let botWritingFunction = BackgroundLogic.getBotWritingFunction(bot, user);
+				let replyFunction = BackgroundLogic.getBotReplyFunction(bot, user);
+				let botWritingFunction = BackgroundLogic.getBotWritingFunction(bot, user);
 
-			//start convo
-			generalLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
+				//start convo
+				generalLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
+			}
 		});
 	}
 
