@@ -145,11 +145,16 @@ class AcuityLogic {
 			//check which calendar to use(if valid id - choose it. else - all calendars)
 			let calendarId = user.defaultCalendar.id > 0 ? user.defaultCalendar.id : null;
 
-			return acuityApi.getAppointments({
+			let params = {
 				minDate: MyUtils.convertToAcuityDate(moment().startOf('day')),
-				maxDate: MyUtils.convertToAcuityDate(moment().endOf('day')),
-				calendarId: calendarId
-			});
+				maxDate: MyUtils.convertToAcuityDate(moment().endOf('day'))
+			};
+
+			if (calendarId) {
+				params.calendarID = calendarId;
+			}
+
+			return acuityApi.getAppointments(params);
 		}).then(function (appointments) {
 
 			//sort appointments

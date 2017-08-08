@@ -110,6 +110,7 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 			let currentQuestion = welcomeQuestions.nameQuestion;
 			user.conversationData = conversationData;
 			user.conversationData.lastQuestion = currentQuestion;
+			user.conversationData.nextAnswerState = "text";
 
 			//save the name question to the user
 			self.DBManager.saveUser(user).then(function () {
@@ -131,6 +132,7 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 			//ask for the user email
 			let currentQuestion = welcomeQuestions.emailQuestion;
 			user.conversationData.lastQuestion = currentQuestion;
+			user.conversationData.nextAnswerState = "text";
 
 			//save user with the email message
 			self.DBManager.saveUser(user).then(function () {

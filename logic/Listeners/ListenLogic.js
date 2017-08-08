@@ -50,15 +50,14 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		//check if the input is payload
 		let isPayloadRequest = MyUtils.isJson(input);
 
-		//TODO if the user entered text that resolved as bye zoi. what to do?
 		//check if wait for text message
-		// let isWaitForText = user.conversationData && user.conversationData.nextAnswerState === "text";
+		let isWaitForText = user.conversationData && user.conversationData.nextAnswerState === "text";
 
 		//declare variables
 		let intent, entities, intentScore;
 
 		//if it's regular message
-		if (!isQuickReply && !isPayloadRequest) {
+		if (!isQuickReply && !isPayloadRequest && !isWaitForText) {
 			//check intent with NLP
 			let nlpResponse = await requestify.request('http://52.177.185.253:5000/parse?q=' + input, {
 				method: 'GET'
