@@ -1,4 +1,4 @@
-function OldCustomersPopupCtrl($log, $scope, $mdDialog, $mdpTimePicker) {
+function CustomerSendLimitPopupCtrl($log, $scope, $mdDialog, $mdpTimePicker) {
 	var vm = this;
 
 	vm.$log = $log;
@@ -11,7 +11,7 @@ function OldCustomersPopupCtrl($log, $scope, $mdDialog, $mdpTimePicker) {
 	vm.initCtrl();
 }
 
-OldCustomersPopupCtrl.prototype.initCtrl = function () {
+CustomerSendLimitPopupCtrl.prototype.initCtrl = function () {
 
 	var vm = this;
 
@@ -35,7 +35,7 @@ OldCustomersPopupCtrl.prototype.initCtrl = function () {
 	]
 };
 
-OldCustomersPopupCtrl.prototype.optionSelected = function (option) {
+CustomerSendLimitPopupCtrl.prototype.optionSelected = function (option) {
 
 	var vm = this;
 

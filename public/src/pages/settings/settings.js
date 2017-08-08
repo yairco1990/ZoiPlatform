@@ -160,7 +160,7 @@ SettingsCtrl.prototype.openCustomersSendLimitPopup = function (ev) {
 
 	var vm = this;
 
-	vm.openPopup(ev, OldCustomersPopupCtrl, 'src/pages/settings/old-customers-popup/old-customers-popup.html', null, function (selectedValue) {
+	vm.openPopup(ev, CustomerSendLimitPopupCtrl, 'src/pages/settings/customers-send-limit-popup/customers-send-limit-popup.html', null, function (selectedValue) {
 
 		//attach range to the user
 		vm.zoiUser.customerSendLimit = selectedValue;
