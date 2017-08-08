@@ -31,6 +31,23 @@ class AcuitySchedulingLogic {
 		});
 	}
 
+	getCalendars(options) {
+		let self = this;
+
+		return new Promise((resolve, reject) => {
+
+			self.acuity.request(MyUtils.addParamsToUrl('calendars', options), function (err, res, body) {
+
+				if (err || body.error) {
+					reject(err);
+					return console.error(err);
+				}
+
+				resolve(body);
+			});
+		});
+	}
+
 	getAvailability(options) {
 		let self = this;
 
@@ -78,7 +95,7 @@ class AcuitySchedulingLogic {
 					reject(err || body.error);
 					return console.error(err);
 				}
-				if(body.error){
+				if (body.error) {
 					reject(err || body.error);
 					return console.error(err);
 				}

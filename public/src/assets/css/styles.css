@@ -80,6 +80,7 @@ html, body {
     display: flex;
     padding: 0 16px;
     border-top: solid #f5ebeb 1px;
+    position: relative;
 }
 
 .boxed-page .box-hour-wrapper {

@@ -50,28 +50,29 @@ const newCustomerJoinQuestions = {
 		text: "Which template to use?"
 	}
 };
-ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
+ClientLogic.prototype.newCustomerJoin = async function (conversationData, reply) {
 
 	let self = this;
 	let user = self.user;
 
-	//if this is the start of the conversation
-	if (!user.conversationData) {
-		//set current question
-		let currentQuestion = newCustomerJoinQuestions.sendEmail;
-		//save conversation to the user
-		user.conversationData = conversationData;
-		//save the question
-		user.conversationData.lastQuestion = currentQuestion;
-		//save qr
-		let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
-			[facebookResponse.getQRButton("text", "Yes, send it.", {id: 1}),
-				facebookResponse.getQRButton("text", "No, don't send it.", {id: 2})]
-		);
-		user.conversationData.lastQRResponse = lastQRResponse;
+	try {
+		//if this is the start of the conversation
+		if (!user.conversationData) {
+			//set current question
+			let currentQuestion = newCustomerJoinQuestions.sendEmail;
+			//save conversation to the user
+			user.conversationData = conversationData;
+			//save the question
+			user.conversationData.lastQuestion = currentQuestion;
+			//save qr
+			let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
+				[facebookResponse.getQRButton("text", "Yes, send it.", {id: 1}),
+					facebookResponse.getQRButton("text", "No, don't send it.", {id: 2})]
+			);
+			user.conversationData.lastQRResponse = lastQRResponse;
 
-		//save the user
-		self.DBManager.saveUser(user).then(function () {
+			//save the user
+			await self.DBManager.saveUser(user);
 
 			//send messages
 			async.series([
@@ -82,83 +83,83 @@ ClientLogic.prototype.newCustomerJoin = function (conversationData, reply) {
 				]), true, delayTime),
 				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 			], MyUtils.getErrorMsg());
-
-		});
-	}
-	else if (user.conversationData.lastQuestion.id === newCustomerJoinQuestions.sendEmail.id) {
-
-		//verify that this is payload
-		if (!conversationData.payload) {
-			//send qr again
-			async.series([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
-				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-			], MyUtils.getErrorMsg());
-			return;
 		}
+		else if (user.conversationData.lastQuestion.id === newCustomerJoinQuestions.sendEmail.id) {
 
-		if (conversationData.payload.id == 1) {
-
-			if (user.session && user.session.newClient && user.session.newClient.email) {
-
-				let newCustomerEmail = user.session.newClient.email;
-				let firstName = user.session.newClient.firstName;
-				let emailTemplate = EmailConfig.newCustomerEmail;
-
-				let emailHtml = EmailLib.getEmailByName('promotionsMail');
-
-				//parse the first part
-				emailHtml = emailHtml.replace('{{line1}}', emailTemplate.line1);
-				emailHtml = emailHtml.replace('{{line2}}', emailTemplate.line2);
-				emailHtml = emailHtml.replace('{{line3}}', emailTemplate.line3);
-				emailHtml = emailHtml.replace('{{line4}}', emailTemplate.line4);
-				emailHtml = emailHtml.replace('{{bannerSrc}}', emailTemplate.bannerImage);
-
-				//parse the second part
-				emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);
-				emailHtml = MyUtils.replaceAll('{{firstName}}', firstName, emailHtml);
-				emailHtml = MyUtils.replaceAll('{{hoverColor}}', emailTemplate.hoverColor, emailHtml);
-				emailHtml = MyUtils.replaceAll('{{color}}', emailTemplate.color, emailHtml);
-				emailHtml = MyUtils.replaceAll('{{href}}', user.integrations.Acuity.userDetails.schedulingPage, emailHtml);
-				emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.newCustomerEmail.buttonText, emailHtml);
-				emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/unsubscribe?email=" + newCustomerEmail, emailHtml);
-
-				//parse subject
-				let newCustomerSubject = EmailConfig.newCustomerEmail.subject;
-				newCustomerSubject = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, newCustomerSubject);
-
-				EmailLib.sendEmail(emailHtml, [{
-					address: newCustomerEmail,
-					from: user.integrations.Acuity.userDetails.name + ' <noreply@zoi.ai>',
-					subject: newCustomerSubject,
-					alt: 'New Customer Joined',
-					replyTo: user.integrations.Acuity.userDetails.email
-				}]);
+			//verify that this is payload
+			if (!conversationData.payload) {
+				//send qr again
+				async.series([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+				], MyUtils.getErrorMsg());
+				return;
 			}
 
-			//send messages
-			async.series([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done 😎"), true),
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Greeting a new customer makes a good first step for retention"), true, delayTime),
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be here if you will need anything else"), false, delayTime),
-			], MyUtils.getErrorMsg());
+			if (conversationData.payload.id == 1) {
 
-			//clear conversation data
-			user.conversationData = null;
-			user.session = null;
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
-			}).catch(MyUtils.getErrorMsg());
+				if (user.session && user.session.newClient && user.session.newClient.email) {
 
-		} else {
-			user.conversationData = null;
-			user.session = null;
+					let newCustomerEmail = user.session.newClient.email;
+					let firstName = user.session.newClient.firstName;
+					let emailTemplate = EmailConfig.newCustomerEmail;
 
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
-				reply(facebookResponse.getTextMessage("Ok boss!"));
-			});
+					let emailHtml = EmailLib.getEmailByName('promotionsMail');
+
+					//parse the first part
+					emailHtml = emailHtml.replace('{{line1}}', emailTemplate.line1);
+					emailHtml = emailHtml.replace('{{line2}}', emailTemplate.line2);
+					emailHtml = emailHtml.replace('{{line3}}', emailTemplate.line3);
+					emailHtml = emailHtml.replace('{{line4}}', emailTemplate.line4);
+					emailHtml = emailHtml.replace('{{bannerSrc}}', emailTemplate.bannerImage);
+
+					//parse the second part
+					emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);
+					emailHtml = MyUtils.replaceAll('{{firstName}}', firstName, emailHtml);
+					emailHtml = MyUtils.replaceAll('{{hoverColor}}', emailTemplate.hoverColor, emailHtml);
+					emailHtml = MyUtils.replaceAll('{{color}}', emailTemplate.color, emailHtml);
+					emailHtml = MyUtils.replaceAll('{{href}}', user.integrations.Acuity.userDetails.schedulingPage, emailHtml);
+					emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.newCustomerEmail.buttonText, emailHtml);
+					emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/unsubscribe?email=" + newCustomerEmail, emailHtml);
+
+					//parse subject
+					let newCustomerSubject = EmailConfig.newCustomerEmail.subject;
+					newCustomerSubject = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, newCustomerSubject);
+
+					EmailLib.sendEmail(emailHtml, [{
+						address: newCustomerEmail,
+						from: user.integrations.Acuity.userDetails.name + ' <noreply@zoi.ai>',
+						subject: newCustomerSubject,
+						alt: 'New Customer Joined',
+						replyTo: user.integrations.Acuity.userDetails.email
+					}]);
+				}
+
+				//send messages
+				async.series([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done 😎"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Greeting a new customer makes a good first step for retention"), true, delayTime),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be here if you will need anything else"), false, delayTime),
+				], MyUtils.getErrorMsg());
+
+				//clear conversation data
+				user.conversationData = null;
+				user.session = null;
+				//save the user
+				self.DBManager.saveUser(user);
+
+			} else {
+				user.conversationData = null;
+				user.session = null;
+
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
+					reply(facebookResponse.getTextMessage("Ok boss!"));
+				});
+			}
 		}
+	} catch (err) {
+		Util.log("Error on new customer joined. userId => " + user._id);
 	}
 };
 
@@ -169,37 +170,39 @@ const promoteOldCustomersQuestions = {
 		text: "What do you say?"
 	}
 };
-ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
+ClientLogic.prototype.promoteOldCustomers = async function (conversationData, reply) {
 
 	let self = this;
 	let user = self.user;
 
-	let lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
-	let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
+	try {
+		let lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+		let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 
-	//if this is the start of the conversation
-	if (!user.conversationData) {
-		//current question
-		let currentQuestion = promoteOldCustomersQuestions.toPromote;
-		//save conversation to the user
-		user.conversationData = conversationData;
-		//save the question
-		user.conversationData.lastQuestion = currentQuestion;
+		//if this is the start of the conversation
+		if (!user.conversationData) {
+			//current question
+			let currentQuestion = promoteOldCustomersQuestions.toPromote;
+			//save conversation to the user
+			user.conversationData = conversationData;
+			//save the question
+			user.conversationData.lastQuestion = currentQuestion;
 
-		//TODO config it
-		let dayRange = 7;
-
-		//search old customers
-		acuityLogic.getAppointments({
-			minDate: MyUtils.convertToAcuityDate(moment().subtract(dayRange, 'days').startOf('day')),
-			maxDate: MyUtils.convertToAcuityDate(moment().add(dayRange, 'days').endOf('day'))
-		}).then(function (appointments) {
+			//user selected range
+			let daysRange = user.oldCustomersRange.value || 30;
+			//search old customers
+			let appointments = await acuityLogic.getAppointments({
+				minDate: MyUtils.convertToAcuityDate(moment().subtract(daysRange, 'days').startOf('day')),
+				maxDate: MyUtils.convertToAcuityDate(moment().add(30, 'days').endOf('day'))
+			});
 
 			//window checking TODO config it
-			let windowStartDate = moment().subtract(dayRange, 'days').startOf('day');
-			let windowEndDate = moment().subtract(dayRange, 'days').endOf('day');
+			let windowStartDate = moment().subtract(daysRange, 'days').startOf('day');
+			let windowEndDate = moment().subtract(daysRange, 'days').endOf('day');
+
 			let windowAppointments = [];
 			let nonWindowAppointments = [];
+
 			//iterate all the appointments
 			appointments.forEach(function (appointment) {
 				//if the appointment is in the window
@@ -219,9 +222,9 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 				};
 				let isExist = false;
 				nonWindowAppointments.forEach(function (nonWindowAppointment) {
-					if (windowAppointment.firstName == nonWindowAppointment.firstName &&
-						windowAppointment.lastName == nonWindowAppointment.lastName &&
-						windowAppointment.email == nonWindowAppointment.email) {
+					if (windowAppointment.firstName === nonWindowAppointment.firstName &&
+						windowAppointment.lastName === nonWindowAppointment.lastName &&
+						windowAppointment.email === nonWindowAppointment.email) {
 						//if those equals, it means that this is not a old customer
 						isExist = true;
 					}
@@ -237,9 +240,6 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 				return customer.firstName && customer.lastName;
 			});
 
-			return oldCustomers;
-		}).then(function (oldCustomers) {
-
 			//save the old customers
 			if (!user.session) {
 				user.session = {};
@@ -254,47 +254,43 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 			user.conversationData.lastQRResponse = lastQRResponse;
 
 			//save the user
-			self.DBManager.saveUser(user).then(function () {
+			await self.DBManager.saveUser(user);
 
-				if (oldCustomers.length) {
-					//send messages
-					async.series([
-						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hey boss, I noticed that there are " + oldCustomers.length + " non-regular customers. These are customers that didn't visit for a while."), true),
-						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's send a promotion email"), true, delayTime),
-						MyUtils.resolveMessage(reply, facebookResponse.getGenericTemplate([
-							facebookResponse.getGenericElement("10% Off", EmailConfig.oldCustomersEmail.bannerImage, "Send non-regular customers a promotion with 10% discount", null)
-						]), true),
-						MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
-					], MyUtils.getErrorMsg());
-
-				} else {
-					reply(facebookResponse.getTextMessage("I didn't find relevant customers for the promotion. Try again tomorrow and I will check again."), false, delayTime);
-					self.clearSession();
-				}
-
-			})
-		}).catch(MyUtils.getErrorMsg(function () {
-			self.clearSession();
-		}));
-	}
-	else if (lastQuestionId === promoteOldCustomersQuestions.toPromote.id) {
-
-		if (!conversationData.payload) {
-			//send qr again
-			async.series([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
-				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-			], MyUtils.getErrorMsg());
-			return;
+			if (oldCustomers.length) {
+				//send messages
+				async.series([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hey boss, I noticed that there are " + oldCustomers.length + " non-regular customers. These are customers that didn't visit for a while."), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's send a promotion email"), true, delayTime),
+					MyUtils.resolveMessage(reply, facebookResponse.getGenericTemplate([
+						facebookResponse.getGenericElement("10% Off", EmailConfig.oldCustomersEmail.bannerImage, "Send non-regular customers a promotion with 10% discount", null)
+					]), true),
+					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
+				], MyUtils.getErrorMsg());
+			} else {
+				//decide on text depends if the user made the request or it made by the system interval
+				let replyText = !conversationData.automated ? "I didn't find relevant customers for the promotion. Try again tomorrow and I will check again." : "There are no non-regulars to preview today :)";
+				reply(facebookResponse.getTextMessage(replyText), false, delayTime);
+				self.clearSession();
+			}
 		}
+		else if (lastQuestionId === promoteOldCustomersQuestions.toPromote.id) {
 
-		if (conversationData.payload.id == 1) {
-			user.conversationData = null;
-			//save the old customers to metadata
-			user.metadata.oldCustomers = user.session.oldCustomers;
+			if (!conversationData.payload) {
+				//send qr again
+				async.series([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+				], MyUtils.getErrorMsg());
+				return;
+			}
 
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
+			if (conversationData.payload.id === 1) {
+				user.conversationData = null;
+				//save the old customers to metadata
+				user.metadata.oldCustomers = user.session.oldCustomers;
+
+				//save the user
+				await self.DBManager.saveUser(user)
 
 				//send messages
 				async.series([
@@ -305,11 +301,15 @@ ClientLogic.prototype.promoteOldCustomers = function (conversationData, reply) {
 				], MyUtils.getErrorMsg());
 
 				self.clearSession();
-			});
-		} else if (conversationData.payload.id == 2) {
-			reply(facebookResponse.getTextMessage("I will be here if you need me :)"));
-			self.clearSession();
+
+			} else if (conversationData.payload.id === 2) {
+				reply(facebookResponse.getTextMessage("I will be here if you need me :)"));
+				self.clearSession();
+			}
 		}
+	} catch (err) {
+		Util.log(err);
+		Util.log("Error on old customers scenario. userId => " + user._id);
 	}
 };
 

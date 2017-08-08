@@ -199,7 +199,7 @@ let Utils = {
 						let newValue = costs[j - 1];
 						if (s1.charAt(i - 1) != s2.charAt(j - 1))
 							newValue = Math.min(Math.min(newValue, lastValue),
-									costs[j]) + 1;
+								costs[j]) + 1;
 						costs[j - 1] = lastValue;
 						lastValue = newValue;
 					}
@@ -244,6 +244,13 @@ let Utils = {
 		return newUrl;
 	},
 
+	/**
+	 * check if in the arr there is key with the selected value
+	 * @param arr
+	 * @param key
+	 * @param value
+	 * @returns {boolean}
+	 */
 	isExist: function (arr, key, value) {
 		let isExist = false;
 		if (key) {
@@ -316,6 +323,53 @@ let Utils = {
 			console.error(err);
 			return null;
 		}
+	},
+
+	removeClientsExistOnList: function (list, clients, emailProperty) {
+		//get clear list of emails only
+		list = _.map(list, function (obj) {
+			return obj[emailProperty];
+		});
+
+		//remove clients by list emails
+		return clients.filter(function (client) {
+			return list.indexOf(client.email) === -1;
+		});
+	},
+
+	/**
+	 * check if string is json object
+	 * @param str
+	 * @returns {boolean}
+	 * @constructor
+	 */
+	isJson: function (str) {
+		try {
+			JSON.parse(str);
+		} catch (e) {
+			return false;
+		}
+		return true;
+	},
+
+	/**
+	 * get random n objects from array
+	 * @param arr
+	 * @param n
+	 * @returns {Array}
+	 */
+	getRandomFromArray: function (arr, n) {
+		var result = new Array(n),
+			len = arr.length,
+			taken = new Array(len);
+		if (n > len)
+			throw new RangeError("getRandom: more elements taken than available");
+		while (n--) {
+			var x = Math.floor(Math.random() * len);
+			result[n] = arr[x in taken ? taken[x] : x];
+			taken[x] = --len;
+		}
+		return result;
 	}
 };
 

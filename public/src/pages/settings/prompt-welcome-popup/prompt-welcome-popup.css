@@ -1,0 +1,18 @@
+#prompt-welcome-popup .old-customers-item {
+    height: 55px;
+    display: flex;
+    padding: 0 16px;
+    border-top: solid #f5ebeb 1px;
+}
+
+#prompt-welcome-popup .old-customers-details-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+#prompt-welcome-popup .old-customers-details-header {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

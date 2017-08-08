@@ -1,0 +1,7 @@
+#brief-time-popup .md-button.md-icon-button {
+    display: none !important;
+}
+
+#brief-time-popup form[name=timeForm] {
+    text-align: center !important;
+}

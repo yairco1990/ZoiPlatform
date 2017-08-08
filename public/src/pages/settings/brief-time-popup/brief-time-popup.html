@@ -1,0 +1,26 @@
+<div id="brief-time-popup">
+    <div style="padding: 20px">
+        <h4 style="text-align: center">
+            Morning Brief Time
+        </h4>
+
+        <!--<md-input-container-->
+                <!--style="margin-top: 40px"-->
+                <!--class="md-prompt-input-container ng-scope md-input-has-placeholder md-default-theme md-input-has-value">-->
+            <!--<input ng-model="vm.username" placeholder="Username" type="text"-->
+                   <!--class="ng-pristine ng-valid md-autofocus md-input ng-not-empty ng-touched">-->
+
+            <!--<div class="md-errors-spacer">-->
+            <!--</div>-->
+        <!--</md-input-container>-->
+
+        <md-time-picker ng-model="vm.morningBriefTime" message="message" read-only="readonly" mandatory="required" no-meridiem no-auto-switch></md-time-picker>
+
+
+        <div style="text-align: center">
+            <md-button class="md-raised md-primary" ng-click="vm.saveButtonClicked()">
+                Save
+            </md-button>
+        </div>
+    </div>
+</div>

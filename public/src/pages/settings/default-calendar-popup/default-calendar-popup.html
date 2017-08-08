@@ -1,0 +1,20 @@
+<div id="default-calendar-popup">
+    <div style="padding: 20px">
+        <h4 style="text-align: center">
+            Select default calendar
+        </h4>
+
+        <div class="old-customers-body">
+            <div class="old-customers-item" ng-repeat="calendar in vm.businessCalendars"
+                 ng-click="vm.calendarSelected(calendar)">
+                <div class="old-customers-details-wrapper">
+                    <div>
+                        <div class="old-customers-details-header">
+                            {{calendar.name}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

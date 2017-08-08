@@ -1,0 +1,20 @@
+<div id="old-customers-popup">
+    <div style="padding: 20px">
+        <h4 style="text-align: center">
+            Select period of time for non-regular customers
+        </h4>
+
+        <div class="old-customers-body">
+            <div class="old-customers-item" ng-repeat="option in vm.options"
+                 ng-click="vm.optionSelected(option)">
+                <div class="old-customers-details-wrapper">
+                    <div>
+                        <div class="old-customers-details-header">
+                            {{option.text}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

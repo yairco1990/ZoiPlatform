@@ -19,21 +19,20 @@ function DBManager() {
 		metadata: Object,
 		wishList: [String],
 		profile: Object,
-		startedAt: String
-		// profile: {
-		// 	actionTime: {
-		// 		numOfIntegrations: Number,
-		// 		isShared: Boolean,
-		// 		numOfAppointments: Number,
-		// 		profitFromAppointments: Number,
-		// 		numOfPromotions: Number
-		// 	}
-		// }
-		//profile - {number of integrations, is did share, number of appointments, amount of money from appointments, number of promotions}
+		startedAt: String,
+		nextMorningBriefDate: Number,
+		morningBriefTime: String,
+		defaultCalendar: Object,
+		promptNewCustomers: Boolean,
+		customerSendLimit: Object,
+		oldCustomersRange: Object,
+		lastMessageTime: Number,
 	}, {minimize: false});
 
 	let blackListSchema = new Schema({
-		_id: String
+		_id: String,
+		blockDate: Number,
+		blockDateString: String
 	});
 
 	let inputsSchema = new Schema({
@@ -48,12 +47,37 @@ function DBManager() {
 		score: Number
 	}, {minimize: false});
 
+	let promotionTypesSchema = new Schema({
+		_id: Number,
+		name: String
+	});
+
 	this.User = mongoose.model('User', userSchema);
 	this.BlackList = mongoose.model('BlackList', blackListSchema);
 	this.Inputs = mongoose.model('Inputs', inputsSchema);
+	this.PromotionTypes = mongoose.model('PromotionTypes', promotionTypesSchema);
 
 	Util.log("DB synced");
 }
+
+/**
+ * get users
+ * @param where
+ */
+DBManager.prototype.getUsers = function (where) {
+
+	let self = this;
+
+	return new Promise(function (resolve, reject) {
+		self.User.find(where, function (err, users) {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(users);
+			}
+		});
+	});
+};
 
 /**
  * get user
@@ -152,8 +176,53 @@ DBManager.prototype.addEmailToUnsubscribe = function (email) {
 
 	return new Promise(function (resolve, reject) {
 
-		self.BlackList.create(email, function (err, doc) { // callback
-				if (err && err.code != 11000) {
+		let emailObj = new self.BlackList(email);
+
+		self.BlackList.findOneAndUpdate(
+			{_id: email}, // find a document with that filter
+			emailObj, // document to insert when nothing was found
+			{upsert: true, new: true}, // options
+			function (err, doc) { // callback
+				if (err) {
+					reject(err);
+				} else {
+					resolve(doc);
+				}
+			}
+		);
+	});
+};
+
+/**
+ * get promotion types
+ * @param where
+ */
+DBManager.prototype.getPromotionsTypes = function (where) {
+
+	let self = this;
+
+	return new Promise(function (resolve, reject) {
+		self.PromotionTypes.find(where, function (err, users) {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(users);
+			}
+		});
+	});
+};
+
+/**
+ * set promotion type
+ * @param where
+ */
+DBManager.prototype.addPromotionsType = function (promotionType) {
+
+	let self = this;
+
+	return new Promise(function (resolve, reject) {
+		self.PromotionTypes.create(promotionType, function (err, doc) { // callback
+				if (err) {
 					reject(err);
 				} else {
 					resolve(doc);
@@ -183,5 +252,6 @@ DBManager.prototype.addInput = function (inputObj) {
 		);
 	});
 };
+
 
 module.exports = new DBManager();

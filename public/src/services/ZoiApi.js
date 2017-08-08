@@ -16,6 +16,8 @@ angular.module('Zoi.services.zoi-api', [])
 						user: user
 					},
 					timeout: 10000
+				}).then(function (result) {
+					return result.data;
 				});
 			}
 		}

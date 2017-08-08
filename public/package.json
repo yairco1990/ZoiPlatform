@@ -20,8 +20,10 @@
     "karma-spec-reporter": "0.0.26"
   },
   "dependencies": {
-    "@google-cloud/speech": "^0.10.2",
+    "@google-cloud/speech": "0.10.2",
     "angular": "1.5.5",
+    "angular-material-time-picker": "1.0.6",
+    "angular-messages": "^1.5.5",
     "angular-resource": "1.5.5",
     "angular-translate": "2.13.1",
     "angular-translate-loader-static-files": "2.13.1",
@@ -31,7 +33,7 @@
     "bootstrap-rtl": "3.3.4",
     "font-awesome": "4.7.0",
     "ionicons": "3.0.0",
-    "iso-currency": "^0.2.7",
+    "iso-currency": "0.2.7",
     "jquery": "3.2.1",
     "moment": "2.17.1",
     "moment-timezone": "0.5.13"

@@ -16,6 +16,7 @@ Promise.all([
 	loadFile('src/assets/css/styles.css', 'css'),
 	loadFile('src/assets/css/animate.css', 'css'),
 	loadFile('https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css', 'css', null, true),
+	loadFile('node_modules/angular-material-time-picker/dist/md-time-picker.css', 'css'),
 
 	//DIRECTIVES
 	loadFile('src/directives/integration-element/integration-element.css', 'css'),
@@ -23,15 +24,22 @@ Promise.all([
 	//PAGES
 	loadFile('src/pages/agenda/agenda.css', 'css'),
 	loadFile('src/pages/old-customers/old-customers.css', 'css'),
+	loadFile('src/pages/settings/settings.css', 'css'),
 	loadFile('src/pages/account/account.css', 'css'),
 	loadFile('src/pages/abilities/abilities.css', 'css'),
 	loadFile('src/pages/profile/profile.css', 'css'),
 	loadFile('src/pages/integrations/integrations.css', 'css'),
 	loadFile('src/pages/appointment-sum/appointment-sum.css', 'css'),
-	loadFile('src/pages/mail/mail.css', 'css')
+	loadFile('src/pages/mail/mail.css', 'css'),
+	loadFile('src/pages/settings/brief-time-popup/brief-time-popup.css', 'css'),
+	loadFile('src/pages/settings/default-calendar-popup/default-calendar-popup.css', 'css'),
+	loadFile('src/pages/settings/old-customers-popup/old-customers-popup.css', 'css'),
+	loadFile('src/pages/settings/customers-send-limit-popup/customers-send-limit-popup.css', 'css'),
+	loadFile('src/pages/settings/prompt-welcome-popup/prompt-welcome-popup.css', 'css'),
 ]).then(function () {
 
-	return loadFile('node_modules/angular/angular.min.js', 'js');
+	//TODO change to min
+	return loadFile('node_modules/angular/angular.js', 'js');
 
 }).then(function () {
 
@@ -44,10 +52,11 @@ Promise.all([
 		//START OF NPM LIBRARIES
 		loadFile('node_modules/jquery/dist/jquery.min.js', 'js'),
 		loadFile('node_modules/angular-ui-router/release/angular-ui-router.min.js', 'js'),
-		// loadFile('node_modules/angular-mocks/angular-mocks.js', 'js'),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js', 'js', null, false),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js', 'js', null, false),
+		loadFile('node_modules/angular-messages/angular-messages.min.js', 'js'),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js', 'js', null, false),
+		loadFile('node_modules/angular-material-time-picker/dist/md-time-picker.js', 'js'),
 		loadFile('node_modules/angular-translate/dist/angular-translate.min.js', 'js'),
 		loadFile('node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js', 'js'),
 		loadFile('node_modules/bootstrap/dist/js/bootstrap.min.js', 'js'),
@@ -69,7 +78,13 @@ Promise.all([
 		loadFile('src/directives/integration-element/integration-element.js', 'js'),
 
 		// CONTROLLERS
+		loadFile('src/pages/settings/brief-time-popup/brief-time-popup.js', 'js'),
+		loadFile('src/pages/settings/default-calendar-popup/default-calendar-popup.js', 'js'),
+		loadFile('src/pages/settings/old-customers-popup/old-customers-popup.js', 'js'),
+		loadFile('src/pages/settings/customers-send-limit-popup/customers-send-limit-popup.js', 'js'),
+		loadFile('src/pages/settings/prompt-welcome-popup/prompt-welcome-popup.js', 'js'),
 		loadFile('src/pages/integrations/integrations.js', 'js'),
+		loadFile('src/pages/settings/settings.js', 'js'),
 		loadFile('src/pages/agenda/agenda.js', 'js'),
 		loadFile('src/pages/account/account.js', 'js'),
 		loadFile('src/pages/abilities/abilities.js', 'js'),
@@ -77,7 +92,6 @@ Promise.all([
 		loadFile('src/pages/old-customers/old-customers.js', 'js'),
 		loadFile('src/pages/appointment-sum/appointment-sum.js', 'js'),
 		loadFile('src/pages/mail/mail.js', 'js'),
-		loadFile('src/pages/integrations/mindbody-popup/mindbody-popup.js', 'js'),
 		loadFile('src/app.js', 'js')
 		//END OF CONTROLLERS
 

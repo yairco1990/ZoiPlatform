@@ -16,7 +16,7 @@ let Environments = {
 		clientUrl: CLIENT_NGROK
 	}
 };
-let selectedEnvironment = Environments.DEV;
+let selectedEnvironment = Environments.NGROK;
 
 ///////////////////////////////////////////////////////////////////////////////
 module.exports = {
@@ -30,9 +30,10 @@ module.exports = {
 	Acuity: {
 		"clientId": "zyD9dntj6EnOQ0tH",
 		"clientSecret": "mezlVskAfjoAJSy8iAGhh3FYOW3MvSEASBnlUGQE",
-		// "clientId": "VyZtYYyz2be8VpZ6",
-		// "clientSecret": "Au4oQ6mG9vSvRnbHRUEBWQ8YOdMw2ZRqkDUg5ehM",
 		"redirectUri": "https://zoiai.com:3000/acuity/oauth2"//TODO change it!
 	},
-	delayTime: 10
+	delayTime: 10,
+	oldCustomersIntervalTime: 1000 * 60 * 60 * 24,
+	morningBriefIntervalTime: 1000 * 60 * 2,
+	oneDay: 1000 * 60 * 60 * 24
 };

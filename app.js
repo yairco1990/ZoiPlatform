@@ -5,12 +5,11 @@ const Bot = require('./bot/bot_framework');
 const Util = require('util');
 const MyUtils = require('./interfaces/utils');
 const PostbackLogic = require('./logic/Listeners/PostbackLogic');
-const speechToText = require('./interfaces/SpeechToText');
-const facebookResponses = require('./interfaces/FacebookResponse');
 const express = require('express');
 const app = express();
 const Services = require('./bot/Services');
 const ApiRouting = require('./bot/ApiRouting');
+const BackgroundLogic = require('./logic/BackgroundLogic');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const EmailLib = require('./interfaces/EmailLib');
@@ -93,3 +92,4 @@ app.use(function (req, res, next) {
 Services.setRouting(app, bot);
 Services.setBotListeners(bot);
 ApiRouting.setApiRouting(app, bot);
+BackgroundLogic.startAll(bot);

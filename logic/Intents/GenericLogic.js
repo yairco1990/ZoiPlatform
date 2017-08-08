@@ -45,6 +45,10 @@ GenericLogic.prototype.processIntent = function (conversationData, setBotTyping,
 				facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", "full")
 			]));
 			break;
+		case "generic say goodbye":
+			reply(facebookResponse.getTextMessage(responseText));
+			self.clearSession();
+			break;
 		default:
 			//if we didn't find response for this intent - send fallback.
 			if (!responseText) {
@@ -53,6 +57,17 @@ GenericLogic.prototype.processIntent = function (conversationData, setBotTyping,
 			reply(facebookResponse.getTextMessage(responseText));
 			break;
 	}
+};
+
+GenericLogic.prototype.clearSession = function () {
+	let self = this;
+	let user = self.user;
+
+	user.conversationData = null;
+	user.session = null;
+	self.DBManager.saveUser(user).then(function () {
+		Util.log("conversation cleared!");
+	});
 };
 
 module.exports = GenericLogic;

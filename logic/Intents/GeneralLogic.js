@@ -40,8 +40,11 @@ GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping,
 		case "general leave review":
 			self.wishZoi(conversationData, setBotTyping, requestObj, reply);
 			break;
+		case "general suggest idea":
+			self.wishZoi(conversationData, setBotTyping, requestObj, reply);
+			break;
 		case "general morning brief":
-			setBotTyping();
+			setBotTyping && setBotTyping();
 			self.sendMorningBrief(conversationData, setBotTyping, requestObj, reply);
 			break;
 		default:
@@ -53,22 +56,30 @@ GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping,
 /**
  * send morning brief
  */
-GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTyping, requestObj, reply) {
+GeneralLogic.prototype.sendMorningBrief = async function (conversationData, setBotTyping, requestObj, reply) {
+
 	let self = this;
 	let user = self.user;
+	try {
 
-	let tokens = user.integrations.Gmail;
+		let appointmentLogic = new AppointmentLogic(user);
 
-	let appointmentLogic = new AppointmentLogic(user);
+		let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 
-	let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
-	acuityLogic.getClients().then(function (clients) {
+		//if user integrated with Gmail
+		if (user.integrations && user.integrations.Gmail) {
 
-		let queryString = "newer_than:7d is:unread";
+			let tokens = user.integrations.Gmail;
 
-		//get unread emails from the user clients
-		GmailLogic.getEmailsList(tokens, queryString, 'me', user).then(function (messages) {
+			//get business customers
+			let clients = await acuityLogic.getClients();
 
+			let queryString = "newer_than:7d is:unread";
+
+			//get unread emails from the user clients
+			let messages = await GmailLogic.getEmailsList(tokens, queryString, 'me', user);
+
+			//do the intersection between customers emails and the user's gmail
 			let clientsMessages = _.filter(messages, function (item1) {
 				return _.some(this, function (item2) {
 					return item1.from.includes(item2.email) && item2.email;
@@ -87,67 +98,68 @@ GeneralLogic.prototype.sendMorningBrief = function (conversationData, setBotTypi
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true),
 				], MyUtils.getErrorMsg());
 			}
+		}
 
-			//get appointments for today
-			return acuityLogic.getAppointments({
-				minDate: MyUtils.convertToAcuityDate(moment().startOf('day')),
-				maxDate: MyUtils.convertToAcuityDate(moment().endOf('day'))
-			});
-		}).then(function (appointments) {
+		//get appointments for today
+		let appointments = await acuityLogic.getAppointments({
+			minDate: MyUtils.convertToAcuityDate(moment().startOf('day')),
+			maxDate: MyUtils.convertToAcuityDate(moment().endOf('day'))
+		});
 
-			//function for starting send promotions dialog
-			let startSendPromotions = function () {
-				appointmentLogic.processIntent({
-					intent: "appointment send promotions",
-					context: "APPOINTMENT",
-					skipHey: true
-				}, setBotTyping, requestObj, reply);
-			};
+		//function for starting send promotions dialog
+		let startSendPromotions = function () {
+			appointmentLogic.processIntent({
+				intent: "appointment send promotions",
+				context: "APPOINTMENT",
+				skipHey: true
+			}, setBotTyping, requestObj, reply);
+		};
 
 
-			if (appointments.length) {
+		if (appointments.length) {
 
-				//sort appointments
-				appointments.sort(function (q1, q2) {
-					if (moment(q1.datetime).isAfter(moment(q2.datetime))) {
-						return 1;
-					} else {
-						return -1;
-					}
-				});
-
-				//get the next appointment
-				let nextAppointment;
-				appointments.forEach(function (appointment) {
-					if (!nextAppointment && moment(appointment.datetime).isAfter(moment())) {
-						nextAppointment = appointment;
-					}
-				});
-
-				let messages = [MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
-					facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
-				]), true, delayTime)];
-
-				//if there is next appointment - add another message about it.
-				if (nextAppointment) {
-					messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime));
+			//sort appointments
+			appointments.sort(function (q1, q2) {
+				if (moment(q1.datetime).isAfter(moment(q2.datetime))) {
+					return 1;
+				} else {
+					return -1;
 				}
+			});
 
-				async.series(messages, function () {
-					startSendPromotions();
-				});
+			//get the next appointment
+			let nextAppointment;
 
-			} else {
-				(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have appointments today"), true, delayTime))().then(function () {
-					startSendPromotions();
-				});
+			appointments.forEach(function (appointment) {
+				if (!nextAppointment && moment(appointment.datetime).isAfter(moment())) {
+					nextAppointment = appointment;
+				}
+			});
+
+			let messages = [MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
+				facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
+			]), true, delayTime)];
+
+			//if there is next appointment - add another message about it.
+			if (nextAppointment) {
+				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime));
 			}
 
-		}).catch(function (err) {
-			Util.log("Error:");
-			Util.log(err);
-		});
-	});
+			async.series(messages, function () {
+				startSendPromotions();
+			});
+
+		} else {
+			async.series([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have appointments today"), true, delayTime)
+			], function () {
+				startSendPromotions();
+			});
+		}
+	} catch (err) {
+		Util.log("Error on morning brief. userId => " + user._id);
+		Util.log(err);
+	}
 };
 
 const wishZoiQuestions = {

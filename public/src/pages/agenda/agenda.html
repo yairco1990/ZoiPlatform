@@ -6,7 +6,12 @@
                 {{moment().format('lll')}}
             </div>
             <div class="box-sub-header">
-                You have {{vm.appointments.length}} meetings today
+                <div>
+                    Calendar: {{vm.calendarName}}
+                </div>
+                <div style="margin-top: 5px;">
+                    You have {{vm.appointments.length}} meetings today
+                </div>
             </div>
             <div class="box-body">
                 <div class="box-item" ng-repeat="appointment in vm.appointments">

@@ -33,22 +33,47 @@ const fallbackText = "I don't know what that means 😕, Please try to say it ag
  * @param input - the user input
  * @param reply - send message to the user function
  */
-ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot, reply) {
+ListenLogic.prototype.processInput = async function (input, payload, setBotTyping, bot, reply) {
 
 	let self = this;
 
 	Util.log("User input = " + input);
 
-	//check intent with NLP
-	// requestify.request('http://52.174.244.154:8080/zoi/getIntent?text=' + input, {
-	requestify.request('http://52.177.185.253:5000/parse?q=' + input, {
-		method: 'GET'
-	}).then(function (response) {
-		response = response.getBody();
+	try {
 
-		let intent = MyUtils.replaceAll("-", " ", response.intent.name);
-		let entities = response.entities;
-		let intentScore = response.intent.confidence;
+		//get the user
+		let user = await self.DBManager.getUser({_id: payload.sender.id});
+
+		//check if this is quick reply
+		let isQuickReply = payload.message && payload.message.quick_reply && payload.message.quick_reply.payload;
+
+		//check if the input is payload
+		let isPayloadRequest = MyUtils.isJson(input);
+
+		//TODO if the user entered text that resolved as bye zoi. what to do?
+		//check if wait for text message
+		// let isWaitForText = user.conversationData && user.conversationData.nextAnswerState === "text";
+
+		//declare variables
+		let intent, entities, intentScore;
+
+		//if it's regular message
+		if (!isQuickReply && !isPayloadRequest) {
+			//check intent with NLP
+			let nlpResponse = await requestify.request('http://52.177.185.253:5000/parse?q=' + input, {
+				method: 'GET'
+			});
+
+			nlpResponse = nlpResponse.getBody();
+
+			intent = MyUtils.replaceAll("-", " ", nlpResponse.intent.name);
+			entities = nlpResponse.entities;
+			intentScore = nlpResponse.intent.confidence;
+		} else {
+			intent = isQuickReply ? "Quick Reply" : isPayloadRequest ? "Payload Button" : "Error: What the intent?";
+			entities = "No entities";
+			intentScore = 0;
+		}
 
 		Util.log("Intent -> " + intent);
 		Util.log("Entities -> " + entities);
@@ -64,90 +89,92 @@ ListenLogic.prototype.processInput = function (input, payload, setBotTyping, bot
 		};
 
 		//check if this is a button of quick replay
-		if (payload.message && payload.message.quick_reply && payload.message.quick_reply.payload) {
+		if (isQuickReply) {
 			conversationData.payload = JSON.parse(payload.message.quick_reply.payload);
 			conversationData.intent = input;
 			conversationData.entities = {};
 		}
 
-		//get the user
-		self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {
+		//add input and intention to DB(do it async)
+		self.DBManager.addInput({
+			userId: user._id,
+			input: input || "Voice Recognition Error Probably",
+			intent: intent,
+			score: intentScore
+		});
 
-			//add input and intention to DB
-			self.DBManager.addInput({
-				userId: user._id,
-				input: input || "Voice Recognition Error Probably",
-				intent: intent,
-				score: intentScore
-			});
+		//if the user have no email or full name - go the complete the "welcome conversation"
+		if (!user || input.toLowerCase() === "reset") {
+			conversationData.context = "WELCOME";
+			//ignore the zoi-brain, and return the intent to the original input
+			conversationData.intent = input;
+			conversationData.entities = {};
+		}
+		//if the user in the middle of a conversation - get the context.
+		//if the user want to leave the conversation - don't use the context, and delete the conversation data from the user
+		else if (user && user.conversationData && conversationData.intent !== "generic say goodbye" && conversationData.intent !== "general no thanks") {
+			conversationData.context = user.conversationData.context;
+			conversationData.intent = user.conversationData.intent;
+		}
+		//block user from proceed without integration with Acuity
+		else if (!user.integrations || !user.integrations.Acuity) {
+			reply(facebookResponse.getButtonMessage("To start working together, I'll have to work with the tools you work with to run your business. Press on the link to help me integrate with Acuity Scheduling and Gmail.", [
+				facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
+			]));
+			return;
+		}
 
-			//if the user have no email or full name - go the complete the "welcome conversation"
-			if (!user || input.toLowerCase() == "reset") {
-				conversationData.context = "WELCOME";
-				//ignore the zoi-brain, and return the intent to the original input
-				conversationData.intent = input;
-				conversationData.entities = {};
-			}
-			//if the user in the middle of a conversation - get the context.
-			//if the user want to leave the conversation - don't use the context, and delete the conversation data from the user
-			else if (user && user.conversationData && conversationData.intent != "general bye zoi" && conversationData.intent != "general no thanks") {
-				conversationData.context = user.conversationData.context;
-				conversationData.intent = user.conversationData.intent;
-			}
-			//block user from proceed without integration with Acuity
-			else if (!user.integrations || !user.integrations.Acuity) {
-				reply(facebookResponse.getButtonMessage("To start working together, I'll have to work with the tools you work with to run your business. Press on the link to help me integrate with Acuity Scheduling and Gmail.", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
-				]));
-				return;
-			}
 
-			//check the intent
-			switch (conversationData.context) {
-				case "WELCOME":
-					let welcomeLogic = new WelcomeLogic(user);
-					welcomeLogic.processIntent(conversationData, setBotTyping, payload, reply);
-					break;
-				case "APPOINTMENT":
-					let appointmentLogic = new AppointmentLogic(user);
-					appointmentLogic.processIntent(conversationData, setBotTyping, payload, reply);
-					break;
-				case "CLIENT":
-					let clientLogic = new ClientLogic(user);
-					clientLogic.processIntent(conversationData, setBotTyping, payload, reply);
-					break;
-				case "GENERAL":
-					let generalLogic = new GeneralLogic(user);
-					generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
-					break;
-				case "GENERIC":
-					let genericLogic = new GenericLogic(user);
-					genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
-					break;
-				default:
-					reply(facebookResponse.getTextMessage(fallbackText));
-					break;
-			}
-		}).catch(function (err) {
+		//save the last message time
+		user.lastMessageTime = new Date().valueOf();
 
-			self.DBManager.getUser({_id: payload.sender.id}).then(function (user) {
+		//check the intent
+		switch (conversationData.context) {
+			case "WELCOME":
+				let welcomeLogic = new WelcomeLogic(user);
+				welcomeLogic.processIntent(conversationData, setBotTyping, payload, reply);
+				break;
+			case "APPOINTMENT":
+				let appointmentLogic = new AppointmentLogic(user);
+				appointmentLogic.processIntent(conversationData, setBotTyping, payload, reply);
+				break;
+			case "CLIENT":
+				let clientLogic = new ClientLogic(user);
+				clientLogic.processIntent(conversationData, setBotTyping, payload, reply);
+				break;
+			case "GENERAL":
+				let generalLogic = new GeneralLogic(user);
+				generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
+				break;
+			case "GENERIC":
+				let genericLogic = new GenericLogic(user);
+				genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
+				break;
+			default:
+				reply(facebookResponse.getTextMessage(fallbackText));
+				break;
+		}
 
-				user.conversationData = null;
-				self.DBManager.saveUser(user).then(function () {
-					Util.log("user session deleted after error. userId -> " + user._id);
+	} catch (err) {
 
-					(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(fallbackText), false))();
-				});
+		Util.log(err);
 
-			}).catch(function () {
+		try {
+
+			let user = await self.DBManager.getUser({_id: payload.sender.id});
+
+			user.conversationData = null;
+			await self.DBManager.saveUser(user).then(function () {
+				Util.log("user session deleted after error. userId -> " + user._id);
+
 				(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(fallbackText), false))();
 			});
 
-			Util.log(err);
-		});
-	}).catch(function (err) {
-		Util.log(err);
-	});
+		} catch (err2) {
+			Util.log(err2);
+			(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(fallbackText), false))();
+		}
+	}
 };
 
 module.exports = ListenLogic;

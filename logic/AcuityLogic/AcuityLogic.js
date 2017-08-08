@@ -78,6 +78,30 @@ class AcuityLogic {
 		});
 	}
 
+	/**
+	 * get business calendars
+	 * @param data
+	 * @param callback
+	 * @returns {Promise.<void>}
+	 */
+	async getCalendars(data, callback) {
+		let self = this;
+
+		try {
+			let user = await self.DBManager.getUser({_id: data.userId});
+
+			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+
+			let calendars = await acuityApi.getCalendars();
+
+			callback(200, calendars);
+		}
+		catch (err) {
+			callback(400, err);
+			console.error(err);
+		}
+	}
+
 	getAppointmentTypes(userId, callback) {
 		let self = this;
 
@@ -118,9 +142,13 @@ class AcuityLogic {
 		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
+			//check which calendar to use(if valid id - choose it. else - all calendars)
+			let calendarId = user.defaultCalendar.id > 0 ? user.defaultCalendar.id : null;
+
 			return acuityApi.getAppointments({
 				minDate: MyUtils.convertToAcuityDate(moment().startOf('day')),
-				maxDate: MyUtils.convertToAcuityDate(moment().endOf('day'))
+				maxDate: MyUtils.convertToAcuityDate(moment().endOf('day')),
+				calendarId: calendarId
 			});
 		}).then(function (appointments) {
 
@@ -310,66 +338,65 @@ class AcuityLogic {
 		});
 	}
 
-	onAppointmentScheduled(userId, data, bot, callback) {
+	async onAppointmentScheduled(userId, data, bot, callback) {
 		let self = this;
 
-		let acuityApi;
-		let user;
-		//get the user that wants to integrate
-		self.DBManager.getUser({_id: userId}).then(function (_user) {
+		try {
+			//get the user that wants to integrate
+			let user = await self.DBManager.getUser({_id: userId});
 
-			user = _user;
+			//if the user prompt new customers
+			if (user.promptNewCustomers !== false) {
+				let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-			acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+				let appointment = await acuityApi.getAppointments(null, 'appointments/' + data.id);
 
-			return acuityApi.getAppointments(null, 'appointments/' + data.id);
-
-		}).then(function (appointment) {
-
-			let options = {
-				firstName: appointment.firstName,
-				lastName: appointment.lastName
-			};
-
-			return acuityApi.getAppointments(options);
-
-		}).then(function (appointments) {
-
-			if (appointments.length < 2) {
-				let appointment = appointments[0];
-				let newClient = {
+				let options = {
 					firstName: appointment.firstName,
-					lastName: appointment.lastName,
-					email: appointment.email,
+					lastName: appointment.lastName
 				};
 
-				if (!user.conversationData) {
+				let appointments = await acuityApi.getAppointments(options);
 
-					//save the new client to user
-					user.session = {
-						newClient: newClient
+				if (appointments.length < 2) {
+
+					let newClient = {
+						firstName: appointment.firstName,
+						lastName: appointment.lastName,
+						email: appointment.email,
 					};
-					self.DBManager.saveUser(user).then(function () {
 
-						//start the conversation in the clientLogic class
-						let clientLogic = new ClientLogic(user);
-						let conversationData = {
-							intent: "client new customer join",
-							context: "CLIENT"
+					if (!user.conversationData) {
+
+						//save the new client to user
+						user.session = {
+							newClient: newClient
 						};
-						let replyFunction = self.getReplyFunction(bot, user);
-						clientLogic.processIntent(conversationData, null, null, replyFunction);
-					});
+						self.DBManager.saveUser(user).then(function () {
+
+							//start the conversation in the clientLogic class
+							let clientLogic = new ClientLogic(user);
+							let conversationData = {
+								intent: "client new customer join",
+								context: "CLIENT"
+							};
+							let replyFunction = self.getReplyFunction(bot, user);
+							clientLogic.processIntent(conversationData, null, null, replyFunction);
+						});
+					}
+
+					callback(200, {message: "It's a new customer"});
+				} else {
+					callback(200, {message: "Not a new customer"});
 				}
-
-				callback(200, {message: "It's a new customer"});
 			} else {
-				callback(200, {message: "Not a new customer"});
+				callback(200, {message: "User doesn't prompt new customers"});
 			}
-
-		}).catch(MyUtils.getErrorMsg(function (err) {
+		} catch (err) {
+			Util.log("Failed to send welcome message to new customer");
+			Util.log(err);
 			callback(400, err);
-		}));
+		}
 	}
 
 	integrate(userId, code, bot, callback) {
@@ -415,6 +442,8 @@ class AcuityLogic {
 				if (!isAlreadyConnectedWithAcuity) {
 					Util.log("Integrated with Acuity successfully");
 					Util.log(response);
+					//save the last message time
+					user.lastMessageTime = new Date().valueOf();
 					//start the conversation in the welcomeLogic class
 					let welcomeLogic = new WelcomeLogic(user);
 					let conversationData = {
@@ -435,7 +464,10 @@ class AcuityLogic {
 
 		let self = this;
 
-		self.DBManager.addEmailToUnsubscribe({_id: data.email}).then(function () {
+		//unsubscribe for 20 years :)
+		let unsubscribeDate = moment().add(20, 'years').valueOf();
+
+		self.DBManager.addEmailToUnsubscribe({_id: data.email, blockDate: unsubscribeDate}).then(function () {
 			callback(200, "Successfully unsubscribed\n" + data.email);
 		});
 	}

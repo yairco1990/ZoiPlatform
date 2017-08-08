@@ -23,20 +23,13 @@ module.exports = {
 
 		//save user
 		app.post('/api/saveUser', function (req, res) {
-			Util.log(API_LOG + "saveUser. userId = " + req.query.user.id);
 			let userApiLogic = new UserApiLogic();
 			let user = JSON.parse(req.query.user);
+			Util.log(API_LOG + "saveUser. userId = " + user._id);
 			userApiLogic.saveUser(user, function (status, data) {
 				res.status(status).send(data);
 			});
 		});
-
-		//get agenda
-		// app.get('/api/getAgenda', function (req, res) {
-		// 	Util.log(API_LOG + "getAgenda. userId = " + req.query.facebookId);
-		// 	let appointmentApiLogic = new AppointmentApiLogic();
-		// 	appointmentApiLogic.getAppointments(res);
-		// });
 
 		//unsubscribe from zoi
 		app.get('/unsubscribe', function (req, res) {
@@ -95,6 +88,15 @@ module.exports = {
 			Util.log(API_LOG + "getAvailability. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
 			acuityLogic.getAvailability(req.query, function (status, data) {
+				res.status(status).send(data);
+			});
+		});
+
+		//get calendars
+		app.get('/acuity/getCalendars', function (req, res) {
+			Util.log(API_LOG + "getCalendars. userId = " + req.query.userId);
+			let acuityLogic = new AcuityLogic();
+			acuityLogic.getCalendars(req.query, function (status, data) {
 				res.status(status).send(data);
 			});
 		});
@@ -170,5 +172,22 @@ module.exports = {
 				res.status(status).send(data);
 			});
 		});
+
+
+		//set promotion types
+		// app.post('/api/setPromotionType', function (req, res) {
+		// 	let userApiLogic = new UserApiLogic();
+		// 	userApiLogic.setPromotionType(req.body, function (status, data) {
+		// 		res.status(status).send(data);
+		// 	});
+		// });
+		//get promotion types
+		// app.get('/api/getPromotionTypes', function (req, res) {
+		// 	Util.log(API_LOG + "getUser. userId = " + req.query.userId);
+		// 	let userApiLogic = new UserApiLogic();
+		// 	userApiLogic.getPromotionTypes(function (status, data) {
+		// 		res.status(status).send(data);
+		// 	});
+		// });
 	}
 };

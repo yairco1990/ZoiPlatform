@@ -71,37 +71,6 @@ integrationsCtrl.prototype.$onInit = function () {
 
 };
 
-integrationsCtrl.prototype.onMindbodyClicked = function (ev) {
-
-	var vm = this;
-
-	vm.$mdDialog.show({
-		controller: MindbodyPopupCtrl,
-		controllerAs: 'vm',
-		templateUrl: 'src/pages/integrations/mindbody-popup/mindbody-popup.html',
-		parent: angular.element(document.body),
-		targetEvent: ev,
-		clickOutsideToClose: true,
-		fullscreen: false // Only for -xs, -sm breakpoints.
-	})
-		.then(function (mindbody) {
-			vm.zoiUser.integrations.mindbody = mindbody;
-			vm.saveMindbodyUser();
-		}, function () {
-			vm.$log.debug('You cancelled the dialog.');
-		});
-};
-
-integrationsCtrl.prototype.saveMindbodyUser = function () {
-	var vm = this;
-
-	vm.zoiApi.saveUser(vm.zoiUser).then(function (result) {
-		vm.$log.info("user saved successfully");
-	}).catch(function () {
-		console.error("asdasdasd");
-	})
-};
-
 integrationsCtrl.prototype.onAcuityClicked = function () {
 	var vm = this;
 
@@ -114,6 +83,36 @@ integrationsCtrl.prototype.onGmailClicked = function () {
 	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id;
 };
 
-integrationsCtrl.prototype.onFacebookClicked = function () {
-	alert("facebook");
-};
+// integrationsCtrl.prototype.onFacebookClicked = function () {
+// 	alert("facebook");
+// };
+// integrationsCtrl.prototype.onMindbodyClicked = function (ev) {
+//
+// 	var vm = this;
+//
+// 	vm.$mdDialog.show({
+// 		controller: BriefPopupCtrl,
+// 		controllerAs: 'vm',
+// 		templateUrl: 'src/pages/integrations/mindbody-popup/mindbody-popup.html',
+// 		parent: angular.element(document.body),
+// 		targetEvent: ev,
+// 		clickOutsideToClose: true,
+// 		fullscreen: false // Only for -xs, -sm breakpoints.
+// 	})
+// 		.then(function (mindbody) {
+// 			vm.zoiUser.integrations.mindbody = mindbody;
+// 			vm.saveMindbodyUser();
+// 		}, function () {
+// 			vm.$log.debug('You cancelled the dialog.');
+// 		});
+// };
+//
+// integrationsCtrl.prototype.saveMindbodyUser = function () {
+// 	var vm = this;
+//
+// 	vm.zoiApi.saveUser(vm.zoiUser).then(function (result) {
+// 		vm.$log.info("user saved successfully");
+// 	}).catch(function () {
+// 		console.error("asdasdasd");
+// 	})
+// };

@@ -7,6 +7,7 @@ angular.module('ZoiClient', [
 	'ui.bootstrap',
 	'ngMaterial',
 	'isoCurrency',
+	'md.time.picker',
 
 	//SERVICES
 	'Zoi.services.config',
@@ -16,6 +17,7 @@ angular.module('ZoiClient', [
 	'Zoi.directives.integration-element',
 
 	//CONTROLLERS
+	'Zoi.controllers.settings',
 	'Zoi.controllers.account',
 	'Zoi.controllers.integrations',
 	'Zoi.controllers.agenda',

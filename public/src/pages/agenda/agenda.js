@@ -9,6 +9,21 @@ angular.module('Zoi.controllers.agenda', [])
 			controller: 'AgendaCtrl as vm',
 			templateUrl: 'src/pages/agenda/agenda.html',
 			resolve: {
+				zoiUser: function ($http, $log, $stateParams, zoiConfig) {
+					return $http({
+						url: zoiConfig.getServerUrl() + "/api/getUser",
+						method: "GET",
+						params: {
+							userId: $stateParams.userId
+						},
+						timeout: 5000
+					}).then(function (result) {
+						return result.data;
+					}, function (err) {
+						$log.error(err.data);
+						return err.data;
+					});
+				},
 				appointments: function ($http, $log, zoiConfig, $stateParams) {
 					return $http({
 						url: zoiConfig.getServerUrl() + "/acuity/getAgenda?userId=" + $stateParams.userId,
@@ -30,7 +45,7 @@ angular.module('Zoi.controllers.agenda', [])
  * page constructor
  * @constructor
  */
-function AgendaCtrl($log, $rootScope, $timeout, appointments) {
+function AgendaCtrl($log, $rootScope, $timeout, appointments, zoiUser) {
 
 	var vm = this;
 
@@ -38,16 +53,18 @@ function AgendaCtrl($log, $rootScope, $timeout, appointments) {
 	vm.$rootScope = $rootScope;
 	vm.$timeout = $timeout;
 	vm.appointments = appointments;
+	vm.zoiUser = zoiUser;
 
 	vm.$log.info("AgendaCtrl loaded");
+	vm.initCtrl();
 }
 
-AgendaCtrl.inject = ['$log', '$rootScope', '$timeout', 'appointments'];
+AgendaCtrl.inject = ['$log', '$rootScope', '$timeout', 'appointments', 'zoiUser'];
 
 /**
  *  init the page
  */
-AgendaCtrl.prototype.$onInit = function () {
+AgendaCtrl.prototype.initCtrl = function () {
 
 	var vm = this;
 
@@ -58,6 +75,8 @@ AgendaCtrl.prototype.$onInit = function () {
 			return -1;
 		}
 	});
+
+	vm.calendarName = vm.zoiUser.defaultCalendar.id > 0 ? vm.zoiUser.defaultCalendar.name : "All Calendars";
 };
 
 
