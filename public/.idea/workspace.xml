@@ -53,11 +53,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="settings.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pages/settings/settings.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="491">
-              <caret line="161" column="0" lean-forward="true" selection-start-line="161" selection-start-column="0" selection-end-line="161" selection-end-column="0" />
+            <state relative-caret-position="695">
+              <caret line="131" column="0" lean-forward="true" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/package.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="18" column="43" lean-forward="true" selection-start-line="18" selection-start-column="43" selection-end-line="18" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -106,7 +116,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>promotionTypes</find>
       <find>brief</find>
       <find>old-customers-item</find>
       <find>old-customers-body</find>
@@ -136,6 +145,7 @@
       <find>items</find>
       <find>businessC</find>
       <find>yours</find>
+      <find>^</find>
     </findStrings>
     <replaceStrings>
       <replace>class=</replace>
@@ -155,7 +165,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/pages/main/mindbody-popup/mindbody-popup.js" />
         <option value="$PROJECT_DIR$/src/directives/integration-element/integration-element.html" />
         <option value="$PROJECT_DIR$/src/pages/main/main.html" />
         <option value="$PROJECT_DIR$/src/pages/appointment-sum/appointment-sum.css" />
@@ -206,6 +215,7 @@
         <option value="$PROJECT_DIR$/src/pages/agenda/agenda.html" />
         <option value="$PROJECT_DIR$/src/pages/settings/customers-send-limit-popup/customers-send-limit-popup.js" />
         <option value="$PROJECT_DIR$/src/pages/settings/settings.js" />
+        <option value="$PROJECT_DIR$/package.json" />
       </list>
     </option>
   </component>
@@ -227,7 +237,7 @@
   <component name="NodeModulesDirectoryManager">
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="x" value="-7" />
     <option name="y" value="1" />
     <option name="width" value="1932" />
@@ -275,30 +285,6 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="pages" type="462c0819:PsiDirectoryNode" />
               <item name="settings" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="public" type="b2602c69:ProjectViewProjectNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-              <item name="settings" type="462c0819:PsiDirectoryNode" />
-              <item name="customers-send-limit-popup" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="public" type="b2602c69:ProjectViewProjectNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-              <item name="settings" type="462c0819:PsiDirectoryNode" />
-              <item name="old-customers-popup" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="public" type="b2602c69:ProjectViewProjectNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-              <item name="settings" type="462c0819:PsiDirectoryNode" />
-              <item name="prompt-welcome-popup" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -439,7 +425,7 @@
       <workItem from="1501027754255" duration="681000" />
       <workItem from="1501071417910" duration="72000" />
       <workItem from="1501077521878" duration="1749000" />
-      <workItem from="1502197757601" duration="16589000" />
+      <workItem from="1502197757601" duration="17640000" />
     </task>
     <task id="LOCAL-00001" summary="finish fix texts">
       <created>1500917039213</created>
@@ -452,7 +438,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="112588000" />
+    <option name="totallyTimeSpent" value="113639000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -464,7 +450,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="1" width="1932" height="1046" extended-state="0" />
+    <frame x="-7" y="1" width="1932" height="1046" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24815206" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -532,7 +518,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/pages/main/mindbody-popup/mindbody-popup.js" />
     <entry file="file://$PROJECT_DIR$/src/pages/main/mindbody-popup/mindbody-popup.html" />
     <entry file="file://$PROJECT_DIR$/src/directives/integration-element/integration-element.js">
       <provider selected="true" editor-type-id="text-editor">
@@ -917,8 +902,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/settings/settings.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="491">
-          <caret line="161" column="0" lean-forward="true" selection-start-line="161" selection-start-column="0" selection-end-line="161" selection-end-column="0" />
+        <state relative-caret-position="695">
+          <caret line="131" column="0" lean-forward="true" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="43" lean-forward="true" selection-start-line="18" selection-start-column="43" selection-end-line="18" selection-end-column="43" />
           <folding />
         </state>
       </provider>

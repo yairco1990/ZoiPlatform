@@ -521,7 +521,8 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 					//send the email to the client
 					EmailLib.sendEmail(emailHtml, emailList);
 
-					let blockRange = user.customerSendLimit.value ? user.customerSendLimit.value : 7;
+					let blockRange = user.customerSendLimit && user.customerSendLimit.value ? user.customerSendLimit.value : 7;
+
 					//unsubscribe this email for X days(do it async)
 					self.DBManager.addEmailToUnsubscribe({
 						_id: client.email,
