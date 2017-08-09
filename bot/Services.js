@@ -2,7 +2,7 @@
  * Created by Yair on 7/3/2017.
  */
 const ListenLogic = require('../logic/Listeners/ListenLogic');
-const Util = require('util');
+const MyLog = require('../interfaces/MyLog');
 const MyUtils = require('../interfaces/utils');
 const PostbackLogic = require('../logic/Listeners/PostbackLogic');
 const speechToText = require('../interfaces/SpeechToText');
@@ -16,19 +16,19 @@ module.exports = {
 
 		//ping request
 		app.get('/ping', function (req, res) {
-			Util.log("Ping request");
+			MyLog.log("Ping request");
 			res.send("Pong!");
 		});
 
 		//status request
 		app.get('/_status', function (req, res) {
-			Util.log("Status request");
+			MyLog.log("Status request");
 			res.end(JSON.stringify({status: 'ok'}));
 		});
 
 		//verify bot
 		app.get('/', function (req, res) {
-			Util.log("Verify bot request");
+			MyLog.log("Verify bot request");
 			return bot._verify(req, res);
 		});
 
@@ -100,7 +100,7 @@ module.exports = {
 								} else {
 									resolve();
 								}
-								Util.log(`Message returned to ${display_name} [id: ${sender_id}] -> ${rep.text}`);
+								MyLog.log(`Message returned to ${display_name} [id: ${sender_id}] -> ${rep.text}`);
 							});
 						}, delay);
 					});
@@ -116,7 +116,7 @@ module.exports = {
 				if (err) throw err;
 
 				let display_name = profile.first_name + ' ' + profile.last_name;
-				Util.log("Got message from " + display_name);
+				MyLog.log("Got message from " + display_name);
 
 				if (payload.message.attachments &&
 					payload.message.attachments[0] &&
@@ -132,7 +132,7 @@ module.exports = {
 							});
 						}
 					}).catch(function (err) {
-						Util.log("Error: failed to convert the payload audio to text");
+						MyLog.error("Error: failed to convert the payload audio to text");
 						reply(facebookResponses.getTextMessage("I can't hear what you say.."), (err) => {
 							if (err) throw err;
 							// console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
@@ -176,7 +176,7 @@ module.exports = {
 								} else {
 									resolve();
 								}
-								Util.log(`Message returned to ${display_name} [id: ${sender_id}]`);
+								MyLog.log(`Message returned to ${display_name} [id: ${sender_id}] -> ${rep.text}`);
 							});
 						}, delay);
 					});
