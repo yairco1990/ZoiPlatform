@@ -34,6 +34,6 @@ module.exports = {
 	},
 	delayTime: 10,
 	oldCustomersIntervalTime: 1000 * 60 * 60 * 24,
-	morningBriefIntervalTime: 1000 * 60 * 2,
+	morningBriefIntervalTime: 1000 * 60 * 5,
 	oneDay: 1000 * 60 * 60 * 24
 };

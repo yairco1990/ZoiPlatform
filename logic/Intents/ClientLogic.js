@@ -190,7 +190,7 @@ ClientLogic.prototype.promoteOldCustomers = async function (conversationData, re
 
 			//user selected range
 			let daysRange = user.oldCustomersRange && user.oldCustomersRange.value ? user.oldCustomersRange.value : 30;
-			
+
 			//search old customers
 			let appointments = await acuityLogic.getAppointments({
 				minDate: MyUtils.convertToAcuityDate(moment().subtract(daysRange, 'days').startOf('day')),
