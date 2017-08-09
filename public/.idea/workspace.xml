@@ -56,7 +56,7 @@
       <file leaf-file-name="settings.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/pages/settings/settings.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
+            <state relative-caret-position="576">
               <caret line="76" column="92" lean-forward="false" selection-start-line="76" selection-start-column="92" selection-end-line="76" selection-end-column="92" />
               <folding />
             </state>
@@ -237,7 +237,7 @@
   <component name="NodeModulesDirectoryManager">
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="x" value="1" />
     <option name="y" value="1" />
     <option name="width" value="1918" />
@@ -425,7 +425,7 @@
       <workItem from="1501027754255" duration="681000" />
       <workItem from="1501071417910" duration="72000" />
       <workItem from="1501077521878" duration="1749000" />
-      <workItem from="1502197757601" duration="17659000" />
+      <workItem from="1502197757601" duration="18310000" />
     </task>
     <task id="LOCAL-00001" summary="finish fix texts">
       <created>1500917039213</created>
@@ -438,7 +438,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="113658000" />
+    <option name="totallyTimeSpent" value="114309000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -450,7 +450,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="1" width="1918" height="1038" extended-state="0" />
+    <frame x="1" y="1" width="1918" height="1038" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -910,7 +910,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/settings/settings.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
+        <state relative-caret-position="576">
           <caret line="76" column="92" lean-forward="false" selection-start-line="76" selection-start-column="92" selection-end-line="76" selection-end-column="92" />
           <folding />
         </state>

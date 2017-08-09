@@ -74,15 +74,13 @@ WelcomeLogic.prototype.sendWelcomeDialog = function (conversationData, senderId,
 
 		self.DBManager.deleteUser({_id: senderId}).then(function () {
 
+			//create default user with default parameters
+			let newUser = require('../../interfaces/DefaultModels/DefaultUser');
+			newUser._id = senderId;
+			newUser.conversationData = conversationData;
+
 			//save the user
-			return self.DBManager.saveUser({
-				_id: senderId,
-				conversationData: conversationData,
-				startedAt: moment().format('lll'),
-				profile: {},
-				integrations: {},
-				metadata: {}
-			});
+			return self.DBManager.saveUser(newUser);
 
 		}).then(function () {
 
