@@ -1,4 +1,3 @@
-const AppointmentApiLogic = require('../logic/ApiLogic/AppointmentApiLogic');
 const UserApiLogic = require('../logic/ApiLogic/UserApiLogic');
 const AcuityLogic = require('../logic/AcuityLogic/AcuityLogic');
 const GmailLogic = require('../logic/GmailLogic');

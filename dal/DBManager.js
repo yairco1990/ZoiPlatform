@@ -2,7 +2,7 @@
  * Created by Yair on 6/19/2017.
  */
 let mongoose = require('mongoose');
-let Util = require('util');
+let MyLog = require('../interfaces/MyLog');
 
 function DBManager() {
 	mongoose.connect('mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db', {useMongoClient: true});
@@ -57,7 +57,7 @@ function DBManager() {
 	this.Inputs = mongoose.model('Inputs', inputsSchema);
 	this.PromotionTypes = mongoose.model('PromotionTypes', promotionTypesSchema);
 
-	Util.log("DB synced");
+	MyLog.log("DB synced");
 }
 
 /**

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const Util = require('util');
+const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const Acuity = require('acuityscheduling');
 const zoiConfig = require('../../config');
@@ -207,8 +207,8 @@ class AcuitySchedulingLogic {
 				});
 
 			}).catch(function (err) {
-				Util.log("Error:");
-				Util.log(err);
+				MyLog.error("Error:");
+				MyLog.error(err);
 				reject(err);
 			});
 		});

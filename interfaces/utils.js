@@ -1,7 +1,7 @@
 /**
  * Created by Yair on 2/20/2017.
  */
-const Util = require('util');
+const MyLog = require('./MyLog');
 const fs = require('fs');
 const webshot = require('webshot');
 const moment = require('moment');
@@ -13,6 +13,21 @@ let Utils = {
 	serverResponse: {
 		SUCCESS: "success",
 		ERROR: "error"
+	},
+
+	/**
+	 * log functions
+	 */
+	log: {
+		error: function (text) {
+			console.error(moment().format("D MMM HH:mm:ss - ") + text);
+		},
+		info: function (text) {
+			console.info(moment().format("D MMM HH:mm:ss - ") + text);
+		},
+		debug: function (text) {
+			console.debug(moment().format("D MMM HH:mm:ss - ") + text);
+		}
 	},
 
 	/**
@@ -289,8 +304,8 @@ let Utils = {
 	getErrorMsg: function (onFinally) {
 		return function (err) {
 			if (err) {
-				Util.log("Error:");
-				Util.log(err);
+				MyLog.error("Error:");
+				MyLog.error(err);
 				onFinally && onFinally(err);
 			}
 		}

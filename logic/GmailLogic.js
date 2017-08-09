@@ -1,7 +1,7 @@
 const google = require("googleapis");
 const ZoiConfig = require('../config');
 const DBManager = require('../dal/DBManager');
-const Util = require('util');
+const MyLog = require('../interfaces/MyLog');
 const rp = require('request-promise');
 const batchUtils = require('google-api-batch-utils');
 const createBatchBody = batchUtils.createBatchBody;
@@ -45,11 +45,11 @@ class GmailLogic {
 		//get tokens(access and refresh)
 		oauth2Client.getToken(code, (err, tokens) => {
 			if (err) {
-				Util.log(err);
+				MyLog.error(err);
 				callback(400, err);
 				return;
 			}
-			Util.log("Got Gmail tokens");
+			MyLog.info("Got Gmail tokens");
 
 			//get user
 			DBManager.getUser({_id: userId}).then((user) => {
@@ -145,7 +145,7 @@ class GmailLogic {
 						});
 					}).done(() => {
 					resolve(messages);
-					Util.log("Successfully got the user's emails");
+					MyLog.info("Successfully got the user's emails");
 				});
 			};
 

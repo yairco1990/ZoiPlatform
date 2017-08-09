@@ -1,9 +1,9 @@
-let ZoiConfig = require('../config');
-let DBManager = require('../dal/DBManager');
-let moment = require('moment');
-let Util = require('util');
-let GeneralLogic = require('./Intents/GeneralLogic');
-let ClientLogic = require('./Intents/ClientLogic');
+const ZoiConfig = require('../config');
+const DBManager = require('../dal/DBManager');
+const moment = require('moment');
+const MyLog = require('../interfaces/MyLog');
+const GeneralLogic = require('./Intents/GeneralLogic');
+const ClientLogic = require('./Intents/ClientLogic');
 
 class BackgroundLogic {
 
@@ -35,28 +35,32 @@ class BackgroundLogic {
 	static startMorningBriefInterval(bot) {
 
 		setInterval(async () => {
-			//get users that should get morning brief
-			let morningBriefUsers = await DBManager.getUsers({
-				$and: [{
-					$or: [{
-						nextMorningBriefDate: {//the date is less than now
-							$lt: new Date().valueOf()
-						}
+			try {
+				//get users that should get morning brief
+				let morningBriefUsers = await DBManager.getUsers({
+					$and: [{
+						$or: [{
+							nextMorningBriefDate: {//the date is less than now
+								$lt: new Date().valueOf()
+							}
+						}, {
+							nextMorningBriefDate: {//there is no date
+								$eq: null
+							}
+						}]
 					}, {
-						nextMorningBriefDate: {//there is no date
+						conversationData: {
 							$eq: null
 						}
 					}]
-				}, {
-					conversationData: {
-						$eq: null
-					}
-				}]
-			});
+				});
 
-			Util.log("Number of users should get morning brief: " + morningBriefUsers.length);
+				BackgroundLogic.sendMorningBriefs(bot, morningBriefUsers);
 
-			BackgroundLogic.sendMorningBriefs(bot, morningBriefUsers);
+			} catch (err) {
+				MyLog.error(err);
+				MyLog.error("Error on startMorningBriefInterval");
+			}
 		}, ZoiConfig.morningBriefIntervalTime);
 	}
 
@@ -66,29 +70,34 @@ class BackgroundLogic {
 	static startCleaningOldConvosInterval() {
 
 		setInterval(async () => {
-			//get user with opened conversation more than hour
-			let usersWithOldConversation = await DBManager.getUsers({
-				$and: [{
-					conversationData: {
-						$ne: null
-					}
-				}, {
-					$or: [{
-						lastMessageTime: {
-							$lt: new Date().valueOf() - 1000 * 60 * 60
+			try {
+				//get user with opened conversation more than hour
+				let usersWithOldConversation = await DBManager.getUsers({
+					$and: [{
+						conversationData: {
+							$ne: null
 						}
 					}, {
-						lastMessageTime: {
-							$eq: null
-						}
+						$or: [{
+							lastMessageTime: {
+								$lt: new Date().valueOf() - 1000 * 60 * 60
+							}
+						}, {
+							lastMessageTime: {
+								$eq: null
+							}
+						}]
 					}]
-				}]
-			});
+				});
 
-			//clear them
-			BackgroundLogic.clearOldConversations(usersWithOldConversation);
+				//clear them
+				BackgroundLogic.clearOldConversations(usersWithOldConversation);
 
-			Util.log("Number of users should clear old conversation: " + usersWithOldConversation.length);
+				MyLog.info("Conversation cleared: " + usersWithOldConversation.length);
+			} catch (err) {
+				MyLog.error(err);
+				MyLog.error("Error on startCleaningOldConvosInterval");
+			}
 		}, ZoiConfig.morningBriefIntervalTime);
 	}
 
@@ -106,14 +115,17 @@ class BackgroundLogic {
 				}
 			});
 
-			Util.log("Number of users should get old customers notifications: " + oldCustomersUsers.length);
-
 			BackgroundLogic.sendOldCustomersConvo(bot, oldCustomersUsers);
 		};
 
-		//execute the function once, and then let the interval handle it.
-		intervalFunction();
-		setInterval(intervalFunction, ZoiConfig.oldCustomersIntervalTime);
+		try {
+			//execute the function once, and then let the interval handle it.
+			intervalFunction();
+			setInterval(intervalFunction, ZoiConfig.oldCustomersIntervalTime);
+		} catch (err) {
+			MyLog.error(err);
+			MyLog.error("Error on startOldCustomersInterval");
+		}
 	}
 
 	/**
@@ -123,10 +135,12 @@ class BackgroundLogic {
 	 */
 	static sendOldCustomersConvo(bot, oldCustomersUsers) {
 
+		let counter = 0;
 		//iterate the users
 		oldCustomersUsers.forEach(async (user) => {
 
 			if (user.integrations && user.integrations.Acuity) {
+				counter++;
 				//save the last message time
 				user.lastMessageTime = new Date().valueOf();
 				//start the conversation in the GeneralLogic class
@@ -142,8 +156,11 @@ class BackgroundLogic {
 
 				//start convo
 				clientLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
+
 			}
 		});
+
+		MyLog.info("Old customers notifications sent: " + counter);
 	}
 
 	/**
@@ -164,11 +181,13 @@ class BackgroundLogic {
 	 */
 	static sendMorningBriefs(bot, morningBriefUsers) {
 
+		let counter = 0;
 		//iterate the users
 		morningBriefUsers.forEach(async (user) => {
 
 			//morning brief only for Acuity users for now
 			if (user.integrations && user.integrations.Acuity) {
+				counter++;
 				//set next time of morning brief for this user
 				user.nextMorningBriefDate = new Date().valueOf() + ZoiConfig.oneDay;
 				//save the last message time
@@ -191,6 +210,8 @@ class BackgroundLogic {
 				generalLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
 			}
 		});
+
+		MyLog.info("Morning briefs sent: " + counter);
 	}
 
 	/**
@@ -231,7 +252,7 @@ class BackgroundLogic {
 						} else {
 							resolve();
 						}
-						Util.log(`Message returned ${user._id}] -> ${rep.text}`);
+						MyLog.info(`Message returned ${user._id}] -> ${rep.text}`);
 					});
 				}, delay);
 			});

@@ -2,7 +2,7 @@
  * Created by Yair on 7/4/2017.
  */
 const AcuityApi = require('../ApiHandlers/AcuitySchedulingLogic');
-const Util = require('util');
+const MyLog = require('../../interfaces/MyLog');
 const moment = require('moment');
 const ZoiConfig = require('../../config');
 const GmailLogic = require('../GmailLogic');
@@ -42,7 +42,7 @@ class AcuityLogic {
 						} else {
 							resolve();
 						}
-						Util.log(`Message returned ${user._id}] -> ${rep.text}`);
+						MyLog.log(`Message returned ${user._id}] -> ${rep.text}`);
 					});
 				}, delay);
 			});
@@ -237,7 +237,7 @@ class AcuityLogic {
 			});
 
 			callback(200, "SUCCESS");
-			Util.log("Old customers promotions sent successfully");
+			MyLog.log("Old customers promotions sent successfully");
 
 			//remove the metadata
 			user.metadata.oldCustomers = null;
@@ -285,7 +285,7 @@ class AcuityLogic {
 		}).then(function () {
 
 			callback(200, {});
-			Util.log("Appointment scheduled successfully");
+			MyLog.log("Appointment scheduled successfully");
 
 			//save appointment times
 			let actionTime = moment().format("YYYY/MM");
@@ -398,8 +398,8 @@ class AcuityLogic {
 				callback(200, {message: "User doesn't prompt new customers"});
 			}
 		} catch (err) {
-			Util.log("Failed to send welcome message to new customer");
-			Util.log(err);
+			MyLog.error("Failed to send welcome message to new customer");
+			MyLog.error(err);
 			callback(400, err);
 		}
 	}
@@ -445,8 +445,8 @@ class AcuityLogic {
 
 				//proceed after user integrated for the first time only(if integrated more than once - skip it)
 				if (!isAlreadyConnectedWithAcuity) {
-					Util.log("Integrated with Acuity successfully");
-					Util.log(response);
+					MyLog.log("Integrated with Acuity successfully");
+					MyLog.log(response);
 					//save the last message time
 					user.lastMessageTime = new Date().valueOf();
 					//start the conversation in the welcomeLogic class
@@ -458,7 +458,7 @@ class AcuityLogic {
 					let replyFunction = self.getReplyFunction(bot, user);
 					welcomeLogic.processIntent(conversationData, null, null, replyFunction);
 				} else {
-					Util.log("Already integrated with Acuity");
+					MyLog.log("Already integrated with Acuity");
 				}
 
 			}).catch(MyUtils.getErrorMsg());

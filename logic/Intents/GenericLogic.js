@@ -2,15 +2,12 @@
  * Created by Yair on 6/20/2017.
  */
 
-const Util = require('util');
+const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
 const EmailLib = require('../../interfaces/EmailLib');
-const EmailConfig = require('../../interfaces/assets/EmailsConfig');
-const AcuityLogic = require('../ApiHandlers/AcuitySchedulingLogic');
-const _ = require('underscore');
 const async = require('async');
 const ZoiConfig = require('../../config');
 const deepcopy = require('deepcopy');
@@ -66,7 +63,7 @@ GenericLogic.prototype.clearSession = function () {
 	user.conversationData = null;
 	user.session = null;
 	self.DBManager.saveUser(user).then(function () {
-		Util.log("conversation cleared!");
+		MyLog.log("conversation cleared!");
 	});
 };
 

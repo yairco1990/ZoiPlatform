@@ -2,7 +2,7 @@
 const fs = require('fs');
 const ListenLogic = require('./logic/Listeners/ListenLogic');
 const Bot = require('./bot/bot_framework');
-const Util = require('util');
+const MyLog = require('./interfaces/MyLog');
 const MyUtils = require('./interfaces/utils');
 const PostbackLogic = require('./logic/Listeners/PostbackLogic');
 const express = require('express');
@@ -22,17 +22,8 @@ require('./dal/DBManager');
 // Facebook doesn't work with http, only https allowed
 let server;
 
-function reqHandler(req, res) {
-	console.log({
-		remoteAddress: req.socket.remoteAddress,
-		remotePort: req.socket.remotePort,
-		localAddress: req.socket.localAddress,
-		localPort: req.socket.localPort,
-	});
-}
-
 [443, 3000].forEach(function (port) {
-	if (process.argv[2] == "local") {
+	if (process.argv[2] === "local") {
 		server = require('http').createServer(app);
 	} else {
 		const options = {
@@ -44,7 +35,7 @@ function reqHandler(req, res) {
 	}
 	server.listen(port);
 
-	Util.log('Bot server running at port ' + port + '.');
+	MyLog.info('Bot server running at port ' + port + '.');
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -79,14 +70,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 //sign that the server got the request
 app.use(function (req, res, next) {
-	console.log("-------------------------------------");
+	MyLog.log("-------------------------------------");
 	next();
 });
-// app.use(session({
-// 	secret: 'pwnz0rz',
-// 	saveUninitialized: true,
-// 	resave: false
-// }));
 
 //set the routing
 Services.setRouting(app, bot);

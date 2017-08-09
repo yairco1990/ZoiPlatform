@@ -1,7 +1,7 @@
 /**
  * Created by Yair on 6/20/2017.
  */
-const Util = require('util');
+const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
@@ -557,8 +557,8 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 			}
 		}
 	} catch (err) {
-		Util.log(err);
-		Util.log("Error on send promotions. userId => " + user._id);
+		MyLog.error(err);
+		MyLog.error("Error on send promotions. userId => " + user._id);
 	}
 };
 
@@ -573,7 +573,7 @@ AppointmentLogic.prototype.clearSession = function () {
 	user.conversationData = null;
 	user.session = null;
 	self.DBManager.saveUser(user).then(function () {
-		Util.log("conversation cleared!");
+		MyLog.log("conversation cleared!");
 	});
 };
 

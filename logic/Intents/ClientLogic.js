@@ -2,7 +2,7 @@
  * Created by Yair on 6/20/2017.
  */
 
-const Util = require('util');
+const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
@@ -159,7 +159,7 @@ ClientLogic.prototype.newCustomerJoin = async function (conversationData, reply)
 			}
 		}
 	} catch (err) {
-		Util.log("Error on new customer joined. userId => " + user._id);
+		MyLog.error("Error on new customer joined. userId => " + user._id);
 	}
 };
 
@@ -309,8 +309,8 @@ ClientLogic.prototype.promoteOldCustomers = async function (conversationData, re
 			}
 		}
 	} catch (err) {
-		Util.log(err);
-		Util.log("Error on old customers scenario. userId => " + user._id);
+		MyLog.error(err);
+		MyLog.error("Error on old customers scenario. userId => " + user._id);
 	}
 };
 
@@ -348,7 +348,7 @@ ClientLogic.prototype.clearSession = function () {
 	user.conversationData = null;
 	user.session = null;
 	self.DBManager.saveUser(user).then(function () {
-		Util.log("conversation cleared!");
+		MyLog.log("conversation cleared!");
 	});
 };
 

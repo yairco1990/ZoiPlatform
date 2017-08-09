@@ -1,7 +1,7 @@
 /**
  * Created by Yair on 6/20/2017.
  */
-const Util = require('util');
+const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
@@ -28,9 +28,6 @@ GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping,
 	let self = this;
 
 	switch (conversationData.intent) {
-		case "general hi zoi":
-			self.sayHey(conversationData.entities, reply);
-			break;
 		case "general no thanks":
 			self.clearSession(reply, true);
 			break;
@@ -157,8 +154,8 @@ GeneralLogic.prototype.sendMorningBrief = async function (conversationData, setB
 			});
 		}
 	} catch (err) {
-		Util.log("Error on morning brief. userId => " + user._id);
-		Util.log(err);
+		MyLog.error("morning brief. userId => " + user._id);
+		MyLog.error(err);
 	}
 };
 
@@ -170,49 +167,41 @@ const wishZoiQuestions = {
 /**
  * send morning brief
  */
-GeneralLogic.prototype.wishZoi = function (conversationData, setBotTyping, requestObj, reply) {
+GeneralLogic.prototype.wishZoi = async function (conversationData, setBotTyping, requestObj, reply) {
 
 	let self = this;
 	let user = self.user;
 
-	//if this is the start of the conversation
-	if (!user.conversationData) {
-		//set current question
-		let currentQuestion = wishZoiQuestions.writeReview;
-		//save conversation to the user
-		user.conversationData = conversationData;
-		//save the question
-		user.conversationData.lastQuestion = currentQuestion;
+	try {
+		//if this is the start of the conversation
+		if (!user.conversationData) {
+			//set current question
+			let currentQuestion = wishZoiQuestions.writeReview;
+			//save conversation to the user
+			user.conversationData = conversationData;
+			//save the question
+			user.conversationData.lastQuestion = currentQuestion;
 
-		//save the user
-		self.DBManager.saveUser(user).then(function () {
+			//save the user
+			await self.DBManager.saveUser(user);
+
 			reply(facebookResponse.getTextMessage("What do you wish I would do for you in the future?"), false, 1000);
-		});
-	} else if (user.conversationData.lastQuestion.id === wishZoiQuestions.writeReview.id) {
 
-		user.wishList.push(conversationData.input);
+		} else if (user.conversationData.lastQuestion.id === wishZoiQuestions.writeReview.id) {
 
-		//save the user
-		self.DBManager.saveUser(user).then(function () {
+			user.wishList.push(conversationData.input);
+
+			//save the user
+			await self.DBManager.saveUser(user);
+
+			//send response
 			reply(facebookResponse.getTextMessage("Thank you for helping me become an even greater assistant!"), false, 1000);
+
+			//clear the session
 			self.clearSession(reply, false);
-		});
-	}
-};
-
-/**
- * say hey
- * @param entities
- * @param reply
- */
-GeneralLogic.prototype.sayHey = function (entities, reply) {
-	let self = this;
-
-	let randomNumber = Math.random();
-	if (randomNumber < 0.5) {
-		(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hey boss! What can I do for you?"), false, delayTime))();
-	} else {
-		(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hey Chief! What can I do for you?"), false, delayTime))();
+		}
+	} catch (err) {
+		MyLog.error(err);
 	}
 };
 

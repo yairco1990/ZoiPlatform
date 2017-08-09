@@ -1,6 +1,6 @@
 const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
 const requestify = require('requestify');
-const Util = require('util');
+const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment');
 const facebookResponse = require('../../interfaces/FacebookResponse');
@@ -37,7 +37,7 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 
 	let self = this;
 
-	Util.log("User input = " + input);
+	MyLog.info("User input = " + input);
 
 	try {
 
@@ -74,9 +74,9 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 			intentScore = 0;
 		}
 
-		Util.log("Intent -> " + intent);
-		Util.log("Entities -> " + entities);
-		Util.log("Score -> " + intentScore);
+		MyLog.info("Intent -> " + intent);
+		MyLog.info("Entities -> " + entities);
+		MyLog.info("Score -> " + intentScore);
 
 		//save conversation data
 		let conversationData = {
@@ -156,7 +156,7 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 
 	} catch (err) {
 
-		Util.log(err);
+		MyLog.error(err);
 
 		try {
 
@@ -164,13 +164,13 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 
 			user.conversationData = null;
 			await self.DBManager.saveUser(user).then(function () {
-				Util.log("user session deleted after error. userId -> " + user._id);
+				MyLog.info("user session deleted after error. userId -> " + user._id);
 
 				(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(fallbackText), false))();
 			});
 
 		} catch (err2) {
-			Util.log(err2);
+			MyLog.error(err2);
 			(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(fallbackText), false))();
 		}
 	}

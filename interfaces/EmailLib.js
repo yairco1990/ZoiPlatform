@@ -1,7 +1,7 @@
 const fs = require('fs');
 const ses = require('node-ses');
 const ZoiConfig = require('../config');
-const Util = require('util');
+const MyLog = require('./MyLog');
 const deepcopy = require('deepcopy');
 
 //save zoi emails
@@ -63,15 +63,13 @@ class EmailLib {
 						replyTo: email.replyTo
 					}, function (err) {
 						if (err) {
-							Util.log("Error:");
-							Util.log(err);
+							MyLog.error(err);
 						}
 					});
 				}
 			});
 		} catch (err) {
-			Util.log("Error:");
-			Util.log(err);
+			MyLog.error(err);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 let SpeechToTextV1 = require('watson-developer-cloud/speech-to-text/v1');
 let fs = require('fs');
 let ffmpeg = require('fluent-ffmpeg');
-let Util = require('util');
+let MyLog = require('./MyLog');
 
 module.exports = function (audioSource) {
 
@@ -46,7 +46,7 @@ module.exports = function (audioSource) {
 			reject(err);
 		});
 		stream.on('data', function (data) {
-			Util.log(data);
+			MyLog.log(data);
 			resolve(data.results);
 		});
 
