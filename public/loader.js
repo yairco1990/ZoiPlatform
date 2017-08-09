@@ -5,16 +5,15 @@ var cssStartTime = new Date().valueOf();
 Promise.all([
 
 	//FONTS
-	loadFile('node_modules/font-awesome/css/font-awesome.min.css', 'css'),
-	loadFile('src/assets/fonts/open_sans_hebrew/OpenSansHebrew.css', 'css'),
+	loadFile('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', 'css', null, true),
 	loadFile('https://fonts.googleapis.com/css?family=Lato', 'css', null, true),
 	loadFile('node_modules/ionicons/dist/css/ionicons.css', 'css', null, true),
 	//END OF FONTS
 
 	//STYLES
-	loadFile('node_modules/bootstrap/dist/css/bootstrap.min.css', 'css'),
+	loadFile('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', 'css', null, true),
 	loadFile('src/assets/css/styles.css', 'css'),
-	loadFile('src/assets/css/animate.css', 'css'),
+	loadFile('https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css', 'css', null, true),
 	loadFile('https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css', 'css', null, true),
 	loadFile('node_modules/angular-material-time-picker/dist/md-time-picker.css', 'css'),
 
@@ -39,7 +38,7 @@ Promise.all([
 ]).then(function () {
 
 	//TODO change to min
-	return loadFile('node_modules/angular/angular.js', 'js');
+	return loadFile('https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.5/angular.min.js', 'js', null, false);
 
 }).then(function () {
 
@@ -50,21 +49,17 @@ Promise.all([
 	Promise.all([
 
 		//START OF NPM LIBRARIES
-		loadFile('node_modules/jquery/dist/jquery.min.js', 'js'),
-		loadFile('node_modules/angular-ui-router/release/angular-ui-router.min.js', 'js'),
+		loadFile('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js', 'js', null, false),
+		loadFile('https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.min.js', 'js', null, false),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js', 'js', null, false),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js', 'js', null, false),
-		loadFile('node_modules/angular-messages/angular-messages.min.js', 'js'),
+		loadFile('https://cdnjs.cloudflare.com/ajax/libs/angular-messages/1.5.5/angular-messages.min.js', 'js', null, false),
 		loadFile('https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js', 'js', null, false),
 		loadFile('node_modules/angular-material-time-picker/dist/md-time-picker.js', 'js'),
-		loadFile('node_modules/angular-translate/dist/angular-translate.min.js', 'js'),
-		loadFile('node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js', 'js'),
-		loadFile('node_modules/bootstrap/dist/js/bootstrap.min.js', 'js'),
-		loadFile('node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js', 'js'),
-		loadFile('node_modules/angular-resource/angular-resource.min.js', 'js'),
-		loadFile('node_modules/moment/min/moment.min.js', 'js'),
-		loadFile('node_modules/moment-timezone/builds/moment-timezone-with-data-2012-2022.js', 'js'),
-		loadFile('node_modules/moment/locale/he.js', 'js'),
+		loadFile('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', 'js', null, true),
+		loadFile('https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.4.0/ui-bootstrap.min.js', 'js', null, true),
+		loadFile('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js', 'js', null, false),
+		loadFile('https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data-2012-2022.min.js', 'js', null, false),
 		loadFile('node_modules/iso-currency/dist/isoCurrency.min.js', 'js'),
 		//END OF NPM
 
