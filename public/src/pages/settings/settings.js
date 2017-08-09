@@ -72,9 +72,9 @@ SettingsCtrl.prototype.initCtrl = function () {
 
 	//check for missing values
 	//old customer range text
-	vm.oldCustomersRangeText = vm.zoiUser.oldCustomersRange.text ? vm.zoiUser.oldCustomersRange.text.toLowerCase() : "1 month";
+	vm.oldCustomersRangeText = vm.zoiUser.oldCustomersRange && vm.zoiUser.oldCustomersRange.text ? vm.zoiUser.oldCustomersRange.text.toLowerCase() : "1 month";
 	//customer send limit text
-	vm.customersSendLimitText = vm.zoiUser.customerSendLimit.text ? vm.zoiUser.customerSendLimit.text.toLowerCase() : "1 promo per week";
+	vm.customersSendLimitText = vm.zoiUser.customerSendLimit && vm.zoiUser.customerSendLimit.text ? vm.zoiUser.customerSendLimit.text.toLowerCase() : "1 promo per week";
 	//prompt new customers
 	vm.promptNewCustomers = vm.zoiUser.promptNewCustomers === false ? "Don't prompt" : "Prompt";
 };
