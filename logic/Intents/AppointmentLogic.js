@@ -534,7 +534,6 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 
 				//save promotion times
 				let actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
-				user.profile = user.profile || {};
 				if (user.profile[actionTime]) {
 					user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
 				} else {

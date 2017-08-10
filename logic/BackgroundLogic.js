@@ -69,7 +69,7 @@ class BackgroundLogic {
 					}, {
 						$or: [{
 							lastMessageTime: {
-								$lt: new Date().valueOf() - 1000 * 60 * 60 * 24 * 3
+								$lt: new Date().valueOf() - 1000 * 60 * 60 * 4
 							}
 						}, {
 							lastMessageTime: {

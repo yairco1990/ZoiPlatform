@@ -3,7 +3,6 @@
  */
 const MyLog = require('../../interfaces/MyLog');
 const moment = require('moment');
-const momentTimezone = require('moment-timezone');
 
 function UserApiLogic() {
 	this.DBManager = require('../../dal/DBManager');

@@ -352,6 +352,10 @@ let Utils = {
 		});
 	},
 
+	getRandomValueFromArray: function (arr) {
+		return arr[Math.floor(Math.random() * arr.length)];
+	},
+
 	/**
 	 * check if string is json object
 	 * @param str

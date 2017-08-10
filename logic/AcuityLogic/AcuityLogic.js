@@ -427,7 +427,7 @@ class AcuityLogic {
 				//set timezone
 				user.timezone = userData.userDetails.timezone;
 
-				//set promotion times
+				//set default values
 				user.nextMorningBriefDate = moment().tz(user.timezone).hours(9).minutes(0).add(1, 'days').valueOf();
 				user.nextOldCustomersDate = moment().tz(user.timezone).hours(12).minutes(0).add(1, 'days').valueOf();
 
