@@ -140,7 +140,7 @@ class BackgroundLogic {
 			if (user.integrations && user.integrations.Acuity) {
 				counter++;
 				//set next time of morning brief for this user
-				user.nextOldCustomersDate = new Date().valueOf() + ZoiConfig.times.oneDay;
+				user.nextOldCustomersDate += ZoiConfig.times.oneDay;
 				//save the last message time
 				user.lastMessageTime = new Date().valueOf();
 				//save the user
@@ -192,7 +192,7 @@ class BackgroundLogic {
 			if (user.integrations && user.integrations.Acuity) {
 				counter++;
 				//set next time of morning brief for this user
-				user.nextMorningBriefDate = new Date().valueOf() + ZoiConfig.times.oneDay;
+				user.nextMorningBriefDate += ZoiConfig.times.oneDay;
 				//save the last message time
 				user.lastMessageTime = new Date().valueOf();
 				//save the user
