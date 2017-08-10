@@ -50,7 +50,7 @@ class BackgroundLogic {
 				MyLog.error(err);
 				MyLog.error("Error on startMorningBriefInterval");
 			}
-		}, ZoiConfig.morningBriefIntervalTime);
+		}, ZoiConfig.times.morningBriefIntervalTime);
 	}
 
 	/**
@@ -69,7 +69,7 @@ class BackgroundLogic {
 					}, {
 						$or: [{
 							lastMessageTime: {
-								$lt: new Date().valueOf() - 1000 * 60 * 60 * 4
+								$lt: new Date().valueOf() - ZoiConfig.times.clearOldConversationRange
 							}
 						}, {
 							lastMessageTime: {
@@ -87,7 +87,7 @@ class BackgroundLogic {
 				MyLog.error(err);
 				MyLog.error("Error on startCleaningOldConvosInterval");
 			}
-		}, ZoiConfig.morningBriefIntervalTime);
+		}, ZoiConfig.times.morningBriefIntervalTime);
 	}
 
 	/**
@@ -123,7 +123,7 @@ class BackgroundLogic {
 				MyLog.error(err);
 				MyLog.error("Error on startOldCustomersInterval");
 			}
-		}, ZoiConfig.oldCustomersIntervalTime);
+		}, ZoiConfig.times.oldCustomersIntervalTime);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class BackgroundLogic {
 			if (user.integrations && user.integrations.Acuity) {
 				counter++;
 				//set next time of morning brief for this user
-				user.nextOldCustomersDate = new Date().valueOf() + ZoiConfig.oneDay;
+				user.nextOldCustomersDate = new Date().valueOf() + ZoiConfig.times.oneDay;
 				//save the last message time
 				user.lastMessageTime = new Date().valueOf();
 				//save the user
@@ -192,7 +192,7 @@ class BackgroundLogic {
 			if (user.integrations && user.integrations.Acuity) {
 				counter++;
 				//set next time of morning brief for this user
-				user.nextMorningBriefDate = new Date().valueOf() + ZoiConfig.oneDay;
+				user.nextMorningBriefDate = new Date().valueOf() + ZoiConfig.times.oneDay;
 				//save the last message time
 				user.lastMessageTime = new Date().valueOf();
 				//save the user

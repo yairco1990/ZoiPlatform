@@ -15,7 +15,7 @@ const async = require('async');
 const ZoiConfig = require('../../config');
 const deepcopy = require('deepcopy');
 
-const delayTime = ZoiConfig.delayTime || 3000;
+const delayTime = ZoiConfig.delayTime;
 
 function ClientLogic(user) {
 	this.user = user;
@@ -190,12 +190,12 @@ ClientLogic.prototype.promoteOldCustomers = async function (conversationData, re
 			user.conversationData.lastQuestion = currentQuestion;
 
 			//user selected range
-			let daysRange = user.oldCustomersRange && user.oldCustomersRange.value ? user.oldCustomersRange.value : 30;
+			let daysRange = user.oldCustomersRange && user.oldCustomersRange.value ? user.oldCustomersRange.value : ZoiConfig.times.oldCustomersPreviousDays;
 
 			//search old customers
 			let appointments = await acuityLogic.getAppointments({
 				minDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day')),
-				maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).add(30, 'days').endOf('day'))
+				maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).add(ZoiConfig.times.oldCustomersForwardDays, 'days').endOf('day'))
 			});
 
 			//window checking TODO config it

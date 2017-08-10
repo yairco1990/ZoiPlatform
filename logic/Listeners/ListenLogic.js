@@ -22,7 +22,7 @@ function ListenLogic() {
 	this.DBManager = require('../../dal/DBManager');
 }
 
-const delayTime = ZoiConfig.delayTime || 3000;
+const delayTime = ZoiConfig.delayTime;
 const fallbackText = "I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu.";
 
 /**

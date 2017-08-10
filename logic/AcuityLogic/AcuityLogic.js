@@ -18,6 +18,13 @@ const WelcomeLogic = require('../Intents/WelcomeLogic');
 const deepcopy = require('deepcopy');
 const async = require('async');
 
+const Response = {
+	SUCCESS: 200,
+	ERROR: 400,
+	UNFULLFILLED: 401,
+	NOT_FOUND: 404
+};
+
 class AcuityLogic {
 
 	constructor(bot) {
@@ -56,7 +63,7 @@ class AcuityLogic {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			acuityApi.getClients().then(function (result) {
-				callback(200, result);
+				callback(Response.SUCCESS, result);
 			})
 		});
 	}
@@ -73,7 +80,7 @@ class AcuityLogic {
 			};
 
 			acuityApi.getAvailability(options).then(function (result) {
-				callback(200, result);
+				callback(Response.SUCCESS, result);
 			}).catch(MyUtils.getErrorMsg());
 		});
 	}
@@ -94,10 +101,10 @@ class AcuityLogic {
 
 			let calendars = await acuityApi.getCalendars();
 
-			callback(200, calendars);
+			callback(Response.SUCCESS, calendars);
 		}
 		catch (err) {
-			callback(400, err);
+			callback(Response.ERROR, err);
 			console.error(err);
 		}
 	}
@@ -109,7 +116,7 @@ class AcuityLogic {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			acuityApi.getAppointmentTypes().then(function (result) {
-				callback(200, result);
+				callback(Response.SUCCESS, result);
 			})
 		});
 	}
@@ -134,7 +141,7 @@ class AcuityLogic {
 
 			//iterate slots
 			slots.forEach(function (slot) {
-				callback(200, slot);
+				callback(Response.SUCCESS, slot);
 			})
 		});
 	}
@@ -169,9 +176,9 @@ class AcuityLogic {
 				}
 			});
 
-			callback(200, AcuityFactory.generateAppointmentsList(appointments));
+			callback(Response.SUCCESS, AcuityFactory.generateAppointmentsList(appointments));
 		}).catch(function (err) {
-			callback(401, err);
+			callback(Response.UNFULLFILLED, err);
 		});
 	}
 
@@ -181,13 +188,13 @@ class AcuityLogic {
 		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 
 			if (user.metadata.oldCustomers) {
-				callback(200, user.metadata.oldCustomers);
+				callback(Response.SUCCESS, user.metadata.oldCustomers);
 			} else {
-				callback(200, "NOT_AVAILABLE");
+				callback(Response.SUCCESS, "NOT_AVAILABLE");
 			}
 
 		}).catch(function (err) {
-			callback(401, err);
+			callback(Response.UNFULLFILLED, err);
 		});
 	}
 
@@ -240,7 +247,7 @@ class AcuityLogic {
 				}]);
 			});
 
-			callback(200, "SUCCESS");
+			callback(Response.SUCCESS, "SUCCESS");
 			MyLog.log("Old customers promotions sent successfully");
 
 			//remove the metadata
@@ -256,7 +263,7 @@ class AcuityLogic {
 			});
 
 		}).catch(function (err) {
-			callback(401, err);
+			callback(Response.UNFULLFILLED, err);
 		});
 	}
 
@@ -288,7 +295,7 @@ class AcuityLogic {
 			return acuityApi.scheduleAppointment(options);
 		}).then(function () {
 
-			callback(200, {});
+			callback(Response.SUCCESS, {});
 			MyLog.log("Appointment scheduled successfully");
 
 			//save appointment times
@@ -308,7 +315,7 @@ class AcuityLogic {
 			});
 		}).catch(function (err) {
 
-			callback(401, err);
+			callback(Response.UNFULLFILLED, err);
 		});
 	}
 
@@ -340,10 +347,10 @@ class AcuityLogic {
 				});
 			}, clients);
 
-			callback(200, clientsMessages);
+			callback(Response.SUCCESS, clientsMessages);
 
 		}).catch(function (err) {
-			callback(401, err);
+			callback(Response.UNFULLFILLED, err);
 		});
 	}
 
@@ -393,18 +400,18 @@ class AcuityLogic {
 						clientLogic.processIntent(conversationData, null, null, replyFunction);
 					}
 
-					callback(200, {message: "It's a new customer"});
+					callback(Response.SUCCESS, {message: "It's a new customer"});
 				} else {
-					callback(200, {message: "Not a new customer"});
+					callback(Response.SUCCESS, {message: "Not a new customer"});
 				}
 			} else {
 				MyLog.info("User doesn't prompt new customers");
-				callback(200, {message: "User doesn't prompt new customers"});
+				callback(Response.SUCCESS, {message: "User doesn't prompt new customers"});
 			}
 		} catch (err) {
 			MyLog.error("Failed to send welcome message to new customer");
 			MyLog.error(err);
-			callback(400, err);
+			callback(Response.ERROR, err);
 		}
 	}
 
@@ -428,8 +435,8 @@ class AcuityLogic {
 				user.timezone = userData.userDetails.timezone;
 
 				//set default values
-				user.nextMorningBriefDate = moment().tz(user.timezone).hours(9).minutes(0).add(1, 'days').valueOf();
-				user.nextOldCustomersDate = moment().tz(user.timezone).hours(12).minutes(0).add(1, 'days').valueOf();
+				user.nextMorningBriefDate = moment().tz(user.timezone).hours(ZoiConfig.times.defaultMorningBriefHours).minutes(0).add(1, 'days').valueOf();
+				user.nextOldCustomersDate = moment().tz(user.timezone).hours(ZoiConfig.times.defaultOldCustomersHours).minutes(0).add(1, 'days').valueOf();
 
 				//save user with the integration
 				return self.DBManager.saveUser(user);
@@ -485,7 +492,7 @@ class AcuityLogic {
 		let unsubscribeDate = moment().add(20, 'years').valueOf();
 
 		self.DBManager.addEmailToUnsubscribe({_id: data.email, blockDate: unsubscribeDate}).then(function () {
-			callback(200, "Successfully unsubscribed\n" + data.email);
+			callback(Response.SUCCESS, "Successfully unsubscribed\n" + data.email);
 		});
 	}
 }

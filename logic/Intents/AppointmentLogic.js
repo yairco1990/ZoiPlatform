@@ -463,7 +463,7 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 				//remove clients from appointments in range of a week
 				clients = MyUtils.removeClientsExistOnList(appointmentsInWeekRange, clients, "email");
 				//get 25% from the left customers
-				clients = MyUtils.getRandomFromArray(clients, (clients.length / 4).toFixed(0));
+				clients = MyUtils.getRandomFromArray(clients, (clients.length / ZoiConfig.generalPromotionDeviation).toFixed(0));
 
 				//iterate clients
 				clients.forEach(function (client) {

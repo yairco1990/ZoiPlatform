@@ -13,7 +13,7 @@ const _ = require('underscore');
 const async = require('async');
 const ZoiConfig = require('../../config');
 
-const delayTime = ZoiConfig.delayTime || 3000;
+const delayTime = ZoiConfig.delayTime;
 const fallbackText = "I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu.";
 
 function GeneralLogic(user) {
@@ -187,7 +187,7 @@ GeneralLogic.prototype.wishZoi = async function (conversationData, setBotTyping,
 			//save the user
 			await self.DBManager.saveUser(user);
 
-			reply(facebookResponse.getTextMessage("What do you wish I would do for you in the future?"), false, 1000);
+			reply(facebookResponse.getTextMessage("What do you wish I would do for you in the future?"), false, ZoiConfig.times.wishZoiWillDelay);
 
 		} else if (user.conversationData.lastQuestion.id === wishZoiQuestions.writeReview.id) {
 
@@ -197,7 +197,7 @@ GeneralLogic.prototype.wishZoi = async function (conversationData, setBotTyping,
 			await self.DBManager.saveUser(user);
 
 			//send response
-			reply(facebookResponse.getTextMessage("Thank you for helping me become an even greater assistant!"), false, 1000);
+			reply(facebookResponse.getTextMessage("Thank you for helping me become an even greater assistant!"), false, ZoiConfig.times.wishZoiWillDelay);
 
 			//clear the session
 			self.clearSession(reply, false);

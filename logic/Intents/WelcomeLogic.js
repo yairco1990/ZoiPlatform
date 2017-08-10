@@ -9,7 +9,7 @@ const facebookResponse = require('../../interfaces/FacebookResponse');
 const ZoiConfig = require('../../config');
 const async = require('async');
 
-const delayTime = ZoiConfig.delayTime || 3000;
+const delayTime = ZoiConfig.delayTime;
 
 function WelcomeLogic(user) {
 	this.user = user;
@@ -32,7 +32,7 @@ WelcomeLogic.prototype.processIntent = function (conversationData, setBotTyping,
 			//wait a little bit before continue with the conversation
 			setTimeout(function () {
 				self.proceedWelcomeConversation(conversationData, senderId, callback);
-			}, 5000);
+			}, ZoiConfig.times.firstIntegratedDelay);
 			break;
 		default:
 			self.sendWelcomeDialog(conversationData, senderId, callback);

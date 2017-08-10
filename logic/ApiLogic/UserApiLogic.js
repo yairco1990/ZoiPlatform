@@ -8,6 +8,12 @@ function UserApiLogic() {
 	this.DBManager = require('../../dal/DBManager');
 }
 
+const Response = {
+	SUCCESS: 200,
+	ERROR: 400,
+	NOT_FOUND: 404
+};
+
 /**
  * get user by facebook id
  * @param userId
@@ -22,15 +28,15 @@ UserApiLogic.prototype.getUser = async function (userId, callback) {
 		let user = await self.DBManager.getUser({_id: userId});
 
 		if (user) {
-			callback(200, user);
+			callback(Response.SUCCESS, user);
 		} else {
-			callback(404, "NO_SUCH_USER");
+			callback(Response.NOT_FOUND, "NO_SUCH_USER");
 		}
 
 	} catch (err) {
 		MyLog.error(err);
 		MyLog.error("Failed to get user by facebook id");
-		callback(404, err);
+		callback(Response.NOT_FOUND, err);
 	}
 };
 
@@ -63,11 +69,11 @@ UserApiLogic.prototype.saveUser = async function (user, callback) {
 
 		//get the user
 		let savedUser = await self.DBManager.saveUser(user);
-		callback(200, savedUser);
+		callback(Response.SUCCESS, savedUser);
 	} catch (err) {
 		MyLog.error(err);
 		MyLog.error("Failed to save user");
-		callback(404, err);
+		callback(Response.NOT_FOUND, err);
 	}
 
 };

@@ -1,8 +1,8 @@
-let CLIENT_DEV = "https://zoiai.com/p/#";
-let CLIENT_LOCAL = "http://local.host:443/p/#";
-let CLIENT_NGROK = "https://2fc4a7c1.ngrok.io/p/#";
+const CLIENT_DEV = "https://zoiai.com/p/#";
+const CLIENT_LOCAL = "http://local.host:443/p/#";
+const CLIENT_NGROK = "https://2fc4a7c1.ngrok.io/p/#";
 
-let Environments = {
+const Environments = {
 	LOCAL: {
 		serverUrl: "http://localhost:3000",
 		clientUrl: CLIENT_LOCAL
@@ -16,7 +16,7 @@ let Environments = {
 		clientUrl: CLIENT_NGROK
 	}
 };
-let selectedEnvironment = Environments.DEV;
+const selectedEnvironment = Environments.DEV;
 
 ///////////////////////////////////////////////////////////////////////////////
 module.exports = {
@@ -33,7 +33,17 @@ module.exports = {
 		"redirectUri": "https://zoiai.com:3000/acuity/oauth2"//TODO change it!
 	},
 	delayTime: 10,
-	oldCustomersIntervalTime: 1000 * 60 * 0.5,
-	morningBriefIntervalTime: 1000 * 60 * 0.5,
-	oneDay: 1000 * 60 * 60 * 24
+	generalPromotionDeviation: 4,
+	times: {
+		oldCustomersIntervalTime: 1000 * 60 * 0.5,
+		morningBriefIntervalTime: 1000 * 60 * 0.5,
+		oneDay: 1000 * 60 * 60 * 24,
+		clearOldConversationRange: 1000 * 60 * 60 * 4,
+		oldCustomersForwardDays: 30,
+		oldCustomersPreviousDays: 30,
+		wishZoiWillDelay: 1000,
+		firstIntegratedDelay: 6000,
+		defaultMorningBriefHours: 9,
+		defaultOldCustomersHours: 12
+	}
 };
