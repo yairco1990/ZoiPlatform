@@ -68,6 +68,15 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 			intent = MyUtils.replaceAll("-", " ", nlpResponse.intent.name);
 			entities = nlpResponse.entities;
 			intentScore = nlpResponse.intent.confidence;
+
+			//add input and intention to DB(do it async)
+			self.DBManager.addInput({
+				userId: user._id,
+				input: input || "Voice Recognition Error Probably",
+				intent: intent,
+				score: intentScore
+			});
+
 		} else {
 			intent = isQuickReply ? "Quick Reply" : isPayloadRequest ? "Payload Button" : isWaitForText ? "Text Answer" : "Error: What the intent?";
 			entities = "No entities";
@@ -93,14 +102,6 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 			conversationData.intent = input;
 			conversationData.entities = {};
 		}
-
-		//add input and intention to DB(do it async)
-		self.DBManager.addInput({
-			userId: user._id,
-			input: input || "Voice Recognition Error Probably",
-			intent: intent,
-			score: intentScore
-		});
 
 		//if the user have no email or full name - go the complete the "welcome conversation"
 		if (!user || input.toLowerCase() === "reset") {

@@ -183,16 +183,12 @@ module.exports = {
 				};
 				let postbackPayload = payload.postback.payload;
 
-				if (postbackPayload.includes("POSTBACK")) {
+				if (postbackPayload.includes("ACTION") || postbackPayload.includes("MENU")) {
 					let postbackLogic = new PostbackLogic();
-					//check if real world or mock to decide which process function we should use
-					let processType = logicType === MyUtils.logicType.REAL_WORLD ? "processAction" : "processMockAction";
-					postbackLogic[processType](postbackPayload, payload, setTypingFunction, bot, replyFunction);
+					postbackLogic.processAction(postbackPayload, payload, setTypingFunction, bot, replyFunction);
 				} else {
 					let listenLogic = new ListenLogic();
-					//check if real world or mock to decide which process function we should use
-					let processType = logicType === MyUtils.logicType.REAL_WORLD ? "processInput" : "processMock";
-					listenLogic[processType](postbackPayload, payload, setTypingFunction, bot, replyFunction);
+					listenLogic.processInput(postbackPayload, payload, setTypingFunction, bot, replyFunction);
 				}
 			});
 		});
