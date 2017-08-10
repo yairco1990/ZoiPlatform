@@ -519,14 +519,7 @@
       <workItem from="1501361421138" duration="18895000" />
       <workItem from="1501433137355" duration="23748000" />
       <workItem from="1502013125844" duration="66116000" />
-      <workItem from="1502302821707" duration="21343000" />
-    </task>
-    <task id="LOCAL-00002" summary="yair control">
-      <created>1495635120603</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1495635120603</updated>
+      <workItem from="1502302821707" duration="21347000" />
     </task>
     <task id="LOCAL-00003" summary="add facebook response">
       <created>1495636572562</created>
@@ -864,11 +857,18 @@
       <option name="project" value="LOCAL" />
       <updated>1502375695493</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="fix agenda quick action">
+      <created>1502375863359</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1502375863359</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="679430000" />
+    <option name="totallyTimeSpent" value="679434000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
