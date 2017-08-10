@@ -22,8 +22,8 @@
       <file leaf-file-name="appointment-sum.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/pages/appointment-sum/appointment-sum.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="884">
-              <caret line="52" column="0" lean-forward="true" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
+            <state relative-caret-position="-527">
+              <caret line="35" column="15" lean-forward="true" selection-start-line="35" selection-start-column="15" selection-end-line="35" selection-end-column="15" />
               <folding />
             </state>
           </provider>
@@ -370,7 +370,7 @@
       <workItem from="1501077521878" duration="1749000" />
       <workItem from="1502197757601" duration="18310000" />
       <workItem from="1502302807374" duration="12000" />
-      <workItem from="1502363374345" duration="2678000" />
+      <workItem from="1502363374345" duration="3398000" />
     </task>
     <task id="LOCAL-00001" summary="finish fix texts">
       <created>1500917039213</created>
@@ -383,7 +383,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="116999000" />
+    <option name="totallyTimeSpent" value="117719000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -820,8 +820,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/appointment-sum/appointment-sum.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="884">
-          <caret line="52" column="0" lean-forward="true" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
+        <state relative-caret-position="-527">
+          <caret line="35" column="15" lean-forward="true" selection-start-line="35" selection-start-column="15" selection-end-line="35" selection-end-column="15" />
           <folding />
         </state>
       </provider>

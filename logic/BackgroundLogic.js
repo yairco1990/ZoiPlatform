@@ -93,7 +93,7 @@ class BackgroundLogic {
 				//clear them
 				BackgroundLogic.clearOldConversations(usersWithOldConversation);
 
-				MyLog.debug("Conversation cleared: " + usersWithOldConversation.length);
+				MyLog.info("Conversation cleared: " + usersWithOldConversation.length);
 			} catch (err) {
 				MyLog.error(err);
 				MyLog.error("Error on startCleaningOldConvosInterval");
@@ -160,7 +160,7 @@ class BackgroundLogic {
 			}
 		});
 
-		MyLog.debug("Old customers notifications sent: " + counter);
+		MyLog.info("Old customers notifications sent: " + counter);
 	}
 
 	/**
@@ -211,7 +211,7 @@ class BackgroundLogic {
 			}
 		});
 
-		MyLog.debug("Morning briefs sent: " + counter);
+		MyLog.info("Morning briefs sent: " + counter);
 	}
 
 	/**
