@@ -21,12 +21,14 @@ function DBManager() {
 		profile: Object,
 		startedAt: String,
 		nextMorningBriefDate: Number,
+		nextOldCustomersDate: Number,
 		morningBriefTime: String,
 		defaultCalendar: Object,
 		promptNewCustomers: Boolean,
 		customerSendLimit: Object,
 		oldCustomersRange: Object,
 		lastMessageTime: Number,
+		timezone: String
 	}, {minimize: false});
 
 	let blackListSchema = new Schema({

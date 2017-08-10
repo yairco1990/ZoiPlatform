@@ -33,7 +33,7 @@ module.exports = {
 		"redirectUri": "https://zoiai.com:3000/acuity/oauth2"//TODO change it!
 	},
 	delayTime: 10,
-	oldCustomersIntervalTime: 1000 * 60 * 60 * 24,
+	oldCustomersIntervalTime: 1000 * 60 * 0.5,
 	morningBriefIntervalTime: 1000 * 60 * 0.5,
 	oneDay: 1000 * 60 * 60 * 24
 };

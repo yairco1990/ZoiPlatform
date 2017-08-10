@@ -7,6 +7,7 @@ let DefaultUser = {
 	profile: {},
 	startedAt: moment().format('lll'),
 	nextMorningBriefDate: moment().hours(9).minutes(0).add(1, 'days').valueOf(),
+	nextOldCustomersDate: moment().hours(12).minutes(0).add(1, 'days').valueOf(),
 	morningBriefTime: "09:00",
 	defaultCalendar: {
 		"id": -1,

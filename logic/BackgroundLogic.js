@@ -14,18 +14,7 @@ class BackgroundLogic {
 	static startAll(bot) {
 		BackgroundLogic.startMorningBriefInterval(bot);
 		BackgroundLogic.startCleaningOldConvosInterval(bot);
-
-		//decide if to start this noon or tomorrow noon
-		let noonTime = moment().hour(12).minute(0).second(0);
-		//if the noon is before now - get tomorrow noon
-		if (noonTime.isBefore(moment())) {
-			noonTime = moment().add(1, 'days').hour(12).minute(0).second(0);
-		}
-		let gapToNoon = moment.duration(noonTime.diff(moment())).valueOf();
-
-		setTimeout(() => {
-			BackgroundLogic.startOldCustomersInterval(bot);
-		}, gapToNoon);
+		BackgroundLogic.startOldCustomersInterval(bot);
 	}
 
 	/**
@@ -107,25 +96,34 @@ class BackgroundLogic {
 	 */
 	static startOldCustomersInterval(bot) {
 
-		let intervalFunction = async () => {
-			//get all users for old customers scenario
-			let oldCustomersUsers = await DBManager.getUsers({
-				conversationData: {
-					$eq: null
-				}
-			});
+		setInterval(async () => {
+			try {
+				//get all users for old customers scenario
+				let oldCustomersUsers = await DBManager.getUsers({
+					$and: [{
+						$or: [{
+							nextOldCustomersDate: {//the date is less than now
+								$lt: new Date().valueOf()
+							}
+						}, {
+							nextOldCustomersDate: {//there is no date
+								$eq: null
+							}
+						}]
+					}, {
+						conversationData: {
+							$eq: null
+						}
+					}]
+				});
 
-			BackgroundLogic.sendOldCustomersConvo(bot, oldCustomersUsers);
-		};
+				BackgroundLogic.sendOldCustomersConvo(bot, oldCustomersUsers);
 
-		try {
-			//execute the function once, and then let the interval handle it.
-			intervalFunction();
-			setInterval(intervalFunction, ZoiConfig.oldCustomersIntervalTime);
-		} catch (err) {
-			MyLog.error(err);
-			MyLog.error("Error on startOldCustomersInterval");
-		}
+			} catch (err) {
+				MyLog.error(err);
+				MyLog.error("Error on startOldCustomersInterval");
+			}
+		}, ZoiConfig.oldCustomersIntervalTime);
 	}
 
 	/**

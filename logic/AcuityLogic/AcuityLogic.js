@@ -424,6 +424,13 @@ class AcuityLogic {
 				//set integration
 				user.integrations.Acuity = userData;
 
+				//set timezone
+				user.timezone = userData.userDetails.timezone;
+
+				//set promotion times
+				user.nextMorningBriefDate = moment().tz(user.timezone).hours(9).minutes(0).add(1, 'days').valueOf();
+				user.nextOldCustomersDate = moment().tz(user.timezone).hours(12).minutes(0).add(1, 'days').valueOf();
+
 				//save user with the integration
 				return self.DBManager.saveUser(user);
 
@@ -449,6 +456,7 @@ class AcuityLogic {
 
 				//proceed after user integrated for the first time only(if integrated more than once - skip it)
 				if (!isAlreadyConnectedWithAcuity) {
+
 					MyLog.log("Integrated with Acuity successfully");
 					MyLog.log(response);
 					//save the last message time
