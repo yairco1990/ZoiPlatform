@@ -69,7 +69,7 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 			entities = nlpResponse.entities;
 			intentScore = nlpResponse.intent.confidence;
 		} else {
-			intent = isQuickReply ? "Quick Reply" : isPayloadRequest ? "Payload Button" : "Error: What the intent?";
+			intent = isQuickReply ? "Quick Reply" : isPayloadRequest ? "Payload Button" : isWaitForText ? "Text Answer" : "Error: What the intent?";
 			entities = "No entities";
 			intentScore = 0;
 		}
