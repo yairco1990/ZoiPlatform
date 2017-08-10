@@ -394,6 +394,7 @@ class AcuityLogic {
 					callback(200, {message: "Not a new customer"});
 				}
 			} else {
+				MyLog.info("User doesn't prompt new customers");
 				callback(200, {message: "User doesn't prompt new customers"});
 			}
 		} catch (err) {

@@ -125,7 +125,7 @@ class AcuitySchedulingLogic {
 
 			self.acuity.request('webhooks', options, function (err, res, body) {
 
-				if (err || body.error) {
+				if (err) {
 					reject(err || body.error);
 					return;
 				}

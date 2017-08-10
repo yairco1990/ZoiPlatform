@@ -16,7 +16,7 @@ let Environments = {
 		clientUrl: CLIENT_NGROK
 	}
 };
-let selectedEnvironment = Environments.DEV;
+let selectedEnvironment = Environments.NGROK;
 
 ///////////////////////////////////////////////////////////////////////////////
 module.exports = {
