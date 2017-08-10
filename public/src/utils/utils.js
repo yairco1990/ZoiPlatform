@@ -1,4 +1,5 @@
 var MyUtils = {
+
 	startsWith: function (str, search) {
 		return str.slice(0, search.length) === search;
 	},

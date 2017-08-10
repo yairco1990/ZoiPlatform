@@ -489,6 +489,7 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 					emailHtml = emailHtml.replace('{{line3}}', EmailConfig.promotionsEmail.line3);
 					emailHtml = emailHtml.replace('{{line4}}', EmailConfig.promotionsEmail.line4);
 					emailHtml = emailHtml.replace('{{bannerSrc}}', template.image);
+					emailHtml = emailHtml.replace('{{preHeaderText}}', EmailConfig.promotionsEmail.subject);
 
 					//parse the second part
 					emailHtml = emailHtml.replace('{{firstName}}', client.firstName);

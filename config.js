@@ -16,7 +16,7 @@ let Environments = {
 		clientUrl: CLIENT_NGROK
 	}
 };
-let selectedEnvironment = Environments.DEV;
+let selectedEnvironment = Environments.NGROK;
 
 ///////////////////////////////////////////////////////////////////////////////
 module.exports = {
@@ -34,6 +34,6 @@ module.exports = {
 	},
 	delayTime: 10,
 	oldCustomersIntervalTime: 1000 * 60 * 60 * 24,
-	morningBriefIntervalTime: 1000 * 60 * 5,
+	morningBriefIntervalTime: 1000 * 60 * 0.5,
 	oneDay: 1000 * 60 * 60 * 24
 };

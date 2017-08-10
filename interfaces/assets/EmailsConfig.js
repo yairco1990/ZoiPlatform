@@ -26,7 +26,7 @@ module.exports = {
 		line1: "Hi {{firstName}},",
 		line2: "We at {{business name}} value our customers and always find ways to make you happy. ",
 		line3: "We have a special offer for you!",
-		line4: "Book for {{service}} today and enjoy <b>{{discount type}}</b> deal.</p>",
+		line4: "Book for {{service}} tomorrow and enjoy <b>{{discount type}}</b> deal.</p>",
 		buttonText: "I Want It!"
 	}
 };

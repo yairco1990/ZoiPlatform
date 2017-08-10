@@ -61,7 +61,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 				facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + userId, "full")
 			]));
 		} else if (input === "MENU_MAILS") {
-			reply(facebookResponse.getButtonMessage("Watch your unread customer emails:", [
+			reply(facebookResponse.getButtonMessage("View your unread emails from your customersWatch your unread customer emails:", [
 				facebookResponse.getGenericButton("web_url", "Unread Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + userId, "full")
 			]));
 		} else if (input === "MENU_PROFILE") {

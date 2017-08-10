@@ -215,6 +215,7 @@ class AcuityLogic {
 				emailHtml = emailHtml.replace('{{line3}}', emailTemplate.line3);
 				emailHtml = emailHtml.replace('{{line4}}', emailTemplate.line4);
 				emailHtml = emailHtml.replace('{{bannerSrc}}', emailTemplate.bannerImage);
+				emailHtml = emailHtml.replace('{{preHeaderText}}', emailTemplate.subject);
 
 				//parse the second part
 				emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);

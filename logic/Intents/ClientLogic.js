@@ -96,7 +96,7 @@ ClientLogic.prototype.newCustomerJoin = async function (conversationData, reply)
 				return;
 			}
 
-			if (conversationData.payload.id == 1) {
+			if (conversationData.payload.id === 1) {
 
 				if (user.session && user.session.newClient && user.session.newClient.email) {
 
@@ -112,6 +112,7 @@ ClientLogic.prototype.newCustomerJoin = async function (conversationData, reply)
 					emailHtml = emailHtml.replace('{{line3}}', emailTemplate.line3);
 					emailHtml = emailHtml.replace('{{line4}}', emailTemplate.line4);
 					emailHtml = emailHtml.replace('{{bannerSrc}}', emailTemplate.bannerImage);
+					emailHtml = emailHtml.replace('{{preHeaderText}}', "Welcome to " + user.integrations.Acuity.userDetails.name);
 
 					//parse the second part
 					emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);

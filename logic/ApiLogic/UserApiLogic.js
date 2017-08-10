@@ -3,6 +3,7 @@
  */
 const MyLog = require('../../interfaces/MyLog');
 const moment = require('moment');
+const momentTimezone = require('moment-timezone');
 
 function UserApiLogic() {
 	this.DBManager = require('../../dal/DBManager');
@@ -47,11 +48,12 @@ UserApiLogic.prototype.saveUser = async function (user, callback) {
 		//calculate morning brief if the user set it
 		if (user.morningBriefTime && typeof(user.morningBriefTime) === "number") {
 
-			let morningBriefTime = moment(user.morningBriefTime);
+			//convert the user selected time to server timezone
+			let morningBriefTime = moment(user.morningBriefTime).tz(user.integrations.Acuity.userDetails.timezone);
 
 			//if the time is before now - get future time
 			if (morningBriefTime.isBefore(moment())) {
-				morningBriefTime = moment(user.morningBriefTime).add(1, 'days');
+				morningBriefTime = moment(user.morningBriefTime).tz(user.integrations.Acuity.userDetails.timezone).add(1, 'days');
 			}
 
 			//set next morning brief time
