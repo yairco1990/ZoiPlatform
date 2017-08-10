@@ -349,9 +349,7 @@ ClientLogic.prototype.clearSession = function () {
 	//clear conversation data
 	user.conversationData = null;
 	user.session = null;
-	self.DBManager.saveUser(user).then(function () {
-		MyLog.log("conversation cleared!");
-	});
+	self.DBManager.saveUser(user);
 };
 
 module.exports = ClientLogic;

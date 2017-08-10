@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="try fix old customers interval">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+    <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/BackgroundLogic.js" afterPath="$PROJECT_DIR$/logic/BackgroundLogic.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/.idea/workspace.xml" afterPath="$PROJECT_DIR$/public/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Intents/ClientLogic.js" afterPath="$PROJECT_DIR$/logic/Intents/ClientLogic.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -62,11 +60,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="3" column="14" lean-forward="true" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
+            <state relative-caret-position="119">
+              <caret line="7" column="21" lean-forward="true" selection-start-line="7" selection-start-column="21" selection-end-line="7" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -92,11 +90,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ClientLogic.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ClientLogic.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/logic/Intents/ClientLogic.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="211" column="20" lean-forward="false" selection-start-line="211" selection-start-column="20" selection-end-line="211" selection-end-column="20" />
+            <state relative-caret-position="425">
+              <caret line="351" column="34" lean-forward="false" selection-start-line="351" selection-start-column="34" selection-end-line="351" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -125,7 +123,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Failed to</find>
       <find>.info</find>
       <find>prom</find>
       <find>newCustomer</find>
@@ -155,6 +152,7 @@
       <find>gapToNoon</find>
       <find>morningBrie</find>
       <find>banner</find>
+      <find>There are no non</find>
     </findStrings>
     <replaceStrings>
       <replace>DATABASE</replace>
@@ -186,8 +184,8 @@
       <dir>D:\Dev\ZoiServer\dal</dir>
       <dir>D:\Dev\ZoiServer\bot</dir>
       <dir>D:\Dev\ZoiServer\public</dir>
-      <dir>D:\Dev\ZoiServer</dir>
       <dir>D:\Dev\ZoiServer\logic</dir>
+      <dir>D:\Dev\ZoiServer</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -238,7 +236,6 @@
         <option value="$PROJECT_DIR$/logic/ApiHandlers/BookerplusLogic.js" />
         <option value="$PROJECT_DIR$/logic/ApiLogic/UserApiLogic.js" />
         <option value="$PROJECT_DIR$/logic/Intents/AppointmentLogic.js" />
-        <option value="$PROJECT_DIR$/logic/Intents/ClientLogic.js" />
         <option value="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" />
         <option value="$PROJECT_DIR$/logic/Listeners/PostbackLogic.js" />
         <option value="$PROJECT_DIR$/interfaces/DefaultModels/DefaultUser.js" />
@@ -247,6 +244,7 @@
         <option value="$PROJECT_DIR$/logic/AcuityLogic/AcuityLogic.js" />
         <option value="$PROJECT_DIR$/logic/BackgroundLogic.js" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/logic/Intents/ClientLogic.js" />
       </list>
     </option>
   </component>
@@ -513,13 +511,6 @@
       <workItem from="1501433137355" duration="23748000" />
       <workItem from="1502013125844" duration="66116000" />
       <workItem from="1502302821707" duration="21347000" />
-    </task>
-    <task id="LOCAL-00004" summary="add facebook response">
-      <created>1495637197031</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1495637197031</updated>
     </task>
     <task id="LOCAL-00005" summary="add facebook response">
       <created>1495637294285</created>
@@ -857,16 +848,24 @@
       <option name="project" value="LOCAL" />
       <updated>1502377258569</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="try fix old customers interval">
+      <created>1502377517064</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1502377517064</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="680314000" />
+    <option name="totallyTimeSpent" value="680511000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
+      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17702845" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38913044" sideWeight="0.50421494" order="7" side_tool="true" content_ui="tabs" />
@@ -884,7 +883,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2340195" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1339,14 +1337,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logic/Intents/ClientLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="211" column="20" lean-forward="false" selection-start-line="211" selection-start-column="20" selection-end-line="211" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logic/Intents/GeneralLogic.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
@@ -1413,8 +1403,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="14" lean-forward="true" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
+        <state relative-caret-position="119">
+          <caret line="7" column="21" lean-forward="true" selection-start-line="7" selection-start-column="21" selection-end-line="7" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/Intents/ClientLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="351" column="34" lean-forward="false" selection-start-line="351" selection-start-column="34" selection-end-line="351" selection-end-column="34" />
           <folding />
         </state>
       </provider>
