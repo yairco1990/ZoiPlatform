@@ -139,8 +139,13 @@ class BackgroundLogic {
 
 			if (user.integrations && user.integrations.Acuity) {
 				counter++;
+				//set next time of morning brief for this user
+				user.nextOldCustomersDate = new Date().valueOf() + ZoiConfig.oneDay;
 				//save the last message time
 				user.lastMessageTime = new Date().valueOf();
+				//save the user
+				await DBManager.saveUser(user);
+
 				//start the conversation in the GeneralLogic class
 				let clientLogic = new ClientLogic(user);
 				let conversationData = {
