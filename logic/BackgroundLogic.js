@@ -1,6 +1,6 @@
 const ZoiConfig = require('../config');
 const DBManager = require('../dal/DBManager');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const MyLog = require('../interfaces/MyLog');
 const GeneralLogic = require('./Intents/GeneralLogic');
 const ClientLogic = require('./Intents/ClientLogic');

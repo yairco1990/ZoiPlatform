@@ -2,7 +2,7 @@
  * Created by Yair on 7/4/2017.
  */
 const MyLog = require('../../interfaces/MyLog');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 function UserApiLogic() {
 	this.DBManager = require('../../dal/DBManager');

@@ -3,7 +3,7 @@
  */
 const AcuityApi = require('../ApiHandlers/AcuitySchedulingLogic');
 const MyLog = require('../../interfaces/MyLog');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const ZoiConfig = require('../../config');
 const GmailLogic = require('../GmailLogic');
 const _ = require('underscore');

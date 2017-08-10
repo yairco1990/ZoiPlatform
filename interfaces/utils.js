@@ -4,7 +4,7 @@
 const MyLog = require('./MyLog');
 const fs = require('fs');
 const webshot = require('webshot');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const SmallTalk = require('./assets/SmallTalk');
 const _ = require('underscore');
 

@@ -4,7 +4,7 @@
  */
 const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const ZoiConfig = require('../../config');
 const async = require('async');
