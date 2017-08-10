@@ -194,13 +194,13 @@ ClientLogic.prototype.promoteOldCustomers = async function (conversationData, re
 
 			//search old customers
 			let appointments = await acuityLogic.getAppointments({
-				minDate: MyUtils.convertToAcuityDate(moment().subtract(daysRange, 'days').startOf('day')),
-				maxDate: MyUtils.convertToAcuityDate(moment().add(30, 'days').endOf('day'))
+				minDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day')),
+				maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).add(30, 'days').endOf('day'))
 			});
 
 			//window checking TODO config it
-			let windowStartDate = moment().subtract(daysRange, 'days').startOf('day');
-			let windowEndDate = moment().subtract(daysRange, 'days').endOf('day');
+			let windowStartDate = moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day');
+			let windowEndDate = moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').endOf('day');
 
 			let windowAppointments = [];
 			let nonWindowAppointments = [];
@@ -208,7 +208,8 @@ ClientLogic.prototype.promoteOldCustomers = async function (conversationData, re
 			//iterate all the appointments
 			appointments.forEach(function (appointment) {
 				//if the appointment is in the window
-				if (moment(appointment.datetime).isAfter(windowStartDate) && moment(appointment.datetime).isBefore(windowEndDate)) {
+				if (moment(appointment.datetime).tz(user.integrations.Acuity.userDetails.timezone).isAfter(windowStartDate)
+					&& moment(appointment.datetime).tz(user.integrations.Acuity.userDetails.timezone).isBefore(windowEndDate)) {
 					windowAppointments.push(appointment);
 				} else {
 					nonWindowAppointments.push(appointment);

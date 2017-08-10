@@ -4,94 +4,94 @@ let Util = require('util');
 let moment = require('moment-timezone');
 
 let DATABASE = {
-    timezone: "Asia/Jerusalem"
+	timezone: "Asia/Jerusalem"
 };
 
 function BookerplusLogic(authtoken) {
-    this.authtoken = authtoken;
+	this.authtoken = authtoken;
 }
 
 BookerplusLogic.prototype.getClient = function (entities, callback) {
 
-    let self = this;
+	let self = this;
 
-    let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/customer";
+	let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/customer";
 
-    let searchQuery;
-    if (entities.person || entities.CUSTOMER) {
-        searchQuery = entities.person || entities.CUSTOMER;
-    } else {
-        searchQuery = "";
-    }
+	let searchQuery;
+	if (entities.person || entities.CUSTOMER) {
+		searchQuery = entities.person || entities.CUSTOMER;
+	} else {
+		searchQuery = "";
+	}
 
-    requestify.request(url, {
-        method: 'GET',
-        params: {
-	  searchQuery: searchQuery,
-	  numOfResults: 1
-        },
-        headers: {
-	  'Authorization': self.authtoken
-        },
-        dataType: 'json'
-    }).then(function (data) {
+	requestify.request(url, {
+		method: 'GET',
+		params: {
+			searchQuery: searchQuery,
+			numOfResults: 1
+		},
+		headers: {
+			'Authorization': self.authtoken
+		},
+		dataType: 'json'
+	}).then(function (data) {
 
-        data = data.getBody();
+		data = data.getBody();
 
-        let resultClient = data.result[0];
+		let resultClient = data.result[0];
 
-        let myResult = "";
+		let myResult = "";
 
-        if (resultClient) {
+		if (resultClient) {
 
-	  //save client
-	  DATABASE.customer = resultClient;
+			//save client
+			DATABASE.customer = resultClient;
 
-	  myResult += "The client that zoi found is " + resultClient.firstname + " " + resultClient.lastname + ".";
-	  if (resultClient.mobile) {
-	      myResult += " His mobile number is " + resultClient.mobile + ".";
-	  }
-	  if (resultClient.email) {
-	      myResult += " His Email is " + resultClient.email + ".";
-	  }
-	  if (resultClient.address) {
-	      myResult += " His address is " + resultClient.address + ".";
-	  }
-        } else {
-	  myResult = "Zoi didn't find client with the name " + args.Request.SearchText;
-        }
+			myResult += "The client that zoi found is " + resultClient.firstname + " " + resultClient.lastname + ".";
+			if (resultClient.mobile) {
+				myResult += " His mobile number is " + resultClient.mobile + ".";
+			}
+			if (resultClient.email) {
+				myResult += " His Email is " + resultClient.email + ".";
+			}
+			if (resultClient.address) {
+				myResult += " His address is " + resultClient.address + ".";
+			}
+		} else {
+			myResult = "Zoi didn't find client with the name " + args.Request.SearchText;
+		}
 
-        let response = {
-	  "attachment": {
-	      "type": "template",
-	      "payload": {
-		"template_type": "generic",
-		"elements": [
-		    {
-		        "title": "Customer Card",
-		        "image_url": resultClient.picUrl,
-		        "subtitle": myResult
-		        // "buttons": [
-		        //  {
-		        //      "type": "postback",
-		        //      "title": "Show customer details",
-		        //      "payload": "DEVELOPER_DEFINED_PAYLOAD"
-		        //  }, {
-		        //      "type": "postback",
-		        //      "title": "Book an appointment",
-		        //      "payload": "DEVELOPER_DEFINED_PAYLOAD"
-		        //  }
-		        // ]
-		    }
-		]
-	      }
-	  }
-        };
+		let response = {
+			"attachment": {
+				"type": "template",
+				"payload": {
+					"template_type": "generic",
+					"elements": [
+						{
+							"title": "Customer Card",
+							"image_url": resultClient.picUrl,
+							"subtitle": myResult
+							// "buttons": [
+							//  {
+							//      "type": "postback",
+							//      "title": "Show customer details",
+							//      "payload": "DEVELOPER_DEFINED_PAYLOAD"
+							//  }, {
+							//      "type": "postback",
+							//      "title": "Book an appointment",
+							//      "payload": "DEVELOPER_DEFINED_PAYLOAD"
+							//  }
+							// ]
+						}
+					]
+				}
+			}
+		};
 
 
-        callback(200, response);
-        // callback(200, {"text": myResult});
-    });
+		callback(200, response);
+		// callback(200, {"text": myResult});
+	});
 };
 
 /**
@@ -102,31 +102,31 @@ BookerplusLogic.prototype.getClient = function (entities, callback) {
  */
 BookerplusLogic.prototype.getServices = function (entities, callback) {
 
-    let self = this;
+	let self = this;
 
-    //get services object
-    self.getServicesObject()
-        .then(function (services) {
-	  let myResult = "";
+	//get services object
+	self.getServicesObject()
+		.then(function (services) {
+			let myResult = "";
 
-	  if (services && services.length > 0) {
+			if (services && services.length > 0) {
 
-	      //save services
-	      DATABASE.services = services;
+				//save services
+				DATABASE.services = services;
 
-	      services.forEach(function (service) {
-		myResult += service.name + "\n";
-	      });
+				services.forEach(function (service) {
+					myResult += service.name + "\n";
+				});
 
-	      callback(200, {"text": myResult});
-	  } else {
+				callback(200, {"text": myResult});
+			} else {
 
-	      callback(200, {"text": "There are no services in your service"});
-	  }
-        }, function (err) {
-	  Util.log(err);
-	  callback(200, {"text": "What exactly do you mean?"});
-        });
+				callback(200, {"text": "There are no services in your service"});
+			}
+		}, function (err) {
+			Util.log(err);
+			callback(200, {"text": "What exactly do you mean?"});
+		});
 };
 
 /**
@@ -135,36 +135,36 @@ BookerplusLogic.prototype.getServices = function (entities, callback) {
  */
 BookerplusLogic.prototype.getServicesObject = function () {
 
-    let self = this;
+	let self = this;
 
-    return new Promise(function (resolve, reject) {
-        let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/branchService";
+	return new Promise(function (resolve, reject) {
+		let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/branchService";
 
-        requestify.request(url, {
-	  method: 'GET',
-	  params: {},
-	  headers: {
-	      'Authorization': self.authtoken
-	  },
-	  dataType: 'json'
-        }).then(function (data) {
+		requestify.request(url, {
+			method: 'GET',
+			params: {},
+			headers: {
+				'Authorization': self.authtoken
+			},
+			dataType: 'json'
+		}).then(function (data) {
 
-	  data = data.getBody();
+			data = data.getBody();
 
-	  let result = data.result;
+			let result = data.result;
 
-	  if (data.responseType == "SUCCESS") {
+			if (data.responseType == "SUCCESS") {
 
-	      resolve(result);
-	  } else {
+				resolve(result);
+			} else {
 
-	      reject(data.responseType);
-	  }
-        }).catch(function (err) {
+				reject(data.responseType);
+			}
+		}).catch(function (err) {
 
-	  reject(err);
-        });
-    });
+			reject(err);
+		});
+	});
 };
 
 /**
@@ -176,85 +176,85 @@ BookerplusLogic.prototype.getServicesObject = function () {
  */
 BookerplusLogic.prototype.getQueues = function (entities, params, callback) {
 
-    let self = this;
+	let self = this;
 
-    if (!params) {
-        params = {
-	  startTime: new Date().valueOf() - (1000 * 60 * 60 * 24 * 7), //week ago
-	  endTime: new Date().valueOf()
-        };
+	if (!params) {
+		params = {
+			startTime: new Date().valueOf() - (1000 * 60 * 60 * 24 * 7), //week ago
+			endTime: new Date().valueOf()
+		};
 
-        //aTODO
-        if (entities && entities.date == 'today') {
-	  params.startTime = moment().startOf('day').unix() * 1000; // set to 12:00 am today
-	  params.endTime = moment().endOf('day').unix() * 1000; // set to 23:59 pm today
-        }
-    }
-
-    //get queues object
-    self.getQueuesObject(params)
-        .then(function (queues) {
-
-	  if (queues && queues.length > 0) {
-
-	      //aTODO save queues
-	      DATABASE.weekQueues = queues;
-
-	      let queuesList = [];
-	      let lastQueueTime;
-
-	      //run until the length or 4 - the shorter between them
-	      for (let i = 0; i < queues.length && i < 4; i++) {
-
-		let queue = queues[i];
-
-		if (queue.forEmployee) {
-		    queuesList.push({
-		        "title": "Appointment for " + queue.customer.firstname + " " + queue.customer.lastname + " at " + moment(queue.estimatedServiceTime).format('lll'),
-		        "image_url": "http://pngimg.com/uploads/clock/clock_PNG6641.png",
-		        "subtitle": "Service: " + queue.branchService.name + ". For employee: " + queue.forEmployee.firstname + " " + queue.forEmployee.lastname + "\n"
-		    });
+		//aTODO
+		if (entities && entities.date == 'today') {
+			params.startTime = moment().startOf('day').unix() * 1000; // set to 12:00 am today
+			params.endTime = moment().endOf('day').unix() * 1000; // set to 23:59 pm today
 		}
+	}
 
-		//save the last queue time(add some time to get the next and not the current again)
-		lastQueueTime = queue.estimatedServiceTime + (1000 * 30);
-	      }
+	//get queues object
+	self.getQueuesObject(params)
+		.then(function (queues) {
 
-	      //add button to get next queues if there are another queues
-	      let buttons = null;
-	      if (queues.length > queuesList.length) {
-		//response button
-		buttons = [{
-		    "type": "postback",
-		    "title": "Bring me later appointments",
-		    "payload": JSON.stringify({
-		        action: "BRING_NEXT_QUEUES",
-		        params: {
-			  startTime: lastQueueTime,
-			  endTime: params.endTime
-		        }
-		    })
-		}];
-	      }
+			if (queues && queues.length > 0) {
 
-	      let response;
+				//aTODO save queues
+				DATABASE.weekQueues = queues;
 
-	      if (queuesList.length > 1) {
-		response = buildTemplateResponse('list', queuesList, buttons);
-	      } else {
-		response = buildTemplateResponse('generic', [queuesList[0]]);
-	      }
+				let queuesList = [];
+				let lastQueueTime;
 
-	      callback(200, response);//
-	  } else {
-	      callback(200, {"text": "There are no queues to show"});
-	  }
-        })
-        .catch(function (err) {
+				//run until the length or 4 - the shorter between them
+				for (let i = 0; i < queues.length && i < 4; i++) {
 
-	  Util.log(err);
-	  callback(200, {"text": "Zoi is a little bit confused"});
-        });
+					let queue = queues[i];
+
+					if (queue.forEmployee) {
+						queuesList.push({
+							"title": "Appointment for " + queue.customer.firstname + " " + queue.customer.lastname + " at " + moment(queue.estimatedServiceTime).format('lll'),
+							"image_url": "http://pngimg.com/uploads/clock/clock_PNG6641.png",
+							"subtitle": "Service: " + queue.branchService.name + ". For employee: " + queue.forEmployee.firstname + " " + queue.forEmployee.lastname + "\n"
+						});
+					}
+
+					//save the last queue time(add some time to get the next and not the current again)
+					lastQueueTime = queue.estimatedServiceTime + (1000 * 30);
+				}
+
+				//add button to get next queues if there are another queues
+				let buttons = null;
+				if (queues.length > queuesList.length) {
+					//response button
+					buttons = [{
+						"type": "postback",
+						"title": "Bring me later appointments",
+						"payload": JSON.stringify({
+							action: "BRING_NEXT_QUEUES",
+							params: {
+								startTime: lastQueueTime,
+								endTime: params.endTime
+							}
+						})
+					}];
+				}
+
+				let response;
+
+				if (queuesList.length > 1) {
+					response = buildTemplateResponse('list', queuesList, buttons);
+				} else {
+					response = buildTemplateResponse('generic', [queuesList[0]]);
+				}
+
+				callback(200, response);//
+			} else {
+				callback(200, {"text": "There are no queues to show"});
+			}
+		})
+		.catch(function (err) {
+
+			Util.log(err);
+			callback(200, {"text": "Zoi is a little bit confused"});
+		});
 };
 
 /**
@@ -265,42 +265,42 @@ BookerplusLogic.prototype.getQueues = function (entities, params, callback) {
  */
 BookerplusLogic.prototype.getNextQueue = function (entities, callback) {
 
-    let self = this;
+	let self = this;
 
-    //get services object
-    self.getQueuesObject({
-        startTime: new Date().valueOf(), //now
-        endTime: new Date().valueOf() + (1000 * 60 * 60 * 24 * 7) //week later
-    })
-        .then(function (queues) {
-	  let myResult = "";
+	//get services object
+	self.getQueuesObject({
+		startTime: new Date().valueOf(), //now
+		endTime: new Date().valueOf() + (1000 * 60 * 60 * 24 * 7) //week later
+	})
+		.then(function (queues) {
+			let myResult = "";
 
-	  if (queues && queues.length > 0) {
+			if (queues && queues.length > 0) {
 
-	      let queue = queues[0];
+				let queue = queues[0];
 
-	      //aTODO save next queue
-	      DATABASE.nextQueue = queue;
+				//aTODO save next queue
+				DATABASE.nextQueue = queue;
 
-	      myResult = "The next queue is for " + queue.customer.firstname + " "
-		+ queue.customer.lastname + " for " + queue.branchService.name + " for the employee "
-		+ queue.forEmployee.firstname + " " + queue.forEmployee.lastname + ", at "
-		+ moment(queue.estimatedServiceTime).format('lll') + ".";
+				myResult = "The next queue is for " + queue.customer.firstname + " "
+					+ queue.customer.lastname + " for " + queue.branchService.name + " for the employee "
+					+ queue.forEmployee.firstname + " " + queue.forEmployee.lastname + ", at "
+					+ moment(queue.estimatedServiceTime).format('lll') + ".";
 
-	      callback(200, {"text": myResult});
-	  } else {
-	      callback(200, {"text": "There is no next queue"});
-	  }
-        }, function (err) {
+				callback(200, {"text": myResult});
+			} else {
+				callback(200, {"text": "There is no next queue"});
+			}
+		}, function (err) {
 
-	  Util.log(err);
-	  callback(200, {"text": "What exactly do you mean?"});
-        })
-        .catch(function (err) {
+			Util.log(err);
+			callback(200, {"text": "What exactly do you mean?"});
+		})
+		.catch(function (err) {
 
-	  Util.log(err);
-	  callback(200, {"text": "Zoi is a little bit confused"});
-        });
+			Util.log(err);
+			callback(200, {"text": "Zoi is a little bit confused"});
+		});
 };
 
 /**
@@ -311,40 +311,40 @@ BookerplusLogic.prototype.getNextQueue = function (entities, callback) {
  */
 BookerplusLogic.prototype.scheduleQueue = function (entities, callback) {
 
-    let self = this;
+	let self = this;
 
-    //schedule queue object
-    self.scheduleQueueObject({
-        customerId: DATABASE.customer.id,
-        dateTime: moment.tz(entities.date, DATABASE.timezone).unix() * 1000,
-        sequenceTemplateId: DATABASE.services[0].sequenceTemplateId,
-        forceSchedule: true,
-        platform: "zoi",
-        forEmployeeId: 1834
-    })
-        .then(function (queue) {
-	  let myResult = "";
+	//schedule queue object
+	self.scheduleQueueObject({
+		customerId: DATABASE.customer.id,
+		dateTime: moment.tz(entities.date, DATABASE.timezone).unix() * 1000,
+		sequenceTemplateId: DATABASE.services[0].sequenceTemplateId,
+		forceSchedule: true,
+		platform: "zoi",
+		forEmployeeId: 1834
+	})
+		.then(function (queue) {
+			let myResult = "";
 
-	  if (queue) {
+			if (queue) {
 
-	      myResult = "The appointment booked for " + DATABASE.customer.firstname + " "
-		+ DATABASE.customer.lastname + ", at "
-		+ moment.tz(queue.estimatedServiceTime, DATABASE.timezone).format('lll') + ".";
+				myResult = "The appointment booked for " + DATABASE.customer.firstname + " "
+					+ DATABASE.customer.lastname + ", at "
+					+ moment.tz(queue.estimatedServiceTime, DATABASE.timezone).format('lll') + ".";
 
-	      callback(200, {"text": myResult});
-	  } else {
-	      callback(200, {"text": "There is no next queue"});
-	  }
-        }, function (err) {
+				callback(200, {"text": myResult});
+			} else {
+				callback(200, {"text": "There is no next queue"});
+			}
+		}, function (err) {
 
-	  Util.log(err);
-	  callback(200, {"text": "What exactly do you mean?"});
-        })
-        .catch(function (err) {
+			Util.log(err);
+			callback(200, {"text": "What exactly do you mean?"});
+		})
+		.catch(function (err) {
 
-	  Util.log(err);
-	  callback(200, {"text": "Zoi is a little bit confused"});
-        });
+			Util.log(err);
+			callback(200, {"text": "Zoi is a little bit confused"});
+		});
 };
 
 
@@ -354,27 +354,27 @@ BookerplusLogic.prototype.scheduleQueue = function (entities, callback) {
  */
 BookerplusLogic.prototype.getQueuesObject = function (params) {
 
-    let self = this;
+	let self = this;
 
-    return new Promise(function (resolve, reject) {
-        let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/queue/getBusinessQueues";
+	return new Promise(function (resolve, reject) {
+		let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/queue/getBusinessQueues";
 
-        requestify.request(url, {
-	  method: 'GET',
-	  params: params,
-	  headers: {
-	      'Authorization': self.authtoken
-	  },
-	  dataType: 'json'
-        }).then(function (data) {
+		requestify.request(url, {
+			method: 'GET',
+			params: params,
+			headers: {
+				'Authorization': self.authtoken
+			},
+			dataType: 'json'
+		}).then(function (data) {
 
-	  handleServerResponse(resolve, reject, data);
+			handleServerResponse(resolve, reject, data);
 
-        }).catch(function (err) {
+		}).catch(function (err) {
 
-	  reject(err);
-        });
-    });
+			reject(err);
+		});
+	});
 };
 
 
@@ -384,27 +384,27 @@ BookerplusLogic.prototype.getQueuesObject = function (params) {
  */
 BookerplusLogic.prototype.scheduleQueueObject = function (params) {
 
-    let self = this;
+	let self = this;
 
-    return new Promise(function (resolve, reject) {
-        let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/reserved/schedule";
+	return new Promise(function (resolve, reject) {
+		let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/reserved/schedule";
 
-        requestify.request(url, {
-	  method: 'POST',
-	  params: params,
-	  headers: {
-	      'Authorization': self.authtoken
-	  },
-	  dataType: 'form-url-encoded'
-        }).then(function (data) {
+		requestify.request(url, {
+			method: 'POST',
+			params: params,
+			headers: {
+				'Authorization': self.authtoken
+			},
+			dataType: 'form-url-encoded'
+		}).then(function (data) {
 
-	  handleServerResponse(resolve, reject, data);
+			handleServerResponse(resolve, reject, data);
 
-        }).catch(function (err) {
+		}).catch(function (err) {
 
-	  reject(err);
-        });
-    });
+			reject(err);
+		});
+	});
 };
 
 /**
@@ -416,21 +416,21 @@ BookerplusLogic.prototype.scheduleQueueObject = function (params) {
  */
 function buildTemplateResponse(templateType, list, buttons) {
 
-    let listTemplate = {
-        "attachment": {
-	  "type": "template",
-	  "payload": {
-	      "template_type": templateType,
-	      "elements": list
-	  }
-        }
-    };
+	let listTemplate = {
+		"attachment": {
+			"type": "template",
+			"payload": {
+				"template_type": templateType,
+				"elements": list
+			}
+		}
+	};
 
-    if (buttons) {
-        listTemplate.attachment.payload.buttons = buttons;
-    }
+	if (buttons) {
+		listTemplate.attachment.payload.buttons = buttons;
+	}
 
-    return listTemplate;
+	return listTemplate;
 }
 
 /**
@@ -440,17 +440,17 @@ function buildTemplateResponse(templateType, list, buttons) {
  * @param data
  */
 function handleServerResponse(resolve, reject, data) {
-    data = data.getBody();
+	data = data.getBody();
 
-    let result = data.result;
+	let result = data.result;
 
-    if (data.responseType == "SUCCESS") {
+	if (data.responseType == "SUCCESS") {
 
-        resolve(result);
-    } else {
+		resolve(result);
+	} else {
 
-        reject(data.responseType);
-    }
+		reject(data.responseType);
+	}
 }
 
 module.exports = BookerplusLogic;

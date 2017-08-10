@@ -69,7 +69,7 @@ class AcuityLogic {
 
 			let options = {
 				appointmentTypeID: parseInt(data.appointmentTypeId),
-				date: moment(parseInt(data.date, 16)).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
+				date: moment(parseInt(data.date, 16)).tz(user.integrations.Acuity.userDetails.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
 			};
 
 			acuityApi.getAvailability(options).then(function (result) {
@@ -123,7 +123,10 @@ class AcuityLogic {
 
 			let options = [
 				{key: 'appointmentTypeID', value: 3581890},
-				{key: 'date', value: moment().add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')}
+				{
+					key: 'date',
+					value: moment().tz(user.integrations.Acuity.userDetails.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
+				}
 			];
 
 			return acuityApi.getAvailability(options);
@@ -146,8 +149,8 @@ class AcuityLogic {
 			let calendarId = user.defaultCalendar.id > 0 ? user.defaultCalendar.id : null;
 
 			let params = {
-				minDate: MyUtils.convertToAcuityDate(moment().startOf('day')),
-				maxDate: MyUtils.convertToAcuityDate(moment().endOf('day'))
+				minDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).startOf('day')),
+				maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).endOf('day'))
 			};
 
 			if (calendarId) {
@@ -289,7 +292,7 @@ class AcuityLogic {
 			MyLog.log("Appointment scheduled successfully");
 
 			//save appointment times
-			let actionTime = moment().format("YYYY/MM");
+			let actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
 			user.profile = user.profile || {};
 			if (user.profile[actionTime]) {
 				user.profile[actionTime].numOfAppointments = (user.profile[actionTime].numOfAppointments || 0) + 1;

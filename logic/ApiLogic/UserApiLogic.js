@@ -52,7 +52,7 @@ UserApiLogic.prototype.saveUser = async function (user, callback) {
 			let morningBriefTime = moment(user.morningBriefTime).tz(user.integrations.Acuity.userDetails.timezone);
 
 			//if the time is before now - get future time
-			if (morningBriefTime.isBefore(moment())) {
+			if (morningBriefTime.isBefore(moment().tz(user.integrations.Acuity.userDetails.timezone))) {
 				morningBriefTime = moment(user.morningBriefTime).tz(user.integrations.Acuity.userDetails.timezone).add(1, 'days');
 			}
 

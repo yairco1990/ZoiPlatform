@@ -240,7 +240,7 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 
 			let options = {
 				appointmentTypeID: appointmentTypes[0].id,
-				date: moment().add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
+				date: moment().tz(user.integrations.Acuity.userDetails.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
 			};
 
 			//get slots
@@ -446,7 +446,7 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 						}
 					}, {
 						blockDate: {
-							$gt: moment().valueOf()
+							$gt: moment().tz(user.integrations.Acuity.userDetails.timezone).valueOf()
 						}
 					}]
 				});
@@ -454,8 +454,8 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 				let daysRange = 7;
 				//get appointments in range of a week
 				let appointmentsInWeekRange = await acuityLogic.getAppointments({
-					minDate: MyUtils.convertToAcuityDate(moment().subtract(daysRange, 'days').startOf('day')),
-					maxDate: MyUtils.convertToAcuityDate(moment().add(daysRange, 'days').endOf('day'))
+					minDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day')),
+					maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).add(daysRange, 'days').endOf('day'))
 				});
 
 				//remove clients from black list
@@ -527,13 +527,13 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 					//unsubscribe this email for X days(do it async)
 					self.DBManager.addEmailToUnsubscribe({
 						_id: client.email,
-						blockDate: moment().add(blockRange, 'days').valueOf(),
-						blockDateString: moment().add(blockRange, 'days').format('lll')
+						blockDate: moment().tz(user.integrations.Acuity.userDetails.timezone).add(blockRange, 'days').valueOf(),
+						blockDateString: moment().tz(user.integrations.Acuity.userDetails.timezone).add(blockRange, 'days').format('lll')
 					});
 				});
 
 				//save promotion times
-				let actionTime = moment().format("YYYY/MM");
+				let actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
 				user.profile = user.profile || {};
 				if (user.profile[actionTime]) {
 					user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;

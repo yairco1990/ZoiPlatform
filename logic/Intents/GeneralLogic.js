@@ -99,8 +99,8 @@ GeneralLogic.prototype.sendMorningBrief = async function (conversationData, setB
 
 		//get appointments for today
 		let appointments = await acuityLogic.getAppointments({
-			minDate: MyUtils.convertToAcuityDate(moment().startOf('day')),
-			maxDate: MyUtils.convertToAcuityDate(moment().endOf('day'))
+			minDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).startOf('day')),
+			maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).endOf('day'))
 		});
 
 		//function for starting send promotions dialog
@@ -117,7 +117,7 @@ GeneralLogic.prototype.sendMorningBrief = async function (conversationData, setB
 
 			//sort appointments
 			appointments.sort(function (q1, q2) {
-				if (moment(q1.datetime).isAfter(moment(q2.datetime))) {
+				if (moment(q1.datetime).tz(user.integrations.Acuity.userDetails.timezone).isAfter(moment(q2.datetime).tz(user.integrations.Acuity.userDetails.timezone))) {
 					return 1;
 				} else {
 					return -1;
@@ -128,7 +128,7 @@ GeneralLogic.prototype.sendMorningBrief = async function (conversationData, setB
 			let nextAppointment;
 
 			appointments.forEach(function (appointment) {
-				if (!nextAppointment && moment(appointment.datetime).isAfter(moment())) {
+				if (!nextAppointment && moment(appointment.datetime).tz(user.integrations.Acuity.userDetails.timezone).isAfter(moment().tz(user.integrations.Acuity.userDetails.timezone))) {
 					nextAppointment = appointment;
 				}
 			});

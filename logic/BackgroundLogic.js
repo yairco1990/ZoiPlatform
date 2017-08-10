@@ -16,7 +16,7 @@ class BackgroundLogic {
 		BackgroundLogic.startCleaningOldConvosInterval(bot);
 
 		//decide if to start this noon or tomorrow noon
-		let noonTime = moment().hour(20).minute(34).second(0);
+		let noonTime = moment().hour(12).minute(0).second(0);
 		//if the noon is before now - get tomorrow noon
 		if (noonTime.isBefore(moment())) {
 			noonTime = moment().add(1, 'days').hour(12).minute(0).second(0);
