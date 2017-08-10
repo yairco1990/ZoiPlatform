@@ -42,6 +42,11 @@ GenericLogic.prototype.processIntent = function (conversationData, setBotTyping,
 				facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", "full")
 			]));
 			break;
+		case "generic unread emails":
+			reply(facebookResponse.getButtonMessage("View your unread emails from your customers:", [
+				facebookResponse.getGenericButton("web_url", "Unread Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + self.user._id, "full")
+			]));
+			break;
 		case "generic say goodbye":
 			reply(facebookResponse.getTextMessage(responseText));
 			self.clearSession();
