@@ -131,7 +131,7 @@ module.exports = {
 		app.get('/acuity/getEmails', function (req, res) {
 			MyLog.log(API_LOG + "getEmails. userId = " + req.query.userId);
 			let acuityLogic = new AcuityLogic();
-			acuityLogic.getEmails(req.query, function (status, data) {
+			acuityLogic.getEmails(req.query, function (bot, status, data) {
 				res.status(status).send(data);
 			});
 		});

@@ -47,6 +47,8 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_MAILS") {
 			self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, bot, reply);
+		} else if (input === "ACTION_LEARN") {
+			self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, callback);
 		}
 	} else if (input.includes("MENU")) {
 

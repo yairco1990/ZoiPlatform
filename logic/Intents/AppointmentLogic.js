@@ -57,7 +57,7 @@ AppointmentLogic.prototype.getAppointments = function (conversationData, reply) 
 
 	async.series([
 		MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
-		MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("This is your schedule for today sir:", [
+		MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Here is your schedule for today boss:", [
 			facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
 		]), true, delayTime),
 		MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
@@ -65,13 +65,13 @@ AppointmentLogic.prototype.getAppointments = function (conversationData, reply) 
 
 };
 
-const nextFreeSlotQuestions = {
-	serviceQuestion: {
-		id: 1,
-		text: "For which service?",
-		field: "serviceObject"
-	}
-};
+// const nextFreeSlotQuestions = {
+// 	serviceQuestion: {
+// 		id: 1,
+// 		text: "For which service?",
+// 		field: "serviceObject"
+// 	}
+// };
 /**
  * get next free slot
  */

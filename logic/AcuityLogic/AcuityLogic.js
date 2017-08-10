@@ -319,39 +319,53 @@ class AcuityLogic {
 		});
 	}
 
-	getEmails(data, callback) {
+	async getEmails(bot, data, callback) {
 
 		let self = this;
 
-		let tokens, clients, user;
-		self.DBManager.getUser({_id: data.userId}).then(function (_user) {
-			user = _user;
+		try {
+			//get the user
+			let user = await self.DBManager.getUser({_id: data.userId});
 
-			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
-			tokens = user.integrations.Gmail;
+			if (user.integrations.Gmail) {
+				//init the acuity api
+				let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-			return acuityApi.getClients();
+				//get the tokens
+				let tokens = user.integrations.Gmail;
 
-		}).then(function (_clients) {
-			clients = _clients;
-			let queryString = "newer_than:7d is:unread";
+				//get user clients
+				let clients = await acuityApi.getClients();
 
-			//get unread emails from the user clients
-			return GmailLogic.getEmailsList(tokens, queryString, 'me', user);
+				//set the query string
+				let queryString = "newer_than:7d is:unread";
 
-		}).then(function (messages) {
+				//get unread emails from the user clients
+				let messages = await GmailLogic.getEmailsList(tokens, queryString, 'me', user);
 
-			let clientsMessages = _.filter(messages, function (item1) {
-				return _.some(this, function (item2) {
-					return item1.from.includes(item2.email) && item2.email;
-				});
-			}, clients);
+				//intersection between user's clients and email messages
+				let clientsMessages = _.filter(messages, function (item1) {
+					return _.some(this, function (item2) {
+						return item1.from.includes(item2.email) && item2.email;
+					});
+				}, clients);
 
-			callback(Response.SUCCESS, clientsMessages);
+				callback(Response.SUCCESS, clientsMessages);
+			} else { //if there is no integration with Gmail yet
 
-		}).catch(function (err) {
+				let replyFunction = self.getReplyFunction(bot, user);
+
+				replyFunction(facebookResponse.getButtonMessage("To see your unread emails, I need you to integrate with Gmail first... :)", [
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
+				]));
+
+				callback(Response.UNFULLFILLED, "There is no integration with Gmail");
+			}
+
+		} catch (err) {
 			callback(Response.UNFULLFILLED, err);
-		});
+		}
+
 	}
 
 	async onAppointmentScheduled(userId, data, bot, callback) {
