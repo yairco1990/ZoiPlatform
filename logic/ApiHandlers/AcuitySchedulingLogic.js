@@ -21,9 +21,9 @@ class AcuitySchedulingLogic {
 
 			self.acuity.request('clients', function (err, res, body) {
 
-				if (err) {
-					reject(err);
-					return console.error(err);
+				if (err || body.error) {
+					reject(err || body.error);
+					return;
 				}
 
 				resolve(body);
@@ -39,8 +39,8 @@ class AcuitySchedulingLogic {
 			self.acuity.request(MyUtils.addParamsToUrl('calendars', options), function (err, res, body) {
 
 				if (err || body.error) {
-					reject(err);
-					return console.error(err);
+					reject(err || body.error);
+					return;
 				}
 
 				resolve(body);
@@ -56,8 +56,8 @@ class AcuitySchedulingLogic {
 			self.acuity.request(MyUtils.addParamsToUrl('availability/times', options), function (err, res, body) {
 
 				if (err || body.error) {
-					reject(err);
-					return console.error(err);
+					reject(err || body.error);
+					return;
 				}
 
 				resolve(body);
@@ -75,7 +75,7 @@ class AcuitySchedulingLogic {
 			self.acuity.request(MyUtils.addParamsToUrl(endpoint, options), function (err, res, body) {
 
 				if (err || body.error) {
-					reject(err);
+					reject(err || body.error);
 					return;
 				}
 
@@ -91,13 +91,9 @@ class AcuitySchedulingLogic {
 
 			self.acuity.request('appointments?admin=true&noEmail=true', options, function (err, res, body) {
 
-				if (err) {
+				if (err || body.error) {
 					reject(err || body.error);
-					return console.error(err);
-				}
-				if (body.error) {
-					reject(err || body.error);
-					return console.error(err);
+					return;
 				}
 
 				resolve(body);
@@ -112,9 +108,9 @@ class AcuitySchedulingLogic {
 
 			self.acuity.request('appointment-types', function (err, res, body) {
 
-				if (err) {
-					reject(err);
-					return console.error(err);
+				if (err || body.error) {
+					reject(err || body.error);
+					return;
 				}
 
 				resolve(body);
@@ -129,9 +125,9 @@ class AcuitySchedulingLogic {
 
 			self.acuity.request('webhooks', options, function (err, res, body) {
 
-				if (err) {
-					reject(err);
-					return console.error(err);
+				if (err || body.error) {
+					reject(err || body.error);
+					return;
 				}
 
 				resolve(body);
@@ -146,9 +142,9 @@ class AcuitySchedulingLogic {
 
 			self.acuity.request('coupons', function (err, res, body) {
 
-				if (err) {
-					reject(err);
-					return console.error(err);
+				if (err || body.error) {
+					reject(err || body.error);
+					return;
 				}
 
 				resolve(body);

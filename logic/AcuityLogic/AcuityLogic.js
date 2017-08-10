@@ -377,17 +377,16 @@ class AcuityLogic {
 						user.session = {
 							newClient: newClient
 						};
-						self.DBManager.saveUser(user).then(function () {
+						await self.DBManager.saveUser(user);
 
-							//start the conversation in the clientLogic class
-							let clientLogic = new ClientLogic(user);
-							let conversationData = {
-								intent: "client new customer join",
-								context: "CLIENT"
-							};
-							let replyFunction = self.getReplyFunction(bot, user);
-							clientLogic.processIntent(conversationData, null, null, replyFunction);
-						});
+						//start the conversation in the clientLogic class
+						let clientLogic = new ClientLogic(user);
+						let conversationData = {
+							intent: "client new customer join",
+							context: "CLIENT"
+						};
+						let replyFunction = self.getReplyFunction(bot, user);
+						clientLogic.processIntent(conversationData, null, null, replyFunction);
 					}
 
 					callback(200, {message: "It's a new customer"});
