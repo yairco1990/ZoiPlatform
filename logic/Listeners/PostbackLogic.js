@@ -43,6 +43,8 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_GET_STARTED") {
 			self.listenLogic.processInput("reset", payload, setBotTyping, bot, reply);
+		} else if (input === "ACTION_LEARN") {
+			self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, bot, reply);
 		}
 	} else if (input.includes("MENU")) {
 
@@ -56,11 +58,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 		}
 
 		//menu buttons options
-		if (input === "MENU_AGENDA") {
-			reply(facebookResponse.getButtonMessage("This is your schedule for today:", [
-				facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + userId, "full")
-			]));
-		} else if (input === "MENU_MAILS") {
+		if (input === "MENU_MAILS") {
 			reply(facebookResponse.getButtonMessage("View your unread emails from your customersWatch your unread customer emails:", [
 				facebookResponse.getGenericButton("web_url", "Unread Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + userId, "full")
 			]));
