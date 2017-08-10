@@ -45,6 +45,8 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			self.listenLogic.processInput("reset", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_AGENDA") {
 			self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, bot, reply);
+		} else if (input === "ACTION_MAILS") {
+			self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, bot, reply);
 		}
 	} else if (input.includes("MENU")) {
 
@@ -58,11 +60,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 		}
 
 		//menu buttons options
-		if (input === "MENU_MAILS") {
-			reply(facebookResponse.getButtonMessage("View your unread emails from your customersWatch your unread customer emails:", [
-				facebookResponse.getGenericButton("web_url", "Unread Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + userId, "full")
-			]));
-		} else if (input === "MENU_PROFILE") {
+		if (input === "MENU_PROFILE") {
 			reply(facebookResponse.getButtonMessage("Take a look at your profile", [
 				facebookResponse.getGenericButton("web_url", "My Profile", null, ZoiConfig.clientUrl + "/profile?userId=" + userId, "full")
 			]));
