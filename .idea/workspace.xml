@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -69,7 +70,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PostbackLogic.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PostbackLogic.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/logic/Listeners/PostbackLogic.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="241">
@@ -79,11 +80,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Services.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bot/Services.js">
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1295">
-              <caret line="187" column="8" lean-forward="false" selection-start-line="187" selection-start-column="8" selection-end-line="187" selection-end-column="8" />
+            <state relative-caret-position="85">
+              <caret line="5" column="18" lean-forward="true" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -203,7 +204,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/public/src/assets/css/loader.css" />
         <option value="$PROJECT_DIR$/public/index.html" />
         <option value="$PROJECT_DIR$/public/src/utils/utils.js" />
         <option value="$PROJECT_DIR$/public/src/pages/mail/mail.js" />
@@ -254,6 +254,7 @@
         <option value="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" />
         <option value="$PROJECT_DIR$/logic/BackgroundLogic.js" />
         <option value="$PROJECT_DIR$/logic/Listeners/PostbackLogic.js" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -868,7 +869,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="679434000" />
+    <option name="totallyTimeSpent" value="679466000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -992,7 +993,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/public/src/pages/integrations/mindbody-popup/mindbody-popup.html" />
     <entry file="file://$PROJECT_DIR$/public/node_modules/angular-material-time-picker/demoApp/demoApp.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1414,6 +1414,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="241">
           <caret line="47" column="9" lean-forward="true" selection-start-line="47" selection-start-column="9" selection-end-line="47" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="18" lean-forward="true" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
           <folding />
         </state>
       </provider>
