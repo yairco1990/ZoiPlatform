@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="try fix timezones">
+    <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/BackgroundLogic.js" afterPath="$PROJECT_DIR$/logic/BackgroundLogic.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Listeners/PostbackLogic.js" afterPath="$PROJECT_DIR$/logic/Listeners/PostbackLogic.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/.idea/workspace.xml" afterPath="$PROJECT_DIR$/public/.idea/workspace.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -75,8 +72,8 @@
       <file leaf-file-name="PostbackLogic.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/logic/Listeners/PostbackLogic.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="224">
-              <caret line="46" column="111" lean-forward="false" selection-start-line="46" selection-start-column="111" selection-end-line="46" selection-end-column="111" />
+            <state relative-caret-position="241">
+              <caret line="47" column="9" lean-forward="true" selection-start-line="47" selection-start-column="9" selection-end-line="47" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -331,7 +328,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/public" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app.js" />
     <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
     <property name="js.eslint.eslintPackage" value="D:\Dev\ZoiServer\node_modules\eslint" />
     <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
@@ -363,11 +360,34 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Node.js.Zoi Local">
+  <component name="RunManager" selected="Node.js.Zoi Remote">
     <configuration name="Remote Debug" type="NodeJSRemoteDebug" factoryName="Node.js Remote Debug">
       <node-js-remote-debug host="52.174.244.154" />
     </configuration>
     <configuration name="Zoi Local" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="$PROJECT_DIR$/app.js" application-parameters="local" working-dir="$PROJECT_DIR$">
+      <EXTENSION ID="com.jetbrains.nodejs.remote.docker.NodeJSDockerRunConfigurationExtension">
+        <option name="envVars">
+          <list />
+        </option>
+        <option name="extraHosts">
+          <list />
+        </option>
+        <option name="links">
+          <list />
+        </option>
+        <option name="networkDisabled" value="false" />
+        <option name="networkMode" value="bridge" />
+        <option name="portBindings">
+          <list />
+        </option>
+        <option name="publishAllPorts" value="false" />
+        <option name="version" value="1" />
+        <option name="volumeBindings">
+          <list />
+        </option>
+      </EXTENSION>
+    </configuration>
+    <configuration name="Zoi Remote" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="app.js" working-dir="$PROJECT_DIR$">
       <EXTENSION ID="com.jetbrains.nodejs.remote.docker.NodeJSDockerRunConfigurationExtension">
         <option name="envVars">
           <list />
@@ -452,9 +472,10 @@
       <recursive>false</recursive>
       <method />
     </configuration>
-    <list size="2">
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Node.js.Zoi Local" />
-      <item index="1" class="java.lang.String" itemvalue="Node.js Remote Debug.Remote Debug" />
+      <item index="1" class="java.lang.String" itemvalue="Node.js.Zoi Remote" />
+      <item index="2" class="java.lang.String" itemvalue="Node.js Remote Debug.Remote Debug" />
     </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
@@ -498,14 +519,7 @@
       <workItem from="1501361421138" duration="18895000" />
       <workItem from="1501433137355" duration="23748000" />
       <workItem from="1502013125844" duration="66116000" />
-      <workItem from="1502302821707" duration="21164000" />
-    </task>
-    <task id="LOCAL-00001" summary="yair control">
-      <created>1495634412319</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1495634412319</updated>
+      <workItem from="1502302821707" duration="21343000" />
     </task>
     <task id="LOCAL-00002" summary="yair control">
       <created>1495635120603</created>
@@ -843,11 +857,18 @@
       <option name="project" value="LOCAL" />
       <updated>1502373699996</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="fix agenda quick action">
+      <created>1502375695492</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1502375695493</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="679251000" />
+    <option name="totallyTimeSpent" value="679430000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -903,7 +924,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="yair control" />
     <MESSAGE value="add facebook response" />
     <MESSAGE value="connect to tomcat server" />
     <MESSAGE value="ssl" />
@@ -928,7 +948,8 @@
     <MESSAGE value="change cfg" />
     <MESSAGE value="fix timezones" />
     <MESSAGE value="try fix timezones" />
-    <option name="LAST_COMMIT_MESSAGE" value="try fix timezones" />
+    <MESSAGE value="fix agenda quick action" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix agenda quick action" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1391,8 +1412,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/logic/Listeners/PostbackLogic.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="46" column="111" lean-forward="false" selection-start-line="46" selection-start-column="111" selection-end-line="46" selection-end-column="111" />
+        <state relative-caret-position="241">
+          <caret line="47" column="9" lean-forward="true" selection-start-line="47" selection-start-column="9" selection-end-line="47" selection-end-column="9" />
           <folding />
         </state>
       </provider>
