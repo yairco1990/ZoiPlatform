@@ -181,6 +181,8 @@ GeneralLogic.prototype.wishZoi = async function (conversationData, setBotTyping,
 			user.conversationData = conversationData;
 			//save the question
 			user.conversationData.lastQuestion = currentQuestion;
+			//next answer state
+			user.conversationData.nextAnswerState = "text";
 
 			//save the user
 			await self.DBManager.saveUser(user);
