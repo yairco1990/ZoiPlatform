@@ -63,8 +63,11 @@ AppointmentSumCtrl.prototype.$onInit = function () {
 	//set timezone
 	vm.timezone = vm.$stateParams.timezone;
 
-	//TODO change it and consider timezone
+	//default selection
 	vm.selectedSlot = vm.openings[0].time;
+
+	//is booked
+	vm.isBooked = false;
 
 	vm.appointment = {
 		customer: {
@@ -110,10 +113,11 @@ AppointmentSumCtrl.prototype.scheduleAppointment = function (ev) {
 				.clickOutsideToClose(true)
 				.title("You Got It!")
 				.textContent("Thank's for scheduling!")
-				.ariaLabel('Alert Dialog Demo')
+				.ariaLabel("Thank's for scheduling!")
 				.ok('OK')
 				.targetEvent(ev)
 		);
+		vm.isBooked = true;
 		vm.$log.debug(result);
 	}, function (err) {
 		MyUtils.removeLoader();

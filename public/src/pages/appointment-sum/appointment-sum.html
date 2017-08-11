@@ -1,7 +1,15 @@
 <div id="appointment-sum-page" class="boxed-page" ng-cloak>
     <div class="boxed-area">
 
-        <div class="box-area-wrapper">
+        <div class="box-area-wrapper" ng-show="vm.isBooked">
+            <div style="margin: auto; text-align: center">
+                <h3>
+                    Thank's for scheduling!
+                </h3>
+            </div>
+        </div>
+
+        <div class="box-area-wrapper" ng-hide="vm.isBooked">
             <img class="promo-image" ng-src="{{vm.appointment.promotionImage}}">
 
             </img>
