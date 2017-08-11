@@ -47,7 +47,7 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		let isNewUser = false;
 
 		//if this is new user
-		if (!user) {
+		if (!user || input.toLowerCase() === "reset") {
 			user = {};
 			input = "reset";
 			isNewUser = true;
