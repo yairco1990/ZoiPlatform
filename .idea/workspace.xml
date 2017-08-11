@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Intents/AppointmentLogic.js" afterPath="$PROJECT_DIR$/logic/Intents/AppointmentLogic.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Intents/WelcomeLogic.js" afterPath="$PROJECT_DIR$/logic/Intents/WelcomeLogic.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Listeners/ListenLogic.js" afterPath="$PROJECT_DIR$/logic/Listeners/ListenLogic.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -42,10 +40,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AppointmentLogic.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AppointmentLogic.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/logic/Intents/AppointmentLogic.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="428">
+            <state relative-caret-position="683">
               <caret line="405" column="69" lean-forward="false" selection-start-line="405" selection-start-column="69" selection-end-line="405" selection-end-column="69" />
               <folding />
             </state>
@@ -72,11 +70,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ListenLogic.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ListenLogic.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/logic/Listeners/ListenLogic.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="41" column="9" lean-forward="true" selection-start-line="41" selection-start-column="9" selection-end-line="41" selection-end-column="9" />
+            <state relative-caret-position="192">
+              <caret line="98" column="68" lean-forward="false" selection-start-line="98" selection-start-column="68" selection-end-line="98" selection-end-column="68" />
               <folding />
             </state>
           </provider>
@@ -135,7 +133,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>2</find>
       <find>3</find>
       <find>10</find>
       <find>200</find>
@@ -165,6 +162,7 @@
       <find>shell we pr</find>
       <find>sawAbilities</find>
       <find>user.conversationData.nextAnswerState</find>
+      <find>isQuickReply</find>
     </findStrings>
     <replaceStrings>
       <replace>DATABASE</replace>
@@ -260,8 +258,8 @@
         <option value="$PROJECT_DIR$/logic/AcuityLogic/AcuityLogic.js" />
         <option value="$PROJECT_DIR$/logic/Listeners/PostbackLogic.js" />
         <option value="$PROJECT_DIR$/logic/Intents/WelcomeLogic.js" />
-        <option value="$PROJECT_DIR$/logic/Listeners/ListenLogic.js" />
         <option value="$PROJECT_DIR$/logic/Intents/AppointmentLogic.js" />
+        <option value="$PROJECT_DIR$/logic/Listeners/ListenLogic.js" />
       </list>
     </option>
   </component>
@@ -522,13 +520,6 @@
       <workItem from="1501433137355" duration="23748000" />
       <workItem from="1502013125844" duration="66116000" />
       <workItem from="1502302821707" duration="21347000" />
-    </task>
-    <task id="LOCAL-00013" summary="connect to tomcat server">
-      <created>1496067300942</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1496067300942</updated>
     </task>
     <task id="LOCAL-00014" summary="connect to tomcat server">
       <created>1496067663510</created>
@@ -866,11 +857,18 @@
       <option name="project" value="LOCAL" />
       <updated>1502408699362</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="force user to answer with qr">
+      <created>1502410123905</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1502410123905</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="692116000" />
+    <option name="totallyTimeSpent" value="692688000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -935,7 +933,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="add black list" />
     <MESSAGE value="change nlp engine" />
     <MESSAGE value="fix small talk" />
     <MESSAGE value="add input and intent to DB" />
@@ -960,7 +957,8 @@
     <MESSAGE value="change log to israel timezone" />
     <MESSAGE value="add one day to lastNotification time instead of current time" />
     <MESSAGE value="Fix Zoi wish and user ask for emails without integration" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix Zoi wish and user ask for emails without integration" />
+    <MESSAGE value="force user to answer with qr" />
+    <option name="LAST_COMMIT_MESSAGE" value="force user to answer with qr" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1414,14 +1412,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logic/Listeners/ListenLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="41" column="9" lean-forward="true" selection-start-line="41" selection-start-column="9" selection-end-line="41" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logic/Intents/WelcomeLogic.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-218">
@@ -1432,8 +1422,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/logic/Intents/AppointmentLogic.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="428">
+        <state relative-caret-position="683">
           <caret line="405" column="69" lean-forward="false" selection-start-line="405" selection-start-column="69" selection-end-line="405" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/Listeners/ListenLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="98" column="68" lean-forward="false" selection-start-line="98" selection-start-column="68" selection-end-line="98" selection-end-column="68" />
           <folding />
         </state>
       </provider>

@@ -96,8 +96,8 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 			context: intent.split(' ')[0].toUpperCase()//the type is the first word in the intent
 		};
 
-		//check if this is a button of quick replay
-		if (isQuickReply) {
+		//check if the user needed to send qr and this is a valid qr
+		if (isQuickReply && payload.message && payload.message.quick_reply && MyUtils.isJson(payload.message.quick_reply.payload)) {
 			conversationData.payload = JSON.parse(payload.message.quick_reply.payload);
 			conversationData.intent = input;
 			conversationData.entities = {};
