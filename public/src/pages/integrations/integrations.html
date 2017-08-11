@@ -9,6 +9,34 @@
                 <b>Add integrations to let Zoi to know your business better</b>
             </div>
             <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
+                Common
+            </div>
+            <div class="box-body">
+                <div class="integration-elements">
+                    <integration-element
+                            ng-click="vm.onAcuityClicked()"
+                            name="Acuity Scheduling"
+                            is-associated="vm.isAcuityAssociated"
+                            is-closed-for-beta="false"
+                            icon="src/assets/images/Integrations-logos/Acuity.png">
+                    </integration-element>
+                    <integration-element
+                            ng-click="vm.onGmailClicked()"
+                            name="Gmail"
+                            is-associated="vm.isGmailAssociated"
+                            is-closed-for-beta="vm.isClosedForBeta"
+                            icon="src/assets/images/Integrations-logos/gmail.png">
+                    </integration-element>
+                    <integration-element
+                            ng-click=""
+                            name="Facebook"
+                            is-associated="true"
+                            is-closed-for-beta="vm.isClosedForBeta"
+                            icon="src/assets/images/Integrations-logos/Facebook.png">
+                    </integration-element>
+                </div>
+            </div>
+            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
                 Utilities
             </div>
             <div class="box-body">
@@ -66,7 +94,7 @@
                     </integration-element>
 
                     <integration-element
-                            ng-click="vm.onMindbodyClicked($event)"
+                            ng-click=""
                             name="Mindbody"
                             is-associated="vm.isMindbodyAssociated"
                             is-closed-for-beta="true"

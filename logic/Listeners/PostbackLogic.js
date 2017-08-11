@@ -31,8 +31,9 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 
 	let userId = payload.sender.id;
 
+	//action buttons
 	if (input.includes("ACTION")) {
-		//action buttons
+
 		if (input === "ACTION_BRIEF") {
 			self.listenLogic.processInput("morning brief", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_PROMOTIONS") {
@@ -45,15 +46,22 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			self.listenLogic.processInput("reset", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_AGENDA") {
 			self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, bot, reply);
-		} else if (input === "ACTION_MAILS") {
-			self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_LEARN") {
 			self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, callback);
+		} else if (input === "ACTION_MAILS") {
+			if (user.integrations.Gmail) {
+				self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, bot, reply);
+			} else {
+				reply(facebookResponse.getButtonMessage("To see your unread emails, I need you to integrate with Gmail first... :)", [
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, "full")
+				]));
+			}
 		}
 	} else if (input.includes("MENU")) {
 
 		//check that the user made first integration with acuity
 		let user = await self.DBManager.getUser({_id: userId});
+
 		if (!user.integrations || !user.integrations.Acuity) {
 			reply(facebookResponse.getButtonMessage("To start working together, I'll have to work with the tools you work with to run your business. Press on the link to help me integrate with Acuity Scheduling and Gmail.", [
 				facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")

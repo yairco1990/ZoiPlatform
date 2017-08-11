@@ -353,12 +353,6 @@ class AcuityLogic {
 				callback(Response.SUCCESS, clientsMessages);
 			} else { //if there is no integration with Gmail yet
 
-				let replyFunction = self.getReplyFunction(bot, user);
-
-				replyFunction(facebookResponse.getButtonMessage("To see your unread emails, I need you to integrate with Gmail first... :)", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
-				]));
-
 				callback(Response.UNFULLFILLED, "There is no integration with Gmail");
 			}
 
