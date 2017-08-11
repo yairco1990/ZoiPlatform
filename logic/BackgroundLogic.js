@@ -72,11 +72,10 @@ class BackgroundLogic {
 				let currentMorningBriefDate = moment(user.nextMorningBriefDate).tz(user.timezone);
 				let hours = currentMorningBriefDate.get('hour');
 				let minutes = currentMorningBriefDate.get('minute');
-				let seconds = currentMorningBriefDate.get('second');
 				let nextMorningBriefDate = moment().tz(user.timezone);
 				nextMorningBriefDate.set('hour', hours);
 				nextMorningBriefDate.set('minute', minutes);
-				nextMorningBriefDate.set('second', seconds);
+				nextMorningBriefDate.set('second', 0);
 				nextMorningBriefDate = nextMorningBriefDate.add(1, 'days');
 
 				//set next time of morning brief for this user
@@ -206,11 +205,10 @@ class BackgroundLogic {
 				let currentOldCustomerDate = moment(user.nextOldCustomersDate).tz(user.timezone);
 				let hours = currentOldCustomerDate.get('hour');
 				let minutes = currentOldCustomerDate.get('minute');
-				let seconds = currentOldCustomerDate.get('second');
 				let nextOldCustomerDate = moment().tz(user.timezone);
 				nextOldCustomerDate.set('hour', hours);
 				nextOldCustomerDate.set('minute', minutes);
-				nextOldCustomerDate.set('second', seconds);
+				nextOldCustomerDate.set('second', 0);
 				nextOldCustomerDate = nextOldCustomerDate.add(1, 'days');
 
 				//set next time of morning brief for this user
