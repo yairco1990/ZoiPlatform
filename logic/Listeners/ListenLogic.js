@@ -44,10 +44,13 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		//get the user
 		let user = await self.DBManager.getUser({_id: payload.sender.id});
 
+		let isNewUser = false;
+
 		//if this is new user
 		if (!user) {
 			user = {};
 			input = "reset";
+			isNewUser = true;
 		}
 
 		//check if this is quick reply - or that he send qr, or that he must entered qr on the last question.
@@ -63,7 +66,7 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		let intent, entities, intentScore;
 
 		//if it's not in the middle of conversation
-		if (!isQuickReply && !isPayloadRequest && !isWaitForText) {
+		if (!isQuickReply && !isPayloadRequest && !isWaitForText && !isNewUser) {
 			//check intent with NLP
 			let nlpResponse = await requestify.request('http://52.177.185.253:5000/parse?q=' + input, {
 				method: 'GET'
