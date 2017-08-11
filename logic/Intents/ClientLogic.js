@@ -198,7 +198,7 @@ ClientLogic.prototype.promoteOldCustomers = async function (conversationData, re
 				maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).add(ZoiConfig.times.oldCustomersForwardDays, 'days').endOf('day'))
 			});
 
-			//window checking TODO config it
+			//window checking
 			let windowStartDate = moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day');
 			let windowEndDate = moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').endOf('day');
 

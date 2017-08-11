@@ -30,7 +30,7 @@ angular.module('Zoi.controllers.old-customers', [])
  * page constructor
  * @constructor
  */
-function OldCustomersCtrl($log, $rootScope, $timeout, oldCustomers, $http, zoiConfig, $stateParams) {
+function OldCustomersCtrl($log, $rootScope, $timeout, oldCustomers, $http, zoiConfig, $stateParams, $mdDialog) {
 
 	var vm = this;
 
@@ -41,6 +41,7 @@ function OldCustomersCtrl($log, $rootScope, $timeout, oldCustomers, $http, zoiCo
 	vm.$http = $http;
 	vm.zoiConfig = zoiConfig;
 	vm.$stateParams = $stateParams;
+	vm.$mdDialog = $mdDialog;
 
 	vm.$log.info("OldCustomersCtrl loaded");
 }
@@ -53,6 +54,8 @@ function OldCustomersCtrl($log, $rootScope, $timeout, oldCustomers, $http, zoiCo
 OldCustomersCtrl.prototype.$onInit = function () {
 
 	var vm = this;
+
+	vm.isPromotionSent = false;
 
 	if (vm.oldCustomers != "NOT_AVAILABLE") {
 		vm.oldCustomers.forEach(function (customer, index) {
@@ -88,6 +91,8 @@ OldCustomersCtrl.prototype.showSendButton = function () {
 OldCustomersCtrl.prototype.sendButtonClicked = function () {
 	var vm = this;
 
+	MyUtils.addLoader();
+
 	//get relevant customers
 	var customersList = vm.oldCustomers.filter(function (customer) {
 		return customer.sendEmail;
@@ -101,13 +106,27 @@ OldCustomersCtrl.prototype.sendButtonClicked = function () {
 			customers: JSON.stringify(customersList)
 		}
 	}).then(function (result) {
-		vm.$log.debug(result.data);
 
+		vm.isPromotionSent = true;
+
+		MyUtils.removeLoader();
+		vm.$mdDialog.show(
+			vm.$mdDialog.alert()
+				.parent(angular.element(document.querySelector('#popupContainer')))
+				.clickOutsideToClose(true)
+				.title("You Got It!")
+				.textContent("Promotions sent successfully!")
+				.ariaLabel("Promotions sent successfully!")
+				.ok('OK')
+				.targetEvent(ev)
+		);
+
+		vm.$log.debug(result.data);
 		alert("Promotions sent successfully!");
 	}).catch(function (err) {
-		vm.$log.error(err);
-
+		MyUtils.removeLoader();
 		alert("Failed to send promotions");
+		vm.$log.error(err);
 	});
 };
 

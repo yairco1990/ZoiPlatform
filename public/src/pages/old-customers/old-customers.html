@@ -1,7 +1,19 @@
 <div id="old-customers-page" ng-cloak>
     <div class="old-customers-area">
 
-        <div class="old-customers-area-wrapper">
+        <div class="old-customers-area-wrapper" ng-show="vm.isPromotionSent" style="border: solid 1px #ececec;">
+            <div style="margin: auto; text-align: center">
+                <h3>
+                    Good job! :)
+                </h3>
+                <br>
+                <h1>
+                    Zoi.
+                </h1>
+            </div>
+        </div>
+
+        <div class="old-customers-area-wrapper" ng-hide="vm.isPromotionSent">
             <div class="old-customers-header">
                 {{moment().format('lll')}}
             </div>
@@ -30,7 +42,7 @@
                     </div>
                 </div>
             </div>
-            <div style="text-align: center;margin: 15px 0;;" ng-show="vm.showSendButton()"
+            <div style="text-align: center;margin: 15px 0;" ng-show="vm.showSendButton()"
                  ng-click="vm.sendButtonClicked()">
                 <md-button class="md-raised md-primary">Send email promotions</md-button>
             </div>
