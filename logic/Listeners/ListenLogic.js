@@ -44,6 +44,12 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		//get the user
 		let user = await self.DBManager.getUser({_id: payload.sender.id});
 
+		//if this is new user
+		if (!user) {
+			user = {};
+			input = "reset";
+		}
+
 		//check if this is quick reply - or that he send qr, or that he must entered qr on the last question.
 		let isQuickReply = payload.message && payload.message.quick_reply && payload.message.quick_reply.payload || (user.conversationData && user.conversationData.nextAnswerState === "qr");
 
