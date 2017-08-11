@@ -56,11 +56,6 @@ function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser
 integrationsCtrl.prototype.$onInit = function () {
 	var vm = this;
 	if (vm.zoiUser != "NO_SUCH_USER") {
-		//add integration object if doesn't exist
-		if (!vm.zoiUser.integrations) {
-			vm.zoiUser.integrations = {};
-		}
-
 		vm.isAcuityAssociated = vm.zoiUser.integrations.Acuity;
 		vm.isMindbodyAssociated = vm.zoiUser.integrations.Mindbody;
 		vm.isGmailAssociated = vm.zoiUser.integrations.Gmail;

@@ -27,6 +27,15 @@ UserApiLogic.prototype.getUser = async function (userId, callback) {
 		//get the user
 		let user = await self.DBManager.getUser({_id: userId});
 
+		//delete sensitive information
+		if (user.integrations.Acuity) {
+			delete user.integrations.Acuity.accessToken;
+			delete user.integrations.Acuity.userDetails.accessToken;
+		}
+		if (user.integrations.Gmail) {
+			delete user.integrations.Gmail;
+		}
+
 		if (user) {
 			callback(Response.SUCCESS, user);
 		} else {
@@ -50,6 +59,18 @@ UserApiLogic.prototype.saveUser = async function (user, callback) {
 	let self = this;
 
 	try {
+
+		let oldUser = await self.DBManager.getUser({_id: user._id});
+
+		//return sensitive information
+		if (oldUser.integrations.Acuity) {
+			user.integrations.Acuity.accessToken = oldUser.integrations.Acuity.accessToken;
+			user.integrations.Acuity.userDetails.accessToken = user.integrations.Acuity.userDetails.accessToken;
+		}
+		if (oldUser.integrations.Gmail) {
+			user.integrations.Gmail = oldUser.integrations.Gmail;
+		}
+
 		//calculate morning brief if the user set it
 		if (user.morningBriefTime && typeof(user.morningBriefTime) === "number") {
 
