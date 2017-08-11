@@ -588,7 +588,7 @@ AppointmentLogic.getCoupons = function () {
 			"Offer a discount of 5% to selected customers",
 			[facebookResponse.getGenericButton("postback", "I like it", {
 				id: 5,
-				title: "2 + 1",
+				title: "5% Off",
 				zoiCoupon: "Zoi.5PercentOff",
 				image: "http://res.cloudinary.com/gotime-systems/image/upload/v1502450747/5_precent_dis-01_lvbaid.png",
 				color: "#4AC3C4",
