@@ -519,7 +519,7 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 				], MyUtils.getErrorMsg());
 			} else {
 				self.clearSession();
-				reply(facebookResponse.getTextMessage("Ok boss"));
+				reply(facebookResponse.getTextMessage("Ok boss"), false);
 			}
 		}
 	} catch (err) {

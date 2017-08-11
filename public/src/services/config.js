@@ -12,10 +12,13 @@ angular.module('Zoi.services.config', [])
 				},
 				DEV: {
 					url: "https://zoiai.com:3000"
+				},
+				PRODUCTION: {
+					url: "https://zoiai.com:3000"
 				}
 			};
 
-			var selectedEnvironment = ENVIRONMENTS.DEV;
+			var selectedEnvironment = ENVIRONMENTS.PRODUCTION;
 
 			return {
 				getServerUrl: function () {

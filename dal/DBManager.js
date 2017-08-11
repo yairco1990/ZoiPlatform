@@ -1,11 +1,12 @@
 /**
  * Created by Yair on 6/19/2017.
  */
-let mongoose = require('mongoose');
-let MyLog = require('../interfaces/MyLog');
+const mongoose = require('mongoose');
+const MyLog = require('../interfaces/MyLog');
+const ZoiConfig = require('../config');
 
 function DBManager() {
-	mongoose.connect('mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db', {useMongoClient: true});
+	mongoose.connect(ZoiConfig.mongoUrl, {useMongoClient: true});
 
 	let Schema = mongoose.Schema;
 
