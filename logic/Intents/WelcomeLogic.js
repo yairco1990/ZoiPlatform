@@ -53,11 +53,11 @@ const welcomeQuestions = {
 	},
 	sawIntegrations: {
 		id: 3,
-		text: "Shell we proceed?"
+		text: "Shall we proceed?"
 	},
 	sawAbilities: {
 		id: 4,
-		text: "Shell we proceed?"
+		text: "Shall we proceed?"
 	}
 };
 

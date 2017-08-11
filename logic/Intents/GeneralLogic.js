@@ -50,6 +50,12 @@ GeneralLogic.prototype.processIntent = function (conversationData, setBotTyping,
 	}
 };
 
+const morningBriefQuestions = {
+	areYouReady: {
+		text: "Hey boss!Are you ready for morning brief?",
+		id: 1
+	}
+};
 /**
  * send morning brief
  */
@@ -59,41 +65,92 @@ GeneralLogic.prototype.sendMorningBrief = async function (conversationData, setB
 	let user = self.user;
 	try {
 
+		//check if the user wants to get the brief
+
 		let appointmentLogic = new AppointmentLogic(user);
 
 		let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 
-		//if user integrated with Gmail
-		if (user.integrations && user.integrations.Gmail) {
+		//if the morning brief sent from the interval and not by the user
+		if (!user.conversationData && conversationData.isAutomated) {
+			//set current question
+			let currentQuestion = morningBriefQuestions.areYouReady;
+			//save conversation to the user
+			user.conversationData = conversationData;
+			//save the question
+			user.conversationData.lastQuestion = currentQuestion;
+			//save the response
+			let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
+				[
+					facebookResponse.getQRButton('text', 'Yes!', {id: 1}),
+					facebookResponse.getQRButton('text', 'No', {id: 2})
+				]
+			);
+			user.conversationData.lastQRResponse = lastQRResponse;
 
-			let tokens = user.integrations.Gmail;
+			//save the user
+			await self.DBManager.saveUser(user);
 
-			//get business customers
-			let clients = await acuityLogic.getClients();
+			//send the message
+			reply(lastQRResponse);
+		}
 
-			let queryString = "newer_than:7d is:unread";
+		else {
+			//check if we can proceed to the morning brief
+			if (conversationData.isAutomated) {
+				//check for valid payload
+				if (conversationData.payload) {
+					//if the payload is not the "yes" button
+					if (conversationData.payload.id !== 1) {
+						//clear the session
+						self.clearSession();
+						//send reply
+						reply(facebookResponse.getTextMessage("Ok boss!See you later. :)"), false, ZoiConfig.times.wishZoiWillDelay);
+						//stop the convo
+						return;
+					}
+				} else {
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please let's finish what we started"), true, delayTime),
+						MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, true, delayTime)
+					]);
+					//stop the convo
+					return;
+				}
+			}
 
-			//get unread emails from the user clients
-			let messages = await GmailLogic.getEmailsList(tokens, queryString, 'me', user);
+			//if user integrated with Gmail
+			if (user.integrations && user.integrations.Gmail) {
 
-			//do the intersection between customers emails and the user's gmail
-			let clientsMessages = _.filter(messages, function (item1) {
-				return _.some(this, function (item2) {
-					return item1.from.includes(item2.email) && item2.email;
-				});
-			}, clients);
+				let tokens = user.integrations.Gmail;
 
-			if (clientsMessages.length > 0) {
-				async.series([
-					//emails
-					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
-						facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
-					]), true),
-				], MyUtils.getErrorMsg());
-			} else {
-				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true),
-				], MyUtils.getErrorMsg());
+				//get business customers
+				let clients = await acuityLogic.getClients();
+
+				let queryString = "newer_than:7d is:unread";
+
+				//get unread emails from the user clients
+				let messages = await GmailLogic.getEmailsList(tokens, queryString, 'me', user);
+
+				//do the intersection between customers emails and the user's gmail
+				let clientsMessages = _.filter(messages, function (item1) {
+					return _.some(this, function (item2) {
+						return item1.from.includes(item2.email) && item2.email;
+					});
+				}, clients);
+
+				if (clientsMessages.length > 0) {
+					async.series([
+						//emails
+						MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
+							facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
+						]), true),
+					], MyUtils.getErrorMsg());
+				} else {
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true),
+					], MyUtils.getErrorMsg());
+				}
 			}
 		}
 

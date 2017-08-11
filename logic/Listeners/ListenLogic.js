@@ -56,7 +56,7 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		//declare variables
 		let intent, entities, intentScore;
 
-		//if it's regular message
+		//if it's not in the middle of conversation
 		if (!isQuickReply && !isPayloadRequest && !isWaitForText) {
 			//check intent with NLP
 			let nlpResponse = await requestify.request('http://52.177.185.253:5000/parse?q=' + input, {

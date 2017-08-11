@@ -54,6 +54,58 @@ class BackgroundLogic {
 	}
 
 	/**
+	 * send morning brief to list of users
+	 * @param bot
+	 * @param morningBriefUsers
+	 */
+	static sendMorningBriefs(bot, morningBriefUsers) {
+
+		let counter = 0;
+		//iterate the users
+		morningBriefUsers.forEach(async (user) => {
+
+			//morning brief only for Acuity users for now
+			if (user.integrations && user.integrations.Acuity) {
+				counter++;
+
+				//get hours, minutes and seconds from the notification date
+				let currentMorningBriefDate = moment(user.nextMorningBriefDate).tz(user.timezone);
+				let hours = currentMorningBriefDate.get('hour');
+				let minutes = currentMorningBriefDate.get('minute');
+				let seconds = currentMorningBriefDate.get('second');
+				let nextMorningBriefDate = moment().tz(user.timezone);
+				nextMorningBriefDate.set('hour', hours);
+				nextMorningBriefDate.set('minute', minutes);
+				nextMorningBriefDate.set('second', seconds);
+				nextMorningBriefDate = nextMorningBriefDate.add(1, 'days');
+
+				//set next time of morning brief for this user
+				user.nextMorningBriefDate = nextMorningBriefDate.valueOf();
+				//save the last message time
+				user.lastMessageTime = new Date().valueOf();
+				//save the user
+				await DBManager.saveUser(user);
+
+				//start the conversation in the GeneralLogic class
+				let generalLogic = new GeneralLogic(user);
+				let conversationData = {
+					intent: "general morning brief",
+					context: "GENERAL",
+					isAutomated: true
+				};
+
+				let replyFunction = BackgroundLogic.getBotReplyFunction(bot, user);
+				let botWritingFunction = BackgroundLogic.getBotWritingFunction(bot, user);
+
+				//start convo
+				generalLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
+			}
+		});
+
+		MyLog.info("Morning briefs sent: " + counter);
+	}
+
+	/**
 	 * clean old convos
 	 */
 	static startCleaningOldConvosInterval() {
@@ -88,6 +140,17 @@ class BackgroundLogic {
 				MyLog.error("Error on startCleaningOldConvosInterval");
 			}
 		}, ZoiConfig.times.morningBriefIntervalTime);
+	}
+
+	/**
+	 * clear customers with old conversation
+	 * @param usersWithOldConvos
+	 */
+	static clearOldConversations(usersWithOldConvos) {
+		//iterate the users
+		usersWithOldConvos.forEach(async (user) => {
+			BackgroundLogic.clearUserConversation(user);
+		});
 	}
 
 	/**
@@ -139,8 +202,19 @@ class BackgroundLogic {
 
 			if (user.integrations && user.integrations.Acuity) {
 				counter++;
+				//get hours, minutes and seconds from the notification date
+				let currentOldCustomerDate = moment(user.nextOldCustomersDate).tz(user.timezone);
+				let hours = currentOldCustomerDate.get('hour');
+				let minutes = currentOldCustomerDate.get('minute');
+				let seconds = currentOldCustomerDate.get('second');
+				let nextOldCustomerDate = moment().tz(user.timezone);
+				nextOldCustomerDate.set('hour', hours);
+				nextOldCustomerDate.set('minute', minutes);
+				nextOldCustomerDate.set('second', seconds);
+				nextOldCustomerDate = nextOldCustomerDate.add(1, 'days');
+
 				//set next time of morning brief for this user
-				user.nextOldCustomersDate += ZoiConfig.times.oneDay;
+				user.nextOldCustomersDate = nextOldCustomerDate.valueOf();
 				//save the last message time
 				user.lastMessageTime = new Date().valueOf();
 				//save the user
@@ -164,57 +238,6 @@ class BackgroundLogic {
 		});
 
 		MyLog.info("Old customers notifications sent: " + counter);
-	}
-
-	/**
-	 * clear customers with old conversation
-	 * @param usersWithOldConvos
-	 */
-	static clearOldConversations(usersWithOldConvos) {
-		//iterate the users
-		usersWithOldConvos.forEach(async (user) => {
-			BackgroundLogic.clearUserConversation(user);
-		});
-	}
-
-	/**
-	 * send morning brief to list of users
-	 * @param bot
-	 * @param morningBriefUsers
-	 */
-	static sendMorningBriefs(bot, morningBriefUsers) {
-
-		let counter = 0;
-		//iterate the users
-		morningBriefUsers.forEach(async (user) => {
-
-			//morning brief only for Acuity users for now
-			if (user.integrations && user.integrations.Acuity) {
-				counter++;
-				//set next time of morning brief for this user
-				user.nextMorningBriefDate += ZoiConfig.times.oneDay;
-				//save the last message time
-				user.lastMessageTime = new Date().valueOf();
-				//save the user
-				await DBManager.saveUser(user);
-
-				//start the conversation in the GeneralLogic class
-				let generalLogic = new GeneralLogic(user);
-				let conversationData = {
-					intent: "general morning brief",
-					context: "GENERAL",
-					automated: true
-				};
-
-				let replyFunction = BackgroundLogic.getBotReplyFunction(bot, user);
-				let botWritingFunction = BackgroundLogic.getBotWritingFunction(bot, user);
-
-				//start convo
-				generalLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
-			}
-		});
-
-		MyLog.info("Morning briefs sent: " + counter);
 	}
 
 	/**
