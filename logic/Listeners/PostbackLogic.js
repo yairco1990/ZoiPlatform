@@ -49,6 +49,8 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 		} else if (input === "ACTION_LEARN") {
 			self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, callback);
 		} else if (input === "ACTION_MAILS") {
+			//check that the user made first integration with gmail
+			let user = await self.DBManager.getUser({_id: userId});
 			if (user.integrations.Gmail) {
 				self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, bot, reply);
 			} else {
