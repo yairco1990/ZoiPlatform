@@ -193,6 +193,8 @@ WelcomeLogic.prototype.proceedWelcomeConversation = async function (conversation
 			user.conversationData = conversationData;
 			//save the service question
 			user.conversationData.lastQuestion = currentQuestion;
+			//set next answer start
+			user.conversationData.nextAnswerState = "qr";
 
 			//save the response
 			let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
@@ -221,15 +223,15 @@ WelcomeLogic.prototype.proceedWelcomeConversation = async function (conversation
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Can't wait to start getting more action to your business!  💪"), false, delayTime),
 
 				], MyUtils.getErrorMsg());
+
+				//clear conversation
+				user.conversationData = null;
+				await self.DBManager.saveUser(user);
+
+				MyLog.log("User finished onboarding step. userId = " + user._id);
 			} else {
 				reply(user.conversationData.lastQRResponse);
 			}
-
-			//clear conversation
-			user.conversationData = null;
-			await self.DBManager.saveUser(user);
-
-			MyLog.log("User finished onboarding step. userId = " + user._id);
 		}
 	} catch (err) {
 		MyLog.error(err);

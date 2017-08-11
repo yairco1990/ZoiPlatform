@@ -404,7 +404,6 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 				]);
 				//set current question
 				user.conversationData.lastQuestion = currentQuestion;
-				user.conversationData.nextAnswerState = "qr";
 
 				//save the user
 				await self.DBManager.saveUser(user);
