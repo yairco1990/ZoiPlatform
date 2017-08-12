@@ -8,26 +8,26 @@ const Environments = {
 		serverUrl: "http://localhost:3000",
 		clientUrl: CLIENT_LOCAL,
 		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
-		NLP_URL: "52.177.185.253:5000"
+		NLP_URL: "http://52.177.185.253:5000"
 	},
 	DEV: {
 		serverUrl: "https://zoiai.com:3000",
 		clientUrl: CLIENT_DEV,
 		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
-		NLP_URL: "52.177.185.253:5000"
+		NLP_URL: "http://52.177.185.253:5000"
 	},
 	NGROK: {
 		serverUrl: "https://2fc4a7c1.ngrok.io",
 		clientUrl: CLIENT_NGROK,
 		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
-		NLP_URL: "52.177.185.253:5000"
+		NLP_URL: "http://52.177.185.253:5000"
 	},
 	/**************PRODUCTION****************/
 	PRODUCTION: {
 		serverUrl: "https://zoiai.com:3000",
 		clientUrl: CLIENT_PROD,
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
-		NLP_URL: "13.82.50.249:5000"
+		NLP_URL: "http://13.82.50.249:5000"
 	}
 	/**************PRODUCTION****************/
 };
