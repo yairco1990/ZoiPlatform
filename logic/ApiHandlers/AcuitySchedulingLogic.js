@@ -115,7 +115,7 @@ class AcuitySchedulingLogic {
 
 				//TODO change the type on next version
 				body = body.filter(function (at) {
-					return at.service === "service";
+					return at.type === "service";
 				});
 
 				resolve(body);
