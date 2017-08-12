@@ -64,8 +64,8 @@ ProfileCtrl.prototype.$onInit = function () {
 		vm.integrationsOn = vm.zoiUser.integrations && Object.keys(vm.zoiUser.integrations).length;
 		if (vm.zoiUser.profile[vm.actionTime]) {
 
-			vm.numOfAppointments = vm.zoiUser.profile[vm.actionTime].numOfAppointments;
-			vm.profitFromAppointments = vm.zoiUser.profile[vm.actionTime].profitFromAppointments;
+			vm.numOfAppointments = vm.zoiUser.profile[vm.actionTime].numOfAppointments || 0;
+			vm.profitFromAppointments = vm.zoiUser.profile[vm.actionTime].profitFromAppointments || 0;
 
 			vm.socialShareOn = vm.zoiUser.profile[vm.actionTime].shared;
 			vm.bookedMoreThanOn = vm.zoiUser.profile[vm.actionTime].numOfAppointments >= vm.bookedMoreThan;

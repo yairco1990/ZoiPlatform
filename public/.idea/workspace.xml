@@ -19,17 +19,17 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="profile.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="profile.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/pages/profile/profile.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="362">
-              <caret line="75" column="37" lean-forward="false" selection-start-line="75" selection-start-column="12" selection-end-line="75" selection-end-column="37" />
+            <state relative-caret-position="413">
+              <caret line="78" column="29" lean-forward="true" selection-start-line="78" selection-start-column="29" selection-end-line="78" selection-end-column="29" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="profile.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="profile.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pages/profile/profile.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="282">
@@ -124,8 +124,8 @@
       <find>$mdDialog</find>
       <find>Meeti</find>
       <find>actionTime</find>
-      <find>vm.actionTime</find>
       <find>numOfAppointments</find>
+      <find>vm.actionTime</find>
     </findStrings>
     <replaceStrings>
       <replace>class=</replace>
@@ -196,8 +196,8 @@
         <option value="$PROJECT_DIR$/src/pages/settings/customers-send-limit-popup/customers-send-limit-popup.html" />
         <option value="$PROJECT_DIR$/src/pages/old-customers/old-customers.html" />
         <option value="$PROJECT_DIR$/src/pages/old-customers/old-customers.js" />
-        <option value="$PROJECT_DIR$/src/pages/profile/profile.js" />
         <option value="$PROJECT_DIR$/src/pages/profile/profile.html" />
+        <option value="$PROJECT_DIR$/src/pages/profile/profile.js" />
       </list>
     </option>
   </component>
@@ -409,7 +409,7 @@
       <workItem from="1501077521878" duration="1749000" />
       <workItem from="1502197757601" duration="18310000" />
       <workItem from="1502302807374" duration="12000" />
-      <workItem from="1502363374345" duration="10968000" />
+      <workItem from="1502363374345" duration="11173000" />
     </task>
     <task id="LOCAL-00001" summary="finish fix texts">
       <created>1500917039213</created>
@@ -422,7 +422,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="125289000" />
+    <option name="totallyTimeSpent" value="125494000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -867,18 +867,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/profile/profile.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="75" column="37" lean-forward="false" selection-start-line="75" selection-start-column="12" selection-end-line="75" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/profile/profile.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="282">
           <caret line="22" column="48" lean-forward="false" selection-start-line="22" selection-start-column="48" selection-end-line="22" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/profile/profile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="413">
+          <caret line="78" column="29" lean-forward="true" selection-start-line="78" selection-start-column="29" selection-end-line="78" selection-end-column="29" />
           <folding />
         </state>
       </provider>
