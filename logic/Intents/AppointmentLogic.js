@@ -440,7 +440,7 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 				MyLog.info("Num of clients after removing clients with appointments = " + clients.length);
 				//get 25% from the left customers
 				clients = MyUtils.getRandomFromArray(clients, (clients.length / ZoiConfig.generalPromotionDeviation).toFixed(0));
-				MyLog.info("Num of clients after removing X precent = " + clients.length);
+				MyLog.info("Num of clients after removing X percent = " + clients.length);
 
 				//iterate clients
 				clients.forEach(function (client) {
