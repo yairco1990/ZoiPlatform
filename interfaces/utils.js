@@ -146,7 +146,7 @@ let Utils = {
 
 		let self = this;
 
-		let maxSimilarity = 0;
+		let maxSimilarity = -1;
 
 		let result = null;
 
