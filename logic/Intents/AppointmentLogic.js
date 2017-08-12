@@ -246,41 +246,48 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 			//get slots
 			let slots = await acuityLogic.getAvailability(options);
 
-			//save the response
-			let lastQRResponse = facebookResponse.getQRElement("Do you want me to promote your openings?",
-				[
-					facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
-					facebookResponse.getQRButton('text', 'Maybe later', {id: 2})
-				]
-			);
-			user.conversationData.lastQRResponse = lastQRResponse;
+			if (slots.length) {
+				//save the response
+				let lastQRResponse = facebookResponse.getQRElement("Do you want me to promote your openings?",
+					[
+						facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
+						facebookResponse.getQRButton('text', 'Maybe later', {id: 2})
+					]
+				);
+				user.conversationData.lastQRResponse = lastQRResponse;
 
-			//save the user
-			self.DBManager.saveUser(user).then(function () {
+				//save the user
+				self.DBManager.saveUser(user).then(function () {
 
-				let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
-				if (slots.length > 10) {
-					firstText = " noticed that you have more than 10 openings on your calendars tomorrow.";
-				}
-				if (!conversationData.skipHey) {
-					firstText = "Hey boss, I" + firstText;
-				} else {
-					firstText = "I also" + firstText;
-				}
+					let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
+					if (slots.length > 10) {
+						firstText = " noticed that you have more than 10 openings on your calendars tomorrow.";
+					}
+					if (!conversationData.skipHey) {
+						firstText = "Hey boss, I" + firstText;
+					} else {
+						firstText = "I also" + firstText;
+					}
 
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true, delayTime),
+						MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
+					]);
+
+				});
+			} else {
 				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true, delayTime),
-					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
-				], MyUtils.getErrorMsg());
-
-			});
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's good!"), false, delayTime),
+				]);
+				self.clearSession();
+			}
 		}
 		else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
 
 			if (conversationData.payload) {
 
-				if (conversationData.payload.id == 1) {
+				if (conversationData.payload.id === 1) {
 
 					//ask which service
 					let question = sendPromotionsQuestions.serviceName;

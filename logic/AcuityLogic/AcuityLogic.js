@@ -27,7 +27,7 @@ const Response = {
 
 class AcuityLogic {
 
-	constructor(bot) {
+	constructor() {
 		this.DBManager = require('../../dal/DBManager');
 	}
 
@@ -319,7 +319,7 @@ class AcuityLogic {
 		});
 	}
 
-	async getEmails(bot, data, callback) {
+	async getEmails(data, callback) {
 
 		let self = this;
 
