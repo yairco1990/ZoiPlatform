@@ -408,6 +408,7 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 
 				//get the clients of the business
 				let clients = await acuityLogic.getClients();
+				MyLog.info("Num of clients before cleaning = " + clients.length);
 
 				//get black list
 				let blackList = await self.DBManager.getBlackList({
@@ -433,10 +434,13 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 
 				//remove clients from black list
 				clients = MyUtils.removeClientsExistOnList(blackList, clients, "_id");
+				MyLog.info("Num of clients after removing black list = " + clients.length);
 				//remove clients from appointments in range of a week
 				clients = MyUtils.removeClientsExistOnList(appointmentsInWeekRange, clients, "email");
+				MyLog.info("Num of clients after removing clients with appointments = " + clients.length);
 				//get 25% from the left customers
 				clients = MyUtils.getRandomFromArray(clients, (clients.length / ZoiConfig.generalPromotionDeviation).toFixed(0));
+				MyLog.info("Num of clients after removing X precent = " + clients.length);
 
 				//iterate clients
 				clients.forEach(function (client) {
