@@ -106,7 +106,8 @@ class AcuitySchedulingLogic {
 
 		return new Promise((resolve, reject) => {
 
-			self.acuity.request('appointment-types', function (err, res, body) {
+			//TODO change the type on next version
+			self.acuity.request('appointment-types?type=service', function (err, res, body) {
 
 				if (err || body.error) {
 					reject(err || body.error);

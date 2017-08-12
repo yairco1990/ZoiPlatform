@@ -38,6 +38,7 @@ module.exports = {
 	serverUrl: selectedEnvironment.serverUrl,
 	clientUrl: selectedEnvironment.clientUrl,
 	mongoUrl: selectedEnvironment.mongoUrl,
+	nlpUrl: selectedEnvironment.NLP_URL,
 	AWS: {
 		key: 'AKIAIH4A77U64F5NNU6Q',
 		secret: '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',
@@ -49,7 +50,7 @@ module.exports = {
 		"redirectUri": "https://zoiai.com:3000/acuity/oauth2"//TODO change it!
 	},
 	delayTime: 10,
-	generalPromotionDeviation: 4,
+	generalPromotionDeviation: 1,
 	times: {
 		oldCustomersIntervalTime: 1000 * 60 * 0.5,
 		morningBriefIntervalTime: 1000 * 60 * 0.5,

@@ -68,7 +68,7 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		//if it's not in the middle of conversation
 		if (!isQuickReply && !isPayloadRequest && !isWaitForText && !isNewUser) {
 			//check intent with NLP
-			let nlpResponse = await requestify.request('http://52.177.185.253:5000/parse?q=' + input, {
+			let nlpResponse = await requestify.request(ZoiConfig.nlpUrl + '/parse?q=' + input, {
 				method: 'GET'
 			});
 
