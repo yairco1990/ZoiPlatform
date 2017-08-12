@@ -34,6 +34,7 @@ UserApiLogic.prototype.getUser = async function (userId, callback) {
 		}
 		if (user.integrations.Gmail) {
 			delete user.integrations.Gmail;
+			user.integrations.Gmail = true;
 		}
 
 		if (user) {
