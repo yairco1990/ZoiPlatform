@@ -5,7 +5,7 @@ let DefaultUser = {
 	integrations: {},
 	metadata: {},
 	profile: {},
-	startedAt: moment().format('lll'),
+	startedAt: moment().format('MMMM Do YYYY'),
 	nextMorningBriefDate: moment().hours(9).minutes(0).add(1, 'days').valueOf(),
 	nextOldCustomersDate: moment().hours(12).minutes(0).add(1, 'days').valueOf(),
 	morningBriefTime: "09:00",

@@ -14,13 +14,13 @@
                     {{vm.zoiUser.fullname}}, this month Zoi booked:
                 </div>
                 <div class="text-center stat-big">
-                    {{vm.zoiUser.profile[vm.actionTime].numOfAppointments}}
+                    {{vm.numOfAppointments}}
                 </div>
                 <div class="text-center box-sub-header" style="margin-bottom:20px">
                     Meetings
                 </div>
                 <div class="text-center stat-big">
-                    {{ vm.zoiUser.profile[vm.actionTime].profitFromAppointments | isoCurrency:vm.currency }}
+                    {{ vm.profitFromAppointments | isoCurrency:vm.currency }}
                 </div>
                 <div class="text-center box-sub-header">
                     Worth

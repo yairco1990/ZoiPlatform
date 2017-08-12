@@ -63,10 +63,17 @@ ProfileCtrl.prototype.$onInit = function () {
 
 		vm.integrationsOn = vm.zoiUser.integrations && Object.keys(vm.zoiUser.integrations).length;
 		if (vm.zoiUser.profile[vm.actionTime]) {
+
+			vm.numOfAppointments = vm.zoiUser.profile[vm.actionTime].numOfAppointments;
+			vm.profitFromAppointments = vm.zoiUser.profile[vm.actionTime].profitFromAppointments;
+
 			vm.socialShareOn = vm.zoiUser.profile[vm.actionTime].shared;
 			vm.bookedMoreThanOn = vm.zoiUser.profile[vm.actionTime].numOfAppointments >= vm.bookedMoreThan;
 			vm.earnedMoreThanOn = vm.zoiUser.profile[vm.actionTime].profitFromAppointments >= vm.earnedMoreThan;
 			vm.promotedMoreThanOn = vm.zoiUser.profile[vm.actionTime].numOfPromotions >= vm.promotedMoreThan;
+		} else {
+			vm.numOfAppointments = 0;
+			vm.profitFromAppointments = 0;
 		}
 
 		vm.badgesCounter = 0;
