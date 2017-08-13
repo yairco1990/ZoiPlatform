@@ -76,7 +76,7 @@ SettingsCtrl.prototype.initCtrl = function () {
 	//customer send limit text
 	vm.customersSendLimitText = vm.zoiUser.customerSendLimit && vm.zoiUser.customerSendLimit.text ? vm.zoiUser.customerSendLimit.text.toLowerCase() : "1 promo per week";
 	//prompt new customers
-	vm.promptNewCustomers = vm.zoiUser.promptNewCustomers === false ? "Don't prompt" : "Prompt";
+	vm.promptNewCustomers = vm.zoiUser.promptNewCustomers === false ? "Don't notify me of new bookers" : "Notify me of new bookers";
 };
 
 /**
