@@ -70,7 +70,7 @@ WelcomeLogic.prototype.sendWelcomeDialog = async function (conversationData, sen
 	let user = self.user;
 
 	//if the user not created yet or wants to be reset
-	if (!user || conversationData.input.toLowerCase() === "reset") {
+	if (!user || conversationData.input.toLowerCase() === "resetzoi") {
 
 		try {
 			//delete the user if exist

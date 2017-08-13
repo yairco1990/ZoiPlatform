@@ -49,16 +49,16 @@ module.exports = {
 		"clientSecret": "mezlVskAfjoAJSy8iAGhh3FYOW3MvSEASBnlUGQE",
 		"redirectUri": "https://zoiai.com:3000/acuity/oauth2"//TODO change it!
 	},
-	delayTime: 10,
-	generalPromotionDeviation: 1,
+	delayTime: 2500,
+	generalPromotionDeviation: 4,
 	times: {
-		oldCustomersIntervalTime: 1000 * 60 * 0.5,
-		morningBriefIntervalTime: 1000 * 60 * 0.5,
+		oldCustomersIntervalTime: 1000 * 60 * 2,
+		morningBriefIntervalTime: 1000 * 60 * 2,
 		oneDay: 1000 * 60 * 60 * 24,
 		clearOldConversationRange: 1000 * 60 * 60 * 4,
 		oldCustomersForwardDays: 30,
 		oldCustomersPreviousDays: 30,
-		wishZoiWillDelay: 1000,
+		wishZoiWillDelay: 2000,
 		firstIntegratedDelay: 6000,
 		defaultMorningBriefHours: 9,
 		defaultOldCustomersHours: 12

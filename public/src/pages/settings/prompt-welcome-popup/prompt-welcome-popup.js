@@ -17,11 +17,11 @@ PromptWelcomePopupCtrl.prototype.initCtrl = function () {
 
 	vm.options = [
 		{
-			text: "Prompt",
+			text: "Notify me of new bookers",
 			value: true
 		},
 		{
-			text: "Don't prompt",
+			text: "Don't notify me of new bookers",
 			value: false
 		}
 	]

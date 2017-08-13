@@ -42,7 +42,6 @@ AppointmentLogic.prototype.processIntent = function (conversationData, setBotTyp
 		// 	self.getNextFreeSlot(conversationData, reply);
 		// 	break;
 		case "appointment send promotions":
-			setBotTyping && setBotTyping();
 			self.sendPromotions(conversationData, reply);
 			break;
 	}
@@ -390,7 +389,7 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 			} else {
 				//case he was typing
 				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please select the template you like"), false),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please select the template you like. Don't worry, I am not going to send promotions without your confirmation."), false),
 				], MyUtils.getErrorMsg());
 			}
 

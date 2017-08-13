@@ -47,9 +47,9 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		let isNewUser = false;
 
 		//if this is new user
-		if (!user || input.toLowerCase() === "reset") {
+		if (!user || input.toLowerCase() === "resetzoi") {
 			user = {};
-			input = "reset";
+			input = "resetzoi";
 			isNewUser = true;
 		}
 
@@ -113,7 +113,7 @@ ListenLogic.prototype.processInput = async function (input, payload, setBotTypin
 		}
 
 		//if the user have no email or full name - go the complete the "welcome conversation"
-		if (!user || input.toLowerCase() === "reset") {
+		if (!user || input.toLowerCase() === "resetzoi") {
 			conversationData.context = "WELCOME";
 			//ignore the zoi-brain, and return the intent to the original input
 			conversationData.intent = input;

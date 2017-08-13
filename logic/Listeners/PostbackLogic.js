@@ -43,7 +43,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 		} else if (input === "ACTION_LEARN") {
 			self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_GET_STARTED") {
-			self.listenLogic.processInput("reset", payload, setBotTyping, bot, reply);
+			self.listenLogic.processInput("resetzoi", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_AGENDA") {
 			self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, bot, reply);
 		} else if (input === "ACTION_LEARN") {
