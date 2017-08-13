@@ -12,3 +12,12 @@
     font-size: 20px;
 
 }
+
+.grayed{
+    color: #8c8c91;
+}
+
+
+.coming-soon{
+    position: absolute; right:20px; top:30px; font-size: 12px;
+}
