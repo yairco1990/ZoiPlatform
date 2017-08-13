@@ -387,6 +387,11 @@ AppointmentLogic.prototype.sendPromotions = async function (conversationData, re
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
 					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 				], MyUtils.getErrorMsg());
+			} else {
+				//case he was typing
+				async.series([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please select the template you like"), false),
+				], MyUtils.getErrorMsg());
 			}
 
 		} else if (lastQuestionId === sendPromotionsQuestions.areYouSure.id) {
