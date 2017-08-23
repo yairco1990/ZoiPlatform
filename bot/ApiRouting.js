@@ -59,7 +59,7 @@ module.exports = {
 
 		app.get('/acuity/authorize', function (req, res) {
 			MyLog.log(API_LOG + "Authorize Acuity. userId = " + req.query.userId);
-			let acuity = Acuity.oauth(zoiConfig.Acuity);
+			let acuity = Acuity.oauth(zoiConfig.ACUITY_OAUTH);
 			acuity.authorizeRedirect(res, {scope: 'api-v1', state: req.query.userId});
 		});
 

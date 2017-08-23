@@ -167,7 +167,7 @@ class AcuitySchedulingLogic {
 		return new Promise(function (resolve, reject) {
 
 			//get config
-			let options = Object.create(zoiConfig.Acuity);
+			let options = Object.create(zoiConfig.ACUITY_OAUTH);
 			//create acuity object
 			let acuity = Acuity.oauth(options);
 
