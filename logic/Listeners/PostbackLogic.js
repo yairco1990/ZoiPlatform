@@ -28,7 +28,7 @@ function PostbackLogic() {
  * process action and return response
  */
 PostbackLogic.prototype.processAction = async function (input, payload, setBotTyping, bot, reply) {
-	let self = this;
+	const self = this;
 
 	let userId = payload.sender.id;
 
@@ -49,7 +49,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			} else if (input === "ACTION_AGENDA") {
 				self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, bot, reply);
 			} else if (input === "ACTION_LEARN") {
-				self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, callback);
+				self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, reply);
 			} else if (input === "ACTION_MAILS") {
 				//check that the user made first integration with gmail
 				let user = await self.DBManager.getUser({_id: userId});

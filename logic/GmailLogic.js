@@ -114,7 +114,7 @@ class GmailLogic {
 
 		return new Promise((resolve, reject) => {
 
-			let getEmails = function () {
+			const getEmails = function () {
 
 				let GBS = new GmailBatchStream(tokens.access_token);
 				const gmailGBS = GBS.gmail();

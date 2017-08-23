@@ -90,7 +90,7 @@ OldCustomersCtrl.prototype.showSendButton = function () {
 /**
  * send the emails
  */
-OldCustomersCtrl.prototype.sendButtonClicked = function () {
+OldCustomersCtrl.prototype.sendButtonClicked = function (ev) {
 	var vm = this;
 
 	MyUtils.addLoader();
@@ -124,7 +124,6 @@ OldCustomersCtrl.prototype.sendButtonClicked = function () {
 		);
 
 		vm.$log.debug(result.data);
-		alert("Promotions sent successfully!");
 	}).catch(function (err) {
 		MyUtils.removeLoader();
 		alert("Failed to send promotions");

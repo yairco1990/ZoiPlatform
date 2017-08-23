@@ -17,7 +17,7 @@ class ConversationLogic {
 	 * @param sendLastMessage
 	 */
 	clearConversation(reply, sendLastMessage) {
-		let self = this;
+		const self = this;
 		let user = self.user;
 
 		user.conversationData = null;
@@ -35,7 +35,7 @@ class ConversationLogic {
 	 */
 	getStatsMessage() {
 
-		let self = this;
+		const self = this;
 		let user = self.user;
 
 		let currentMonth = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");

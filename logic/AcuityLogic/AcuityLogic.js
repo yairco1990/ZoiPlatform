@@ -18,6 +18,7 @@ const WelcomeLogic = require('../Intents/WelcomeLogic');
 const deepcopy = require('deepcopy');
 const async = require('async');
 const Acuity = require('acuityscheduling');
+const zoiBot = require('../../bot/ZoiBot');
 
 const Response = {
 	SUCCESS: 200,
@@ -32,47 +33,40 @@ class AcuityLogic {
 		this.DBManager = require('../../dal/DBManager');
 	}
 
-	getReplyFunction(bot, user) {
-		return function (rep, isBotTyping, delay) {
-			return new Promise(function (resolve, reject) {
-				delay = delay || 0;
-				setTimeout(() => {
-					//send reply
-					bot.sendMessage(user._id, rep, (err) => {
-						if (err) {
-							reject(err);
-							return;
-						}
-						if (isBotTyping) {
-							bot.sendSenderAction(user._id, "typing_on", () => {
-								resolve();
-							});
-						} else {
-							resolve();
-						}
-						MyLog.log(`Message returned ${user._id}] -> ${rep.text}`);
-					});
-				}, delay);
-			});
-		};
-	}
+	/**
+	 * get business's clients
+	 * @param userId
+	 * @param callback
+	 * @returns {Promise.<void>}
+	 */
+	async getClients(userId, callback) {
+		const self = this;
 
-	getClients(userId, callback) {
-		let self = this;
-
-		self.DBManager.getUser({_id: userId}).then(function (user) {
+		try {
+			let user = await self.DBManager.getUser({_id: userId});
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-			acuityApi.getClients().then(function (result) {
-				callback(Response.SUCCESS, result);
-			})
-		}).catch(MyUtils.getErrorMsg);
+			let result = await acuityApi.getClients();
+
+			callback(Response.SUCCESS, result);
+		} catch (err) {
+			callback(Response.ERROR);
+			MyLog.error("Error on getClients");
+			MyLog.error(err);
+		}
 	}
 
-	getAvailability(data, callback) {
-		let self = this;
+	/**
+	 * get availability of business for tomorrow
+	 * @param data
+	 * @param callback
+	 */
+	async getAvailability(data, callback) {
+		const self = this;
 
-		self.DBManager.getUser({_id: data.userId}).then(function (user) {
+		try {
+
+			let user = await self.DBManager.getUser({_id: data.userId});
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			let options = {
@@ -80,10 +74,15 @@ class AcuityLogic {
 				date: moment(parseInt(data.date, 16)).tz(user.integrations.Acuity.userDetails.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
 			};
 
-			acuityApi.getAvailability(options).then(function (result) {
-				callback(Response.SUCCESS, result);
-			}).catch(MyUtils.getErrorMsg());
-		}).catch(MyUtils.getErrorMsg);
+			let result = await acuityApi.getAvailability(options);
+			callback(Response.SUCCESS, result);
+
+		} catch (err) {
+			callback(Response.ERROR);
+			MyLog.error("Error on getAvailability");
+			MyLog.error(err);
+		}
+
 	}
 
 	/**
@@ -93,7 +92,7 @@ class AcuityLogic {
 	 * @returns {Promise.<void>}
 	 */
 	async getCalendars(data, callback) {
-		let self = this;
+		const self = this;
 
 		try {
 			let user = await self.DBManager.getUser({_id: data.userId});
@@ -106,51 +105,43 @@ class AcuityLogic {
 		}
 		catch (err) {
 			callback(Response.ERROR, err);
-			console.error(err);
+			MyLog.error("Error on getCalendars", err);
 		}
 	}
 
-	getAppointmentTypes(userId, callback) {
-		let self = this;
+	/**
+	 * get appointment types
+	 * @param userId
+	 * @param callback
+	 */
+	async getAppointmentTypes(userId, callback) {
+		const self = this;
 
-		self.DBManager.getUser({_id: userId}).then(function (user) {
+		try {
+			let user = await self.DBManager.getUser({_id: userId});
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-			acuityApi.getAppointmentTypes().then(function (result) {
-				callback(Response.SUCCESS, result);
-			})
-		}).catch(MyUtils.getErrorMsg);
+			let result = await acuityApi.getAppointmentTypes();
+			callback(Response.SUCCESS, result);
+		} catch (err) {
+			callback(Response.ERROR);
+			MyLog.error("Error on getAppointmentTypes", err);
+		}
 	}
 
-	//only for test now
-	sendPromotions(userId, callback) {
-		let self = this;
+	/**
+	 * get business agenda
+	 * @param data
+	 * @param callback
+	 */
+	async getAgenda(data, callback) {
 
-		self.DBManager.getUser({_id: userId}).then(function (user) {
-			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+		const self = this;
 
-			let options = [
-				{key: 'appointmentTypeID', value: 3581890},
-				{
-					key: 'date',
-					value: moment().tz(user.integrations.Acuity.userDetails.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
-				}
-			];
+		try {
 
-			return acuityApi.getAvailability(options);
-		}).then(function (slots) {
+			let user = await self.DBManager.getUser({_id: data.userId});
 
-			//iterate slots
-			slots.forEach(function (slot) {
-				callback(Response.SUCCESS, slot);
-			})
-		}).catch(MyUtils.getErrorMsg);
-	}
-
-	getAgenda(data, callback) {
-		let self = this;
-
-		self.DBManager.getUser({_id: data.userId}).then(function (user) {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			//check which calendar to use(if valid id - choose it. else - all calendars)
@@ -165,8 +156,7 @@ class AcuityLogic {
 				params.calendarID = calendarId;
 			}
 
-			return acuityApi.getAppointments(params);
-		}).then(function (appointments) {
+			let appointments = await acuityApi.getAppointments(params);
 
 			//sort appointments
 			appointments.sort(function (q1, q2) {
@@ -178,44 +168,54 @@ class AcuityLogic {
 			});
 
 			callback(Response.SUCCESS, AcuityFactory.generateAppointmentsList(appointments));
-		}).catch(function (err) {
-			MyLog.error(err);
-			callback(Response.UNFULLFILLED, err);
-		});
+		} catch (err) {
+			callback(Response.ERROR);
+			MyLog.error("Error on getAppointmentTypes", err);
+		}
 	}
 
-	getOldCustomers(data, callback) {
-		let self = this;
+	/**
+	 * get old customers(customers who didn't visit for a long time)
+	 * @param data
+	 * @param callback
+	 */
+	async getOldCustomers(data, callback) {
+		const self = this;
 
-		self.DBManager.getUser({_id: data.userId}).then(function (user) {
+		try {
+			let user = await self.DBManager.getUser({_id: data.userId});
 
 			if (user.metadata.oldCustomers) {
 				callback(Response.SUCCESS, user.metadata.oldCustomers);
 			} else {
 				callback(Response.SUCCESS, "NOT_AVAILABLE");
 			}
+		} catch (err) {
+			callback(Response.ERROR);
+			MyLog.error("Error on getOldCustomers", err);
+		}
 
-		}).catch(function (err) {
-			callback(Response.UNFULLFILLED, err);
-		});
 	}
 
-	promoteOldCustomers(bot, data, callback) {
-		let self = this;
+	/**
+	 * send promotions to old customers
+	 * @param bot
+	 * @param data
+	 * @param callback
+	 */
+	async promoteOldCustomers(bot, data, callback) {
+		const self = this;
 
-		let customers = JSON.parse(data.customers);
+		try {
+			const customers = JSON.parse(data.customers);
 
-		let user;
-		self.DBManager.getUser({_id: data.userId}).then(function (_user) {
-			user = _user;
-			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+			let user = await self.DBManager.getUser({_id: data.userId});
 
-			return acuityApi.getAppointmentTypes();
+			const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-		}).then(function (appointmentTypes) {
-
-			let emailTemplate = EmailConfig.oldCustomersEmail;
-			let service = appointmentTypes[0];
+			const appointmentTypes = await acuityApi.getAppointmentTypes();
+			const emailTemplate = EmailConfig.oldCustomersEmail;
+			const service = appointmentTypes[0];
 
 			customers.forEach(function (customer) {
 
@@ -254,32 +254,37 @@ class AcuityLogic {
 
 			//remove the metadata
 			user.metadata.oldCustomers = null;
-			self.DBManager.saveUser(user).then(function () {
+			await self.DBManager.saveUser(user);
 
-				let replyFunction = self.getReplyFunction(bot, user);
-				//send messages
-				async.series([
-					MyUtils.resolveMessage(replyFunction, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + customers.length + " of your customers."), true),
-					MyUtils.resolveMessage(replyFunction, facebookResponse.getTextMessage("Trust me, they will be regulars soon enough."), false, ZoiConfig.delayTime),
-				], MyUtils.getErrorMsg());
-			});
+			const replyFunction = zoiBot.getBotReplyFunction(user);
+			//send messages
+			async.series([
+				MyUtils.resolveMessage(replyFunction, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + customers.length + " of your customers."), true),
+				MyUtils.resolveMessage(replyFunction, facebookResponse.getTextMessage("Trust me, they will be regulars soon enough."), false, ZoiConfig.delayTime),
+			], MyUtils.getErrorMsg());
 
-		}).catch(function (err) {
-			MyLog.error(err);
-			callback(Response.UNFULLFILLED, err);
-		});
+		} catch (err) {
+			callback(Response.ERROR);
+			MyLog.error("Error on promoteOldCustomers", err);
+		}
+
 	}
 
-	scheduleAppointment(data, callback) {
-		let self = this;
+	/**
+	 * schedule an appointment by customers
+	 * @param data
+	 * @param callback
+	 */
+	async scheduleAppointment(data, callback) {
+		const self = this;
 
-		let user;
-		self.DBManager.getUser({_id: data.userId}).then(function (_user) {
-			user = _user;
-			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+		try {
+			const user = await self.DBManager.getUser({_id: data.userId});
+
+			const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			// Create appointment:
-			let options = {
+			const options = {
 				method: 'POST',
 				body: {
 					//remove the timezone
@@ -295,15 +300,16 @@ class AcuityLogic {
 				options.body.certificate = data.certificate;
 			}
 
-			return acuityApi.scheduleAppointment(options);
-		}).then(function () {
+			await acuityApi.scheduleAppointment(options);
 
-			callback(Response.SUCCESS, {});
+			callback(Response.SUCCESS, {message: "Appointment scheduled successfully"});
 			MyLog.log("Appointment scheduled successfully");
 
-			//save appointment times
-			let actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
+			//save number of appointments schedule by zoi
+			const actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
+
 			user.profile = user.profile || {};
+
 			if (user.profile[actionTime]) {
 				user.profile[actionTime].numOfAppointments = (user.profile[actionTime].numOfAppointments || 0) + 1;
 				user.profile[actionTime].profitFromAppointments = ((user.profile[actionTime].profitFromAppointments || 0) + parseFloat(data.price)) || 0;
@@ -314,40 +320,46 @@ class AcuityLogic {
 				}
 			}
 
-			self.DBManager.saveUser(user).then(function () {
-			});
-		}).catch(function (err) {
-			MyLog.error(err);
-			callback(Response.UNFULLFILLED, err);
-		});
+			await self.DBManager.saveUser(user);
+
+		} catch (err) {
+			callback(Response.ERROR);
+			MyLog.error("Error on promoteOldCustomers", err);
+		}
 	}
 
+	/**
+	 * get unread emails
+	 * @param data
+	 * @param callback
+	 * @returns {Promise.<void>}
+	 */
 	async getEmails(data, callback) {
 
-		let self = this;
+		const self = this;
 
 		try {
 			//get the user
-			let user = await self.DBManager.getUser({_id: data.userId});
+			const user = await self.DBManager.getUser({_id: data.userId});
 
 			if (user.integrations.Gmail) {
 				//init the acuity api
-				let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+				const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 				//get the tokens
 				let tokens = user.integrations.Gmail;
 
 				//get user clients
-				let clients = await acuityApi.getClients();
+				const clients = await acuityApi.getClients();
 
 				//set the query string
-				let queryString = "newer_than:7d is:unread";
+				const queryString = "newer_than:7d is:unread";
 
 				//get unread emails from the user clients
-				let messages = await GmailLogic.getEmailsList(tokens, queryString, 'me', user);
+				const messages = await GmailLogic.getEmailsList(tokens, queryString, 'me', user);
 
 				//intersection between user's clients and email messages
-				let clientsMessages = _.filter(messages, function (item1) {
+				const clientsMessages = _.filter(messages, function (item1) {
 					return _.some(this, function (item2) {
 						return item1.from.includes(item2.email) && item2.email;
 					});
@@ -367,146 +379,177 @@ class AcuityLogic {
 	}
 
 	async onAppointmentScheduled(userId, data, bot, callback) {
-		let self = this;
+		const self = this;
 
 		try {
 			//get the user that wants to integrate
 			let user = await self.DBManager.getUser({_id: userId});
 
-			//if the user prompt new customers
-			if (user.promptNewCustomers !== false) {
-				let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
+			//check if the user integrated with Acuity(in some case, the user deleted himself, but the webhook is still exist)
+			if (user.integrations.Acuity) {
 
-				let appointment = await acuityApi.getAppointments(null, 'appointments/' + data.id);
+				//if the user prompt new customers
+				if (user.promptNewCustomers !== false) {
+					const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-				let options = {
-					firstName: appointment.firstName,
-					lastName: appointment.lastName
-				};
+					const appointment = await acuityApi.getAppointments(null, 'appointments/' + data.id);
 
-				let appointments = await acuityApi.getAppointments(options);
-
-				if (appointments.length < 2) {
-
-					let newClient = {
+					const options = {
 						firstName: appointment.firstName,
-						lastName: appointment.lastName,
-						email: appointment.email,
+						lastName: appointment.lastName
 					};
 
-					if (!user.conversationData) {
+					const appointments = await acuityApi.getAppointments(options);
 
-						//save the new client to user
-						user.session = {
-							newClient: newClient
-						};
-						await self.DBManager.saveUser(user);
+					if (appointments.length < 2) {
 
-						//start the conversation in the clientLogic class
-						let clientLogic = new ClientLogic(user);
-						let conversationData = {
-							intent: "client new customer join",
-							context: "CLIENT"
+						const newClient = {
+							firstName: appointment.firstName,
+							lastName: appointment.lastName,
+							email: appointment.email,
 						};
-						let replyFunction = self.getReplyFunction(bot, user);
-						clientLogic.processIntent(conversationData, null, null, replyFunction);
+
+						if (!user.conversationData) {
+
+							//save the new client to user
+							user.session = {
+								newClient: newClient
+							};
+							await self.DBManager.saveUser(user);
+
+							//start the conversation in the clientLogic class
+							const clientLogic = new ClientLogic(user);
+							const conversationData = {
+								intent: "client new customer join",
+								context: "CLIENT"
+							};
+							const replyFunction = zoiBot.getBotReplyFunction(user);
+							const botTypingFunction = zoiBot.getBotWritingFunction(user);
+
+							clientLogic.processIntent(conversationData, botTypingFunction, null, replyFunction);
+						}
+
+						callback(Response.SUCCESS, {message: "It's a new customer"});
+					} else {
+						callback(Response.SUCCESS, {message: "Not a new customer"});
 					}
-
-					callback(Response.SUCCESS, {message: "It's a new customer"});
 				} else {
-					callback(Response.SUCCESS, {message: "Not a new customer"});
+					MyLog.info("User doesn't prompt new customers");
+					callback(Response.SUCCESS, {message: "User doesn't prompt new customers"});
 				}
 			} else {
-				MyLog.info("User doesn't prompt new customers");
-				callback(Response.SUCCESS, {message: "User doesn't prompt new customers"});
+				MyLog.info("User didn't integrate with Acuity");
+				callback(Response.SUCCESS, {message: "User didn't integrate with Acuity"});
 			}
 		} catch (err) {
-			MyLog.error("Failed to send welcome message to new customer");
-			MyLog.error(err);
+			MyLog.error("Failed to send welcome message to new customer", err);
 			callback(Response.ERROR, err);
 		}
 	}
 
-	integrate(userId, code, bot, callback) {
+	/**
+	 * integrate with Acuity.
+	 * the step that the user click on "Allow" on Acuity page
+	 * @param userId
+	 * @param code
+	 * @param bot
+	 * @param callback
+	 */
+	async integrate(userId, code, bot, callback) {
 
-		let self = this;
+		const self = this;
 
-		//get the user that wants to integrate
-		self.DBManager.getUser({_id: userId}).then(function (user) {
+		try {
+			//get the user that wants to integrate
+			const user = await self.DBManager.getUser({_id: userId});
 
 			//check if already integrated with Acuity
-			let isAlreadyConnectedWithAcuity = user.integrations && user.integrations.Acuity;
+			const isAlreadyConnectedWithAcuity = user.integrations && user.integrations.Acuity;
 
 			//get acuity details
-			AcuityApi.getUserAndToken(code).then(function (userData) {
+			const userData = await AcuityApi.getUserAndToken(code);
 
-				//set integration
-				user.integrations.Acuity = userData;
+			//set integration
+			user.integrations.Acuity = userData;
 
-				//set timezone
-				user.timezone = userData.userDetails.timezone;
+			//set timezone
+			user.timezone = userData.userDetails.timezone;
 
-				//set default values
-				user.nextMorningBriefDate = moment().tz(user.timezone).hours(ZoiConfig.times.defaultMorningBriefHours).minutes(0).add(1, 'days').valueOf();
-				user.nextOldCustomersDate = moment().tz(user.timezone).hours(ZoiConfig.times.defaultOldCustomersHours).minutes(0).add(1, 'days').valueOf();
+			//set default values
+			user.nextMorningBriefDate = moment().tz(user.timezone).hours(ZoiConfig.times.defaultMorningBriefHours).minutes(0).add(1, 'days').valueOf();
+			user.nextOldCustomersDate = moment().tz(user.timezone).hours(ZoiConfig.times.defaultOldCustomersHours).minutes(0).add(1, 'days').valueOf();
 
-				//save user with the integration
-				return self.DBManager.saveUser(user);
+			//save user with the integration
+			await self.DBManager.saveUser(user);
 
-			}).then(function () {
+			//redirect the user to his integrations page
+			callback(302, {'location': ZoiConfig.clientUrl + '/integrations?userId=' + userId});
 
-				//redirect the user to his integrations page
-				callback(302, {'location': ZoiConfig.clientUrl + '/integrations?userId=' + userId});
+			const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
-				let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
-
-				let targetUrl = ZoiConfig.serverUrl + "/acuity/webhook/" + userId + "/scheduled";
-				//register for Acuity webhooks
-				let options = {
-					method: 'POST',
-					body: {
-						event: "appointment.scheduled",
-						target: targetUrl.replace(":3000", "") //we want to listen on 443 due to Acuity rules
-					}
-				};
-				return acuityApi.setWebhooks(options);
-
-			}).then(function (response) {
-
-				//proceed after user integrated for the first time only(if integrated more than once - skip it)
-				if (!isAlreadyConnectedWithAcuity) {
-
-					MyLog.log("Integrated with Acuity successfully");
-					MyLog.log(response);
-					//save the last message time
-					user.lastMessageTime = new Date().valueOf();
-					//start the conversation in the welcomeLogic class
-					let welcomeLogic = new WelcomeLogic(user);
-					let conversationData = {
-						intent: "welcome acuity integrated",
-						context: "WELCOME",
-						setDelay: true
-					};
-					let replyFunction = self.getReplyFunction(bot, user);
-					welcomeLogic.processIntent(conversationData, null, null, replyFunction);
-				} else {
-					MyLog.log("Already integrated with Acuity");
+			const targetUrl = ZoiConfig.serverUrl + "/acuity/webhook/" + userId + "/scheduled";
+			//register for Acuity webhooks
+			const options = {
+				method: 'POST',
+				body: {
+					event: "appointment.scheduled",
+					target: targetUrl.replace(":3000", "") //we want to listen on 443 due to Acuity rules
 				}
+			};
 
-			}).catch(MyUtils.getErrorMsg());
-		}).catch(MyUtils.getErrorMsg);
+			const response = await acuityApi.setWebhooks(options);
+
+			//proceed after user integrated for the first time only(if integrated more than once - skip it)
+			if (!isAlreadyConnectedWithAcuity) {
+
+				MyLog.log("Integrated with Acuity successfully");
+				MyLog.log(response);
+
+				//save the last message time
+				user.lastMessageTime = new Date().valueOf();
+
+				//start the conversation in the welcomeLogic class
+				const welcomeLogic = new WelcomeLogic(user);
+				const conversationData = {
+					intent: "welcome acuity integrated",
+					context: "WELCOME",
+					setDelay: true
+				};
+
+				const replyFunction = zoiBot.getBotReplyFunction(user);
+				const botTypingFunction = zoiBot.getBotWritingFunction(user);
+
+				welcomeLogic.processIntent(conversationData, botTypingFunction, null, replyFunction);
+			} else {
+				MyLog.log("Already integrated with Acuity");
+			}
+		} catch (err) {
+			callback(Response.ERROR, err);
+			MyLog.error("Failed to integrate with Acuity", err);
+		}
+
 	}
 
-	unsubscribe(data, callback) {
+	/**
+	 * unsubscribe from zoi emails
+	 * @param data
+	 * @param callback
+	 */
+	async unsubscribe(data, callback) {
 
-		let self = this;
+		const self = this;
 
-		//unsubscribe for 20 years :)
-		let unsubscribeDate = moment().add(20, 'years').valueOf();
+		try {
+			//unsubscribe for 20 years :)
+			let unsubscribeDate = moment().add(20, 'years').valueOf();
 
-		self.DBManager.addEmailToUnsubscribe({_id: data.email, blockDate: unsubscribeDate}).then(function () {
+			await self.DBManager.addEmailToUnsubscribe({_id: data.email, blockDate: unsubscribeDate});
+
 			callback(Response.SUCCESS, "Successfully unsubscribed\n" + data.email);
-		});
+		} catch (err) {
+			callback(Response.ERROR, err);
+			MyLog.error("Failed to unsubscribe", err);
+		}
 	}
 
 	/**
@@ -542,11 +585,15 @@ class AcuityLogic {
 					}]
 				});
 
+				let sentCounter = 0;
+
 				//iterate the users that should get the reminder
 				usersToRemind.forEach(async (user) => {
 
 					//send only if there is no integration with acuity
 					if (!user.integrations || !user.integrations.Acuity) {
+
+						sentCounter++;
 
 						//get sendMessage function
 						const sendMessage = bot.getBotReplyFunction(user);
@@ -568,8 +615,8 @@ class AcuityLogic {
 					}
 				});
 
-				MyLog.info(`Reminders sent to ${usersToRemind.length} users`);
-				callback(Response.SUCCESS, {message: `Reminders sent to ${usersToRemind.length} users`})
+				MyLog.info(`Reminders sent to ${sentCounter} users`);
+				callback(Response.SUCCESS, {message: `Reminders sent to ${sentCounter} users`})
 
 			} else {
 				MyLog.error("Error on sendIntegrationReminder - Auth Error");

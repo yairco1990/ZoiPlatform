@@ -40,7 +40,7 @@ MindbodyLogic.prototype.getAppointments = function (entities) {
 
     Util.log("getAppointments function from mindbody");
 
-    let self = this;
+    const self = this;
 
     return new Promise(function (resolve, reject) {
 
@@ -79,7 +79,7 @@ MindbodyLogic.prototype.getNextFreeSlot = function (entities) {
 
     Util.log("getNextFreeSlot function from mindbody");
 
-    let self = this;
+    const self = this;
 
     return new Promise(function (resolve, reject) {
 
@@ -121,7 +121,7 @@ MindbodyLogic.prototype.getNextFreeSlot = function (entities) {
  */
 MindbodyLogic.prototype.getClasses = function () {
 
-    let self = this;
+    const self = this;
 
     Util.log("getClasses from mindbody function");
 
@@ -158,7 +158,7 @@ MindbodyLogic.prototype.getSales = function () {
 
     Util.log("getSales from mindbody function");
 
-    let self = this;
+    const self = this;
 
     return new Promise(function (resolve, reject) {
 
@@ -195,7 +195,7 @@ MindbodyLogic.prototype.getSessionTypes = function () {
 
     Util.log("getSessionTypes from mindbody function");
 
-    let self = this;
+    const self = this;
 
     return new Promise(function (resolve, reject) {
 
@@ -227,7 +227,7 @@ MindbodyLogic.prototype.getPrograms = function () {
 
     Util.log("getPrograms from mindbody function");
 
-    let self = this;
+    const self = this;
 
     return new Promise(function (resolve, reject) {
 
@@ -264,7 +264,7 @@ MindbodyLogic.prototype.getClients = function (entities) {
 
     Util.log("getClients from mindbody function");
 
-    let self = this;
+    const self = this;
 
     return new Promise(function (resolve, reject) {
 
@@ -308,7 +308,7 @@ MindbodyLogic.prototype.bookAppointment = function (appointmentDetails) {
 
     Util.log("bookAppointment from mindbody function");
 
-    let self = this;
+    const self = this;
 
     return new Promise(function (resolve, reject) {
 

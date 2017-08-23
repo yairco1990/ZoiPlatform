@@ -291,9 +291,7 @@ class Bot extends EventEmitter {
 	 */
 	getBotReplyFunction(user) {
 		const bot = this;
-		//@param rep - the facebook json message
-		//@param isBotTyping - boolean, decide if the bot typing after the message
-		//@param delay - delay in ms to send the message
+
 		return function (rep, isBotTyping, delay) {
 			return new Promise(function (resolve, reject) {
 				delay = delay || 0;
@@ -311,7 +309,11 @@ class Bot extends EventEmitter {
 						} else {
 							resolve();
 						}
-						MyLog.info(`Message returned ${user._id}] -> ${rep.text}`);
+						if (user.fullname) {
+							MyLog.info(`Message returned to ${user.fullname} [id: ${user._id}] -> ${rep.text ? rep.text : "Attachment"}`);
+						} else {
+							MyLog.info(`Message returned to [id: ${user._id}] -> ${rep.text ? rep.text : "Attachment"}`);
+						}
 					});
 				}, delay);
 			});

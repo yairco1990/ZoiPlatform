@@ -36,7 +36,7 @@ class ListenLogic {
 	 */
 	async processInput(input, payload, setBotTyping, bot, reply) {
 
-		let self = this;
+		const self = this;
 
 		MyLog.info("User input = " + input);
 
@@ -86,7 +86,7 @@ class ListenLogic {
 				});
 
 			} else {
-				intent = isQuickReply ? "Quick Reply" : isPayloadRequest ? "Payload Button" : isWaitForText ? "Text Answer" : "Error: What the intent?";
+				intent = isQuickReply ? "Quick Reply" : isPayloadRequest ? "Payload Button" : isWaitForText ? "Text Answer" : "What the intent?(Maybe new user)";
 				entities = "No entities";
 				intentScore = 0;
 			}

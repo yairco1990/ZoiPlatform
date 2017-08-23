@@ -21,7 +21,7 @@ const Response = {
  */
 UserApiLogic.prototype.getUser = async function (userId, callback) {
 
-	let self = this;
+	const self = this;
 
 	try {
 		//get the user
@@ -57,7 +57,7 @@ UserApiLogic.prototype.getUser = async function (userId, callback) {
  */
 UserApiLogic.prototype.saveUser = async function (user, callback) {
 
-	let self = this;
+	const self = this;
 
 	try {
 

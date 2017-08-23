@@ -13,9 +13,11 @@
       <w>memwatch</w>
       <w>mongo</w>
       <w>ngrok</w>
+      <w>onboarding</w>
       <w>postback</w>
       <w>replset</w>
       <w>requestify</w>
+      <w>resetzoi</w>
       <w>screenshot</w>
       <w>unfullfilled</w>
       <w>unsubscribe</w>
@@ -24,6 +26,7 @@
       <w>webhook</w>
       <w>webhooks</w>
       <w>webshot</w>
+      <w>yair</w>
     </words>
   </dictionary>
 </component>

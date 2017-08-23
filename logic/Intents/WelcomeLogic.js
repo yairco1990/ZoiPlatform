@@ -2,6 +2,7 @@
  * In this class we process the user intent after we realized
  * that the intent was about the welcome conversation
  */
+const ZoiBot = require('../../bot/ZoiBot');
 const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment-timezone');
@@ -45,7 +46,7 @@ class WelcomeLogic extends ConversationLogic {
 	 */
 	processIntent(conversationData, setBotTyping, requestObj, reply) {
 
-		let self = this;
+		const self = this;
 		let user = self.user;
 
 		let senderId = requestObj ? requestObj.sender.id : user._id;
@@ -69,19 +70,25 @@ class WelcomeLogic extends ConversationLogic {
 	 */
 	async sendWelcomeDialog(conversationData, senderId, reply) {
 
-		let self = this;
+		const self = this;
 		let user = self.user;
 
 		//if the user not created yet or wants to be reset
 		if (!user || conversationData.input.toLowerCase() === "resetzoi") {
 
 			try {
+
+				//get user profile
+				const profile = await ZoiBot.getProfile(senderId);
+				const displayName = profile.first_name + ' ' + profile.last_name;
+
 				//delete the user if exist
 				await self.DBManager.deleteUser({_id: senderId});
 
 				//create default user with default parameters
-				let newUser = require('../../interfaces/DefaultModels/DefaultUser');
+				const newUser = require('../../interfaces/DefaultModels/DefaultUser');
 				newUser._id = senderId;
+				newUser.fullname = displayName;
 				newUser.conversationData = conversationData;
 
 				//save the user
@@ -90,7 +97,7 @@ class WelcomeLogic extends ConversationLogic {
 				async.series([
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hi there my new boss! 😁"), true),
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("My Name is Zoi, Your own AI personal assistant."), true, delayTime),
-					MyUtils.resolveMessage(reply, facebookResponse.getQRElement("May I ask you some questions before we start our journey?", [
+					MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Are you ready to start our great journey together?", [
 						facebookResponse.getQRButton("text", "Yes, lets start!", {id: 1}),
 						facebookResponse.getQRButton("text", "Not now", {id: 2}),
 					]), false, delayTime)
@@ -136,7 +143,7 @@ class WelcomeLogic extends ConversationLogic {
 	 */
 	async proceedWelcomeConversation(conversationData, reply) {
 
-		let self = this;
+		const self = this;
 		let user = self.user;
 
 		try {

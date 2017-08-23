@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 const ListenLogic = require('./logic/Listeners/ListenLogic');
-const Bot = require('./bot/bot_framework');
+const zoiBot = require('./bot/ZoiBot');
 const MyLog = require('./interfaces/MyLog');
 const MyUtils = require('./interfaces/utils');
 const PostbackLogic = require('./logic/Listeners/PostbackLogic');
@@ -40,9 +40,6 @@ let server;
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// initialize bot
-let bot = new Bot(ZoiConfig.BOT_DETAILS);
-
 // Add headers
 app.use(function (req, res, next) {
 	// Website you wish to allow to connect
@@ -69,7 +66,7 @@ app.use(function (req, res, next) {
 });
 
 //set the routing
-Services.setRouting(app, bot);
-Services.setBotListeners(bot);
-ApiRouting.setApiRouting(app, bot);
-BackgroundLogic.startAll(bot);
+Services.setRouting(app);
+Services.setBotListeners();
+ApiRouting.setApiRouting(app, zoiBot);
+BackgroundLogic.startAll(zoiBot);

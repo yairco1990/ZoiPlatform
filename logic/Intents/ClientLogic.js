@@ -48,13 +48,14 @@ class ClientLogic extends ConversationLogic {
 	 */
 	processIntent(conversationData, setBotTyping, requestObj, reply) {
 
-		let self = this;
+		const self = this;
 
 		switch (conversationData.intent) {
 			case "client new customer join":
 				self.newCustomerJoin(conversationData, reply);
 				break;
 			case "client old customers":
+				setBotTyping && setBotTyping();
 				self.promoteOldCustomers(conversationData, reply);
 				break;
 		}
@@ -68,7 +69,7 @@ class ClientLogic extends ConversationLogic {
 	 */
 	async newCustomerJoin(conversationData, reply) {
 
-		let self = this;
+		const self = this;
 		let user = self.user;
 
 		try {
@@ -188,37 +189,38 @@ class ClientLogic extends ConversationLogic {
 	 */
 	async promoteOldCustomers(conversationData, reply) {
 
-		let self = this;
-		let user = self.user;
+		const self = this;
+		const user = self.user;
 
 		try {
-			let lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
-			let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
+			const lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+			const acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 
 			//if this is the start of the conversation
 			if (!user.conversationData) {
 				//current question
-				let currentQuestion = promoteOldCustomersQuestions.toPromote;
+				const currentQuestion = promoteOldCustomersQuestions.toPromote;
 				//save conversation to the user
 				user.conversationData = conversationData;
 				//save the question
 				user.conversationData.lastQuestion = currentQuestion;
 
 				//user selected range
-				let daysRange = user.oldCustomersRange && user.oldCustomersRange.value ? user.oldCustomersRange.value : ZoiConfig.times.oldCustomersPreviousDays;
+				const daysRange = user.oldCustomersRange && user.oldCustomersRange.value ? user.oldCustomersRange.value : ZoiConfig.times.oldCustomersPreviousDays;
 
 				//search old customers
-				let appointments = await acuityLogic.getAppointments({
+				const appointments = await acuityLogic.getAppointments({
+					max: 10000,//maximum number of results
 					minDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day')),
 					maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).add(ZoiConfig.times.oldCustomersForwardDays, 'days').endOf('day'))
 				});
 
 				//window checking
-				let windowStartDate = moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day');
-				let windowEndDate = moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').endOf('day');
+				const windowStartDate = moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day');
+				const windowEndDate = moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').endOf('day');
 
-				let windowAppointments = [];
-				let nonWindowAppointments = [];
+				const windowAppointments = [];
+				const nonWindowAppointments = [];
 
 				//iterate all the appointments
 				appointments.forEach(function (appointment) {
@@ -265,7 +267,7 @@ class ClientLogic extends ConversationLogic {
 				user.session.oldCustomers = oldCustomers;
 
 				//save qr
-				let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
+				const lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
 					[facebookResponse.getQRButton("text", "Yes, send it.", {id: 1}),
 						facebookResponse.getQRButton("text", "No, don't send it.", {id: 2})]
 				);

@@ -15,7 +15,7 @@ class AcuitySchedulingLogic {
 	}
 
 	getClients() {
-		let self = this;
+		const self = this;
 
 		return new Promise((resolve, reject) => {
 
@@ -32,7 +32,7 @@ class AcuitySchedulingLogic {
 	}
 
 	getCalendars(options) {
-		let self = this;
+		const self = this;
 
 		return new Promise((resolve, reject) => {
 
@@ -49,7 +49,7 @@ class AcuitySchedulingLogic {
 	}
 
 	getAvailability(options) {
-		let self = this;
+		const self = this;
 
 		return new Promise((resolve, reject) => {
 
@@ -66,7 +66,7 @@ class AcuitySchedulingLogic {
 	}
 
 	getAppointments(options, endpoint) {
-		let self = this;
+		const self = this;
 
 		return new Promise((resolve, reject) => {
 
@@ -85,7 +85,7 @@ class AcuitySchedulingLogic {
 	}
 
 	scheduleAppointment(options) {
-		let self = this;
+		const self = this;
 
 		return new Promise((resolve, reject) => {
 
@@ -102,7 +102,7 @@ class AcuitySchedulingLogic {
 	}
 
 	getAppointmentTypes() {
-		let self = this;
+		const self = this;
 
 		return new Promise((resolve, reject) => {
 
@@ -124,7 +124,7 @@ class AcuitySchedulingLogic {
 	}
 
 	setWebhooks(options) {
-		let self = this;
+		const self = this;
 
 		return new Promise((resolve, reject) => {
 
@@ -141,7 +141,7 @@ class AcuitySchedulingLogic {
 	}
 
 	getCoupons() {
-		let self = this;
+		const self = this;
 
 		return new Promise((resolve, reject) => {
 

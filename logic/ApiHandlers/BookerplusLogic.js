@@ -13,7 +13,7 @@ function BookerplusLogic(authtoken) {
 
 BookerplusLogic.prototype.getClient = function (entities, callback) {
 
-	let self = this;
+	const self = this;
 
 	let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/customer";
 
@@ -102,7 +102,7 @@ BookerplusLogic.prototype.getClient = function (entities, callback) {
  */
 BookerplusLogic.prototype.getServices = function (entities, callback) {
 
-	let self = this;
+	const self = this;
 
 	//get services object
 	self.getServicesObject()
@@ -135,7 +135,7 @@ BookerplusLogic.prototype.getServices = function (entities, callback) {
  */
 BookerplusLogic.prototype.getServicesObject = function () {
 
-	let self = this;
+	const self = this;
 
 	return new Promise(function (resolve, reject) {
 		let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/branchService";
@@ -176,7 +176,7 @@ BookerplusLogic.prototype.getServicesObject = function () {
  */
 BookerplusLogic.prototype.getQueues = function (entities, params, callback) {
 
-	let self = this;
+	const self = this;
 
 	if (!params) {
 		params = {
@@ -265,7 +265,7 @@ BookerplusLogic.prototype.getQueues = function (entities, params, callback) {
  */
 BookerplusLogic.prototype.getNextQueue = function (entities, callback) {
 
-	let self = this;
+	const self = this;
 
 	//get services object
 	self.getQueuesObject({
@@ -311,7 +311,7 @@ BookerplusLogic.prototype.getNextQueue = function (entities, callback) {
  */
 BookerplusLogic.prototype.scheduleQueue = function (entities, callback) {
 
-	let self = this;
+	const self = this;
 
 	//schedule queue object
 	self.scheduleQueueObject({
@@ -354,7 +354,7 @@ BookerplusLogic.prototype.scheduleQueue = function (entities, callback) {
  */
 BookerplusLogic.prototype.getQueuesObject = function (params) {
 
-	let self = this;
+	const self = this;
 
 	return new Promise(function (resolve, reject) {
 		let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/queue/getBusinessQueues";
@@ -384,7 +384,7 @@ BookerplusLogic.prototype.getQueuesObject = function (params) {
  */
 BookerplusLogic.prototype.scheduleQueueObject = function (params) {
 
-	let self = this;
+	const self = this;
 
 	return new Promise(function (resolve, reject) {
 		let url = "https://bookerplus.booker-plus.com:8443/bookerplus_prod/services/auth/employee/reserved/schedule";

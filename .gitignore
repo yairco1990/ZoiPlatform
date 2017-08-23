@@ -2,8 +2,8 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff:
-.idea/**
-
+/.idea/
 /node_modules/
 /logs/
 /public/node_modules/
+/public/.idea/

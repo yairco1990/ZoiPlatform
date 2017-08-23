@@ -40,7 +40,7 @@ class GeneralLogic extends ConversationLogic {
 	 * process the user input
 	 */
 	processIntent(conversationData, setBotTyping, requestObj, reply) {
-		let self = this;
+		const self = this;
 
 		switch (conversationData.intent) {
 			case "general no thanks":
@@ -71,7 +71,7 @@ class GeneralLogic extends ConversationLogic {
 
 	async sendMorningBrief(conversationData, setBotTyping, requestObj, reply) {
 
-		let self = this;
+		const self = this;
 		let user = self.user;
 		try {
 
@@ -233,7 +233,7 @@ class GeneralLogic extends ConversationLogic {
 	 */
 	async wishZoi(conversationData, setBotTyping, requestObj, reply) {
 
-		let self = this;
+		const self = this;
 		let user = self.user;
 
 		try {

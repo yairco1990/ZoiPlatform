@@ -27,7 +27,7 @@ class GenericLogic extends ConversationLogic {
 	 */
 	processIntent(conversationData, setBotTyping, requestObj, reply) {
 
-		let self = this;
+		const self = this;
 
 		//get response from small talk object
 		let responseText = MyUtils.getResponseByIntent(conversationData.intent);

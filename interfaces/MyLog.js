@@ -26,7 +26,7 @@ class MyLog {
 		ZoiConfig.writeInfo && MyLog.writeToFile(logText);
 	}
 
-	static error(err) {
+	static error(...errs) {
 
 		let printError = (text) => {
 			const logText = `${MyLog.getCurrentTime()} Error: ${text}`;
@@ -34,15 +34,17 @@ class MyLog {
 			ZoiConfig.writeErrors && MyLog.writeToFile(logText);
 		};
 
-		if (err.message) {
-			printError(err.message);
-		}
-		if (err.stack) {
-			printError(err.stack);
-		}
-		if (typeof err === 'string') {
-			printError(err);
-		}
+		errs.forEach((err) => {
+			if (err.message) {
+				printError(err.message);
+			}
+			if (err.stack) {
+				printError(err.stack);
+			}
+			if (typeof err === 'string') {
+				printError(err);
+			}
+		});
 	}
 
 	static getCurrentTime() {

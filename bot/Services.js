@@ -7,12 +7,108 @@ const MyUtils = require('../interfaces/utils');
 const PostbackLogic = require('../logic/Listeners/PostbackLogic');
 const speechToText = require('../interfaces/SpeechToText');
 const facebookResponses = require('../interfaces/FacebookResponse');
-//here we decide if mock or real world
-const logicType = MyUtils.logicType.REAL_WORLD;
+const zoiBot = require('../bot/ZoiBot');
+
+/**
+ * on message arrived
+ * @param payload
+ * @param reply
+ */
+async function onMessageArrived(payload, reply) {
+
+	const onTextReady = function (profile, speechToTextResult) {
+		// user information
+		const display_name = profile.first_name + ' ' + profile.last_name;
+		const sender_id = payload.sender.id;
+
+		const listenLogic = new ListenLogic();
+
+		//if it's sound message - set it in the text key
+		if (speechToTextResult) {
+			payload.message.text = speechToTextResult;
+		}
+
+		//get functions
+		const setTypingFunction = zoiBot.getBotWritingFunction({_id: sender_id});
+		const replyFunction = zoiBot.getBotReplyFunction({_id: sender_id, fullname: display_name});
+
+		const textMessage = payload.message.text;
+
+		//process the input and return an answer to the sender
+		listenLogic.processInput(textMessage, payload, setTypingFunction, zoiBot, replyFunction);
+	};
+
+	try {
+		// get profile info
+		const profile = await zoiBot.getProfile(payload.sender.id);
+
+		const display_name = profile.first_name + ' ' + profile.last_name;
+		MyLog.log("Got message from " + display_name);
+
+		//check if this is a voice message
+		if (payload.message.attachments &&
+			payload.message.attachments[0] &&
+			payload.message.attachments[0].payload &&
+			payload.message.attachments[0].payload.url) {
+			speechToText(payload.message.attachments[0].payload.url).then(function (text) {
+				if (text) {
+					onTextReady(profile, text);
+				} else {
+					reply(facebookResponses.getTextMessage("I can't hear what you say.."), (err) => {
+						if (err) throw err;
+						// console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
+					});
+				}
+			}).catch(function (err) {
+				MyLog.error("Error: failed to convert the payload audio to text");
+				reply(facebookResponses.getTextMessage("I can't hear what you say.."), (err) => {
+					if (err) throw err;
+					// console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
+				});
+			});
+		} else { //if it's a regular message
+			onTextReady(profile);
+		}
+	} catch (err) {
+		MyLog.error("Failed on onMessageArrived", err);
+	}
+}
+
+/**
+ * on postback arrived
+ * @param payload
+ * @param reply
+ */
+async function onPostbackArrived(payload, reply) {
+	try {
+		// get profile info
+		const profile = await zoiBot.getProfile(payload.sender.id);
+
+		// user information
+		const display_name = profile.first_name + ' ' + profile.last_name;
+		const sender_id = payload.sender.id;
+
+		//get functions
+		const setTypingFunction = zoiBot.getBotWritingFunction({_id: sender_id});
+		const replyFunction = zoiBot.getBotReplyFunction({_id: sender_id, fullname: display_name});
+
+		const postbackPayload = payload.postback.payload;
+
+		if (postbackPayload.includes("ACTION") || postbackPayload.includes("MENU")) {
+			const postbackLogic = new PostbackLogic();
+			postbackLogic.processAction(postbackPayload, payload, setTypingFunction, zoiBot, replyFunction);
+		} else {
+			const listenLogic = new ListenLogic();
+			listenLogic.processInput(postbackPayload, payload, setTypingFunction, zoiBot, replyFunction);
+		}
+	} catch (err) {
+		MyLog.error("Failed on onPostbackArrived", err);
+	}
+}
 
 module.exports = {
 	//set server routing
-	setRouting: function (app, bot) {
+	setRouting: function (app) {
 
 		//ping request
 		app.get('/ping', function (req, res) {
@@ -29,7 +125,7 @@ module.exports = {
 		//verify bot
 		app.get('/', function (req, res) {
 			MyLog.log("Verify bot request");
-			return bot._verify(req, res);
+			return zoiBot._verify(req, res);
 		});
 
 		//facebook message request
@@ -37,7 +133,7 @@ module.exports = {
 			// we always write 200, otherwise facebook will keep retrying the request
 			res.writeHead(200, {'Content-Type': 'application/json'});
 
-			bot._handleMessage(req.body);
+			zoiBot._handleMessage(req.body);
 			res.end(JSON.stringify({status: 'ok'}));
 		});
 	},
@@ -46,168 +142,16 @@ module.exports = {
 	 * set bot listeners
 	 * @param bot
 	 */
-	setBotListeners: function (bot) {
+	setBotListeners: function () {
 		// bot error handler
-		bot.on('error', (err) => {
-			console.log(err.message)
+		zoiBot.on('error', (err) => {
+			MyLog.error(err);
 		});
 
 		// bot message handler
-		bot.on('message', (payload, reply) => {
-			//console.log(payload);
-
-			// get message text
-			// if message has no text (e.g. location response) - stringify it.
-			// let text = !!payload.message.text ? payload.message.text : JSON.stringify(payload.message);
-			// let msg_payload = !!payload.message.quick_reply && !!payload.message.quick_reply.payload ? payload.message.quick_reply.payload : null;
-
-			let onTextReady = function (profile, speechToText) {
-				// user information
-				let display_name = profile.first_name + ' ' + profile.last_name;
-				let sender_id = payload.sender.id;
-
-				// build reply
-				// let rep = repHandler.buildReply(payload);
-
-				//MY RESPONSE LOGIC
-				let listenLogic = new ListenLogic();
-
-				//check if real world or mock to decide which process function we should use
-				let processType = logicType === MyUtils.logicType.REAL_WORLD ? "processInput" : "processMock";
-
-				//if it's sound message - set it in the text key
-				if (speechToText) {
-					payload.message.text = speechToText;
-				}
-
-				let setTypingFunction = function () {
-					bot.sendSenderAction(payload.sender.id, "typing_on");
-				};
-				let replyFunction = function (rep, isBotTyping, delay) {
-					return new Promise(function (resolve, reject) {
-						delay = delay || 0;
-						setTimeout(() => {
-							//send reply
-							reply(rep, (err) => {
-								if (err) {
-									reject();
-									return;
-								}
-								if (isBotTyping) {
-									bot.sendSenderAction(payload.sender.id, "typing_on", () => {
-										resolve();
-									});
-								} else {
-									resolve();
-								}
-								MyLog.log(`Message returned to ${display_name} [id: ${sender_id}] -> ${rep.text}`);
-							});
-						}, delay);
-					});
-				};
-				let textMessage = payload.message.text;
-
-				//process the input and return an answer to the sender
-				listenLogic[processType](textMessage, payload, setTypingFunction, bot, replyFunction);
-			};
-
-			// get profile info
-			bot.getProfile(payload.sender.id, (err, profile) => {
-				if (err) throw err;
-
-				let display_name = profile.first_name + ' ' + profile.last_name;
-				MyLog.log("Got message from " + display_name);
-
-				if (payload.message.attachments &&
-					payload.message.attachments[0] &&
-					payload.message.attachments[0].payload &&
-					payload.message.attachments[0].payload.url) {
-					speechToText(payload.message.attachments[0].payload.url).then(function (text) {
-						if (text) {
-							onTextReady(profile, text);
-						} else {
-							reply(facebookResponses.getTextMessage("I can't hear what you say.."), (err) => {
-								if (err) throw err;
-								// console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
-							});
-						}
-					}).catch(function (err) {
-						MyLog.error("Error: failed to convert the payload audio to text");
-						reply(facebookResponses.getTextMessage("I can't hear what you say.."), (err) => {
-							if (err) throw err;
-							// console.log(`Echoed back to ${display_name} [id: ${sender_id}]`);
-						});
-					});
-				} else {
-					onTextReady(profile);
-				}
-
-			});
-		});
+		zoiBot.on('message', onMessageArrived);
 
 		//postback buttons handler
-		bot.on('postback', (payload, reply) => {
-
-			// get profile info
-			bot.getProfile(payload.sender.id, (err, profile) => {
-				if (err) throw err;
-
-				// user information
-				let display_name = profile.first_name + ' ' + profile.last_name;
-				let sender_id = payload.sender.id;
-
-				let setTypingFunction = function () {
-					bot.sendSenderAction(payload.sender.id, "typing_on");
-				};
-				let replyFunction = function (rep, isBotTyping, delay) {
-					return new Promise(function (resolve, reject) {
-						delay = delay || 0;
-						setTimeout(() => {
-							//send reply
-							reply(rep, (err) => {
-								if (err) {
-									reject(err);
-									return;
-								}
-								if (isBotTyping) {
-									bot.sendSenderAction(payload.sender.id, "typing_on", () => {
-										resolve();
-									});
-								} else {
-									resolve();
-								}
-								MyLog.log(`Message returned to ${display_name} [id: ${sender_id}] -> ${rep.text}`);
-							});
-						}, delay);
-					});
-				};
-				let postbackPayload = payload.postback.payload;
-
-				if (postbackPayload.includes("ACTION") || postbackPayload.includes("MENU")) {
-					let postbackLogic = new PostbackLogic();
-					postbackLogic.processAction(postbackPayload, payload, setTypingFunction, bot, replyFunction);
-				} else {
-					let listenLogic = new ListenLogic();
-					listenLogic.processInput(postbackPayload, payload, setTypingFunction, bot, replyFunction);
-				}
-			});
-		});
+		zoiBot.on('postback', onPostbackArrived);
 	}
 };
-
-// //test mindbody api
-// app.get('/test/mindbody', function (req, res) {
-// 	GeneralTest.index(req, res);
-// });
-//
-// //getImage request
-// app.get('/getImage', function (req, res) {
-// 	MyUtils.getScreenShot(res, req.url.substring(10));
-// });
-//
-// //test mindbody api
-// app.get('/mock/openings', function (req, res) {
-// 	let requestLogic = new RequestLogic();
-// 	requestLogic.processMock(bot, {id: 1}, req.query.senderId);
-// 	res.end("Message sent!");
-// });
