@@ -69,7 +69,7 @@ class ListenLogic {
 			//if it's not in the middle of conversation
 			if (!isQuickReply && !isPayloadRequest && !isWaitForText && !isNewUser) {
 				//check intent with NLP
-				let nlpResponse = await requestify.get(ZoiConfig.nlpUrl + '/parse?q=' + input);
+				let nlpResponse = await requestify.get(ZoiConfig.NLP_URL + '/parse?q=' + input);
 
 				nlpResponse = nlpResponse.getBody();
 
