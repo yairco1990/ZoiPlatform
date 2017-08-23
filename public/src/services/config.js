@@ -11,7 +11,7 @@ angular.module('Zoi.services.config', [])
 					url: "http://localhost:3000"
 				},
 				DEV: {
-					url: "https://2bf98780.ngrok.io"
+					url: "https://bdd1bb96.ngrok.io"
 				},
 				PRODUCTION: {
 					url: "https://zoiai.com:3000"

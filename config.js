@@ -8,16 +8,6 @@ const PRODUCTION_BOT_DETAILS = {
 	verify: "40NCkrPUPaALsV4NJz",
 	app_secret: "1b27655a518d7d7ee75312074afabe09"
 };
-const ACUITY_OAUTH_DEV = {
-	"clientId": "2aSb6hOLkXZu0CEs",
-	"clientSecret": "rDrarobUWzAc953F3AqizKBtqwfloYlXSRIhX5XF",
-	"redirectUri": "http://localhost:3000/acuity/oauth2"
-};
-const ACUITY_OAUTH_PRODUCTION = {
-	"clientId": "zyD9dntj6EnOQ0tH",
-	"clientSecret": "mezlVskAfjoAJSy8iAGhh3FYOW3MvSEASBnlUGQE",
-	"redirectUri": "https://zoiai.com:3000/acuity/oauth2"
-};
 
 const Environments = {
 	LOCAL: {
@@ -27,7 +17,11 @@ const Environments = {
 		NLP_URL: "http://52.177.185.253:5000",
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
-		ACUITY_OAUTH: ACUITY_OAUTH_DEV,
+		ACUITY_OAUTH: {
+			"clientId": "GudNczB4yE1zF6I3",
+			"clientSecret": "pc47AU2Tjz9V7DmGZRMDEGyuLPpqlqUmjR4hKu5b",
+			"redirectUri": "http://localhost:3000/acuity/oauth2"
+		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		delayTime: 1,
 		generalPromotionDeviation: 2,
@@ -59,7 +53,11 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
-		ACUITY_OAUTH: ACUITY_OAUTH_DEV,
+		ACUITY_OAUTH: {
+			"clientId": "GudNczB4yE1zF6I3",
+			"clientSecret": "pc47AU2Tjz9V7DmGZRMDEGyuLPpqlqUmjR4hKu5b",
+			"redirectUri": "http://localhost:3000/acuity/oauth2"
+		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		delayTime: 1,
 		generalPromotionDeviation: 2,
@@ -85,13 +83,17 @@ const Environments = {
 		}
 	},
 	DEV: {
-		serverUrl: "https://2bf98780.ngrok.io",
-		clientUrl: "https://2bf98780.ngrok.io/p/#",
+		serverUrl: "https://bdd1bb96.ngrok.io",
+		clientUrl: "https://bdd1bb96.ngrok.io/p/#",
 		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
 		NLP_URL: "http://52.177.185.253:5000",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
-		ACUITY_OAUTH: ACUITY_OAUTH_PRODUCTION,
+		ACUITY_OAUTH: {
+			"clientId": "GudNczB4yE1zF6I3",
+			"clientSecret": "pc47AU2Tjz9V7DmGZRMDEGyuLPpqlqUmjR4hKu5b",
+			"redirectUri": "http://52.174.244.154:3000/acuity/oauth2"
+		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		delayTime: 1,
 		generalPromotionDeviation: 2,
@@ -124,7 +126,11 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: PRODUCTION_BOT_DETAILS,
-		ACUITY_OAUTH: ACUITY_OAUTH_PRODUCTION,
+		ACUITY_OAUTH: {
+			"clientId": "zyD9dntj6EnOQ0tH",
+			"clientSecret": "mezlVskAfjoAJSy8iAGhh3FYOW3MvSEASBnlUGQE",
+			"redirectUri": "https://zoiai.com:3000/acuity/oauth2"
+		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		delayTime: 2500,
 		generalPromotionDeviation: 3,
