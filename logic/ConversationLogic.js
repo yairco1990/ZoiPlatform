@@ -1,6 +1,7 @@
 const MyUtils = require('../interfaces/utils');
 const MyLog = require('../interfaces/MyLog');
 const FacebookResponse = require('../interfaces/FacebookResponse');
+const moment = require('moment-timezone');
 const ZoiConfig = require('../config');
 
 class ConversationLogic {
@@ -10,6 +11,11 @@ class ConversationLogic {
 		this.DBManager = require('../dal/DBManager');
 	}
 
+	/**
+	 * clear user conversation
+	 * @param reply
+	 * @param sendLastMessage
+	 */
 	clearConversation(reply, sendLastMessage) {
 		let self = this;
 		let user = self.user;
@@ -23,6 +29,10 @@ class ConversationLogic {
 		});
 	};
 
+	/**
+	 * send stats message
+	 * @returns {*}
+	 */
 	getStatsMessage() {
 
 		let self = this;

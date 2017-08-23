@@ -55,7 +55,7 @@ class WelcomeLogic extends ConversationLogic {
 				//wait a little bit before continue with the conversation
 				setTimeout(function () {
 					self.proceedWelcomeConversation(conversationData, reply);
-				}, ZoiConfig.times.firstIntegratedDelay);
+				}, conversationData.setDelay ? ZoiConfig.times.firstIntegratedDelay : 0);
 				break;
 			default:
 				self.sendWelcomeDialog(conversationData, senderId, reply);

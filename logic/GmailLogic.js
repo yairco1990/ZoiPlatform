@@ -176,9 +176,8 @@ class GmailLogic {
 	static getByKey(arr, name) {
 		let value = null;
 		arr.forEach(function (item) {
-			if (item.name == name) {
+			if (item.name === name) {
 				value = item.value;
-				return;
 			}
 		});
 		return value;

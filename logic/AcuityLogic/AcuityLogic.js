@@ -484,7 +484,8 @@ class AcuityLogic {
 					let welcomeLogic = new WelcomeLogic(user);
 					let conversationData = {
 						intent: "welcome acuity integrated",
-						context: "WELCOME"
+						context: "WELCOME",
+						setDelay: true
 					};
 					let replyFunction = self.getReplyFunction(bot, user);
 					welcomeLogic.processIntent(conversationData, null, null, replyFunction);
@@ -544,21 +545,27 @@ class AcuityLogic {
 				//iterate the users that should get the reminder
 				usersToRemind.forEach(async (user) => {
 
-					//get sendMessage function
-					const sendMessage = bot.getBotReplyFunction(user);
+					//send only if there is no integration with acuity
+					if (!user.integrations || !user.integrations.Acuity) {
 
-					//create the redirect url
-					const acuity = Acuity.oauth(ZoiConfig.Acuity);
-					const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
+						//get sendMessage function
+						const sendMessage = bot.getBotReplyFunction(user);
 
-					user.lastMessageTime = new Date().valueOf();
+						//create the redirect url
+						const acuity = Acuity.oauth(ZoiConfig.Acuity);
+						const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
 
-					await this.DBManager.saveUser(user);
+						//set last message time
+						user.lastMessageTime = new Date().valueOf();
 
-					//send the reminder
-					sendMessage((facebookResponse.getButtonMessage("Hey boss! I noticed that you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
-						facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
-					])));
+						//save the user
+						await this.DBManager.saveUser(user);
+
+						//send the reminder
+						sendMessage((facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
+							facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
+						])));
+					}
 				});
 
 				MyLog.info(`Reminders sent to ${usersToRemind.length} users`);
