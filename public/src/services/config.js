@@ -11,14 +11,14 @@ angular.module('Zoi.services.config', [])
 					url: "http://localhost:3000"
 				},
 				DEV: {
-					url: "https://zoiai.com:3000"
+					url: "https://2bf98780.ngrok.io"
 				},
 				PRODUCTION: {
 					url: "https://zoiai.com:3000"
 				}
 			};
 
-			var selectedEnvironment = ENVIRONMENTS.NGROK;
+			var selectedEnvironment = ENVIRONMENTS.DEV;
 
 			return {
 				getServerUrl: function () {

@@ -599,7 +599,7 @@ class AcuityLogic {
 						const sendMessage = bot.getBotReplyFunction(user);
 
 						//create the redirect url
-						const acuity = Acuity.oauth(ZoiConfig.Acuity);
+						const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
 						const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
 
 						//set last message time
