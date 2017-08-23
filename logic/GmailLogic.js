@@ -2,10 +2,7 @@ const google = require("googleapis");
 const ZoiConfig = require('../config');
 const DBManager = require('../dal/DBManager');
 const MyLog = require('../interfaces/MyLog');
-const rp = require('request-promise');
-const batchUtils = require('google-api-batch-utils');
-const createBatchBody = batchUtils.createBatchBody;
-const parseBatchResponse = batchUtils.parseBatchResponse;
+const MyUtils = require('../interfaces/utils');
 const _h = require('highland');
 const GmailBatchStream = require('gmail-batch-stream');
 
@@ -28,7 +25,7 @@ class GmailLogic {
 				}
 				callback(302, {'location': authUrl});
 			}
-		});
+		}).catch(MyUtils.getErrorMsg);
 	}
 
 	/**
@@ -72,7 +69,7 @@ class GmailLogic {
 				// res.send(tokens);
 				// listMessages(oauth2Client);
 				// getMessage(oauth2Client);
-			});
+			}).catch(MyUtils.getErrorMsg);
 		});
 	}
 
@@ -103,7 +100,7 @@ class GmailLogic {
 		//TODO change the localhost to zoiai.com after review in google
 		// http://192.168.43.233.xip.io:3000/gmail/oauthcallback
 		// http://localhost:3000/gmail/oauthcallback
-		return new OAuth2("514803140347-utj3lmcijoj5flqo2i5c393m0gf8sq6r.apps.googleusercontent.com", "N7WGFdSUY02RqdhaEm-BbVia", ZoiConfig.serverUrl + "/gmail/oauthcallback");
+		return new OAuth2("514803140347-utj3lmcijoj5flqo2i5c393m0gf8sq6r.apps.googleusercontent.com", "N7WGFdSUY02RqdhaEm-BbVia", ZoiConfig.GOOGLE_AUTH_REDIRECT);
 	}
 
 	/**

@@ -270,13 +270,13 @@ let Utils = {
 		let isExist = false;
 		if (key) {
 			arr.forEach(function (item) {
-				if (item[key] == value) {
+				if (item[key] === value) {
 					isExist = true;
 				}
 			});
 		} else {
 			arr.forEach(function (item) {
-				if (item == value) {
+				if (item === value) {
 					isExist = true;
 				}
 			});

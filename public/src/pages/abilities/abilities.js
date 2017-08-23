@@ -5,12 +5,9 @@ angular.module('Zoi.controllers.abilities', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
 		$stateProvider.state('abilities', {
-			url: '/abilities?{userId}',
+			url: '/abilities',
 			controller: 'AbilitiesCtrl as vm',
-			templateUrl: 'src/pages/abilities/abilities.html',
-			resolve: {
-
-			}
+			templateUrl: 'src/pages/abilities/abilities.html'
 		})
 	}]).controller('AbilitiesCtrl', AbilitiesCtrl);
 

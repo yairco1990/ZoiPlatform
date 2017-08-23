@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const MyUtils = require('../interfaces/utils');
 const GeneralTest = require('../tests/general');
 const RequestLogic = require('../logic/Listeners/RequestLogic');
+const MyLog = require('../interfaces/MyLog');
 
 class Bot extends EventEmitter {
 	/**
@@ -280,6 +281,57 @@ class Bot extends EventEmitter {
 
 	_handleEvent(type, event) {
 		this.emit(type, event, this.sendMessage.bind(this, event.sender.id), this._getActionsObject(event))
+	}
+
+
+	/**
+	 * get bot reply function
+	 * @param user - the user that is going to get Zoi message
+	 * @returns {Function}
+	 */
+	getBotReplyFunction(user) {
+		const bot = this;
+		//@param rep - the facebook json message
+		//@param isBotTyping - boolean, decide if the bot typing after the message
+		//@param delay - delay in ms to send the message
+		return function (rep, isBotTyping, delay) {
+			return new Promise(function (resolve, reject) {
+				delay = delay || 0;
+				setTimeout(() => {
+					//send reply
+					bot.sendMessage(user._id, rep, (err) => {
+						if (err) {
+							reject(err);
+							return;
+						}
+						if (isBotTyping) {
+							bot.sendSenderAction(user._id, "typing_on", () => {
+								resolve();
+							});
+						} else {
+							resolve();
+						}
+						MyLog.info(`Message returned ${user._id}] -> ${rep.text}`);
+					});
+				}, delay);
+			});
+		};
+	}
+
+	/**
+	 * get bot writing function
+	 * @param user
+	 * @returns {Function}
+	 */
+	getBotWritingFunction(user) {
+		const bot = this;
+		return function () {
+			return new Promise(function (resolve, reject) {
+				bot.sendSenderAction(user._id, "typing_on", () => {
+					resolve();
+				});
+			});
+		};
 	}
 }
 

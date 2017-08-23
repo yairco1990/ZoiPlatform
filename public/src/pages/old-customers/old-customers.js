@@ -9,7 +9,7 @@ angular.module('Zoi.controllers.old-customers', [])
 			controller: 'OldCustomersCtrl as vm',
 			templateUrl: 'src/pages/old-customers/old-customers.html',
 			resolve: {
-				oldCustomers: function ($http, $log, zoiConfig, $stateParams) {
+				oldCustomers: function ($http, $log, zoiConfig, $stateParams, $timeout, $state) {
 					return $http({
 						url: zoiConfig.getServerUrl() + "/acuity/getOldCustomers?userId=" + $stateParams.userId,
 						method: "GET",
@@ -18,7 +18,9 @@ angular.module('Zoi.controllers.old-customers', [])
 						return result.data;
 					}).catch(function (err) {
 						$log.error(err);
-						return [];
+						$timeout(function () {
+							$state.go('404');
+						});
 					});
 				}
 			}

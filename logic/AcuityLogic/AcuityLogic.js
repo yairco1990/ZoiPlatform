@@ -17,6 +17,7 @@ const EmailConfig = require('../../interfaces/assets/EmailsConfig');
 const WelcomeLogic = require('../Intents/WelcomeLogic');
 const deepcopy = require('deepcopy');
 const async = require('async');
+const Acuity = require('acuityscheduling');
 
 const Response = {
 	SUCCESS: 200,
@@ -65,7 +66,7 @@ class AcuityLogic {
 			acuityApi.getClients().then(function (result) {
 				callback(Response.SUCCESS, result);
 			})
-		});
+		}).catch(MyUtils.getErrorMsg);
 	}
 
 	getAvailability(data, callback) {
@@ -82,7 +83,7 @@ class AcuityLogic {
 			acuityApi.getAvailability(options).then(function (result) {
 				callback(Response.SUCCESS, result);
 			}).catch(MyUtils.getErrorMsg());
-		});
+		}).catch(MyUtils.getErrorMsg);
 	}
 
 	/**
@@ -118,7 +119,7 @@ class AcuityLogic {
 			acuityApi.getAppointmentTypes().then(function (result) {
 				callback(Response.SUCCESS, result);
 			})
-		});
+		}).catch(MyUtils.getErrorMsg);
 	}
 
 	//only for test now
@@ -143,7 +144,7 @@ class AcuityLogic {
 			slots.forEach(function (slot) {
 				callback(Response.SUCCESS, slot);
 			})
-		});
+		}).catch(MyUtils.getErrorMsg);
 	}
 
 	getAgenda(data, callback) {
@@ -178,6 +179,7 @@ class AcuityLogic {
 
 			callback(Response.SUCCESS, AcuityFactory.generateAppointmentsList(appointments));
 		}).catch(function (err) {
+			MyLog.error(err);
 			callback(Response.UNFULLFILLED, err);
 		});
 	}
@@ -263,6 +265,7 @@ class AcuityLogic {
 			});
 
 		}).catch(function (err) {
+			MyLog.error(err);
 			callback(Response.UNFULLFILLED, err);
 		});
 	}
@@ -314,7 +317,7 @@ class AcuityLogic {
 			self.DBManager.saveUser(user).then(function () {
 			});
 		}).catch(function (err) {
-
+			MyLog.error(err);
 			callback(Response.UNFULLFILLED, err);
 		});
 	}
@@ -357,6 +360,7 @@ class AcuityLogic {
 			}
 
 		} catch (err) {
+			MyLog.error(err);
 			callback(Response.UNFULLFILLED, err);
 		}
 
@@ -489,7 +493,7 @@ class AcuityLogic {
 				}
 
 			}).catch(MyUtils.getErrorMsg());
-		});
+		}).catch(MyUtils.getErrorMsg);
 	}
 
 	unsubscribe(data, callback) {
@@ -502,6 +506,74 @@ class AcuityLogic {
 		self.DBManager.addEmailToUnsubscribe({_id: data.email, blockDate: unsubscribeDate}).then(function () {
 			callback(Response.SUCCESS, "Successfully unsubscribed\n" + data.email);
 		});
+	}
+
+	/**
+	 * send integration reminder
+	 * @param data
+	 * @param bot
+	 * @param callback
+	 */
+	async sendIntegrationReminder(data, bot, callback) {
+
+		try {
+			if (data.token === ZoiConfig.adminToken) {
+
+				//get the users that should get the reminder
+				let usersToRemind = await this.DBManager.getUsers({
+					$and: [{
+						conversationData: {
+							$eq: null
+						}
+					}, {
+						$or: [
+							{
+								lastMessageTime: {
+									$lt: new Date().valueOf() - (data.days * ZoiConfig.times.oneDay)
+								}
+							}
+							, {
+								lastMessageTime: {
+									$eq: null
+								}
+							}
+						]
+					}]
+				});
+
+				//iterate the users that should get the reminder
+				usersToRemind.forEach(async (user) => {
+
+					//get sendMessage function
+					const sendMessage = bot.getBotReplyFunction(user);
+
+					//create the redirect url
+					const acuity = Acuity.oauth(ZoiConfig.Acuity);
+					const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
+
+					user.lastMessageTime = new Date().valueOf();
+
+					await this.DBManager.saveUser(user);
+
+					//send the reminder
+					sendMessage((facebookResponse.getButtonMessage("Hey boss! I noticed that you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
+						facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
+					])));
+				});
+
+				MyLog.info(`Reminders sent to ${usersToRemind.length} users`);
+				callback(Response.SUCCESS, {message: `Reminders sent to ${usersToRemind.length} users`})
+
+			} else {
+				MyLog.error("Error on sendIntegrationReminder - Auth Error");
+				callback(Response.ERROR, "Auth Error");
+			}
+
+		} catch (err) {
+			MyLog.error(err);
+			callback(Response.ERROR, err);
+		}
+
 	}
 }
 

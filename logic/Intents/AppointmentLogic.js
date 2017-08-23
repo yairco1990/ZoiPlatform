@@ -14,185 +14,11 @@ const deepcopy = require('deepcopy');
 const EmailConfig = require('../../interfaces/assets/EmailsConfig');
 const async = require('async');
 const _ = require('underscore');
+const ConversationLogic = require('../ConversationLogic');
 
-const delayTime = ZoiConfig.delayTime || 3000;
+const delayTime = ZoiConfig.delayTime;
 
-function AppointmentLogic(user) {
-	this.user = user;
-	//get the single instance of DBManager
-	this.DBManager = require('../../dal/DBManager');
-	this.mindbodyLogic = new MindbodyLogic({});
-}
-
-/**
- * process the user input
- */
-AppointmentLogic.prototype.processIntent = function (conversationData, setBotTyping, requestObj, reply) {
-	let self = this;
-
-	switch (conversationData.intent) {
-		case "appointment what is my schedule":
-			self.getAppointments(conversationData, reply);
-			break;
-		case "appointment show my schedule":
-			self.getAppointments(conversationData, reply);
-			break;
-		// case "appointment bring next free slot":
-		// 	setBotTyping();
-		// 	self.getNextFreeSlot(conversationData, reply);
-		// 	break;
-		case "appointment send promotions":
-			self.sendPromotions(conversationData, reply);
-			break;
-	}
-};
-
-/**
- * get appointments
- */
-AppointmentLogic.prototype.getAppointments = function (conversationData, reply) {
-	let self = this;
-	let user = self.user;
-
-	async.series([
-		MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
-		MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Here is your schedule for today boss:", [
-			facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
-		]), true, delayTime),
-		MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
-	], MyUtils.getErrorMsg());
-
-};
-
-// const nextFreeSlotQuestions = {
-// 	serviceQuestion: {
-// 		id: 1,
-// 		text: "For which service?",
-// 		field: "serviceObject"
-// 	}
-// };
-/**
- * get next free slot
- */
-// AppointmentLogic.prototype.getNextFreeSlot = function (conversationData, reply) {
-// 	let self = this;
-// 	let user = self.user;
-//
-// 	//if this is the start of the conversation
-// 	if (!user.conversationData) {
-// 		//ask which service
-// 		let question = nextFreeSlotQuestions.serviceQuestion;
-//
-// 		//save conversation to the user
-// 		user.conversationData = conversationData;
-// 		//save the service question
-// 		user.conversationData.lastQuestion = question;
-// 		//create session object to store the user data during the session
-// 		// user.session = {};
-// 		//save the user
-// 		self.DBManager.saveUser(user).then(function () {
-// 			reply(facebookResponse.getTextMessage(question.text), true);
-// 		});
-// 	}
-// 	else if (user.conversationData.lastQuestion.id === nextFreeSlotQuestions.serviceQuestion.id) {
-//
-// 		//get the services list
-// 		self.mindbodyLogic.getSessionTypes().then(function (services) {
-//
-// 			user.session = {};
-// 			//get the service by the user input
-// 			user.session[user.conversationData.lastQuestion.field] = MyUtils.getSimilarityFromArray(conversationData.input, services, 'Name');
-//
-// 			//get the next free slot with the service id
-// 			self.mindbodyLogic.getNextFreeSlot({sessionTypeId: user.session.serviceObject.ID}).then(function (slots) {
-//
-// 				let responseText = "";
-// 				if (slots.length) {
-// 					let slot = slots[1];
-// 					responseText = "The next free slot for " + user.session.serviceObject.Name + " is at " + moment(slot.StartDateTime).format("HH:mm MM/DD");
-//
-// 					user.session.nextFreeSlot = slot;
-// 				} else {
-// 					responseText = "There are no available slots for this service";
-// 				}
-//
-// 				//clean conversation data
-// 				user.conversationData = null;
-//
-// 				self.DBManager.saveUser(user).then(function () {
-// 					async.series([
-// 						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(responseText), true),
-// 						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Is there another thing you want to do sir?"), false, delayTime)
-// 					], MyUtils.getErrorMsg());
-// 				});
-// 			});
-// 		});
-// 	}
-// };
-
-/**
- * book for customer for free slot
- * the session must contains details about free slot!
- * @param conversationData
- * @param reply
- */
-// AppointmentLogic.prototype.bookForCustomer = function (conversationData, callback) {
-// 	let self = this;
-// 	let user = self.user;
-//
-// 	//validate request
-// 	if (!conversationData.entities.CUSTOMER && !conversationData.entities.person) {
-// 		callback(facebookResponse.getTextMessage("Need details about the customer"));
-// 		return;
-// 	}
-// 	if (!user.session || !user.session.nextFreeSlot) {
-// 		callback(facebookResponse.getTextMessage("Need details about the required slot"));
-// 		return;
-// 	}
-//
-// 	self.mindbodyLogic.getClients(conversationData.entities).then(function (customers) {
-// 		if (!customers.length) {
-// 			callback(facebookResponse.getTextMessage("Didn't found customer with this name"));
-// 			return;
-// 		}
-//
-// 		let customer = customers[0];
-// 		let slot = user.session.nextFreeSlot;
-//
-// 		let appointmentObject = {
-// 			Appointments: {
-// 				Appointment: {
-// 					Location: {
-// 						ID: slot.Location.ID
-// 					},
-// 					Staff: {
-// 						ID: slot.Staff.ID
-// 					},
-// 					Client: {
-// 						ID: customer.ID
-// 					},
-// 					SessionType: {
-// 						ID: slot.SessionType.ID
-// 					},
-// 					StartDateTime: moment(slot.StartDateTime).format('YYYY-MM-DDTHH:mm:ss')
-// 				}
-// 			},
-// 			UpdateAction: "AddNew"
-// 		};
-// 		self.mindbodyLogic.bookAppointment(appointmentObject).then(function (result) {
-// 			console.log(result);
-// 			callback(facebookResponse.getTextMessage("Booked successfully for " + customer.FirstName + " " + customer.LastName));
-// 		}).catch(function (err) {
-// 			if (err.errorReason) {
-// 				callback(facebookResponse.getTextMessage(err.errorReason));
-// 			} else {
-// 				callback(facebookResponse.getTextMessage("Try to book for " + customer.FirstName));
-// 			}
-// 		});
-// 	});
-// };
-
-
+//QUESTIONS
 const sendPromotionsQuestions = {
 	toPromote: {
 		id: 0
@@ -213,418 +39,448 @@ const sendPromotionsQuestions = {
 	}
 };
 
-/**
- * send promotions
- */
-AppointmentLogic.prototype.sendPromotions = async function (conversationData, reply) {
-	let self = this;
-	let user = self.user;
 
-	try {
+class AppointmentLogic extends ConversationLogic {
 
-		let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
-		let lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+	constructor(user) {
+		super(user);
+	}
 
-		//if this is the start of the conversation
-		if (!user.conversationData) {
-			//ask if he wants to promote
-			let question = sendPromotionsQuestions.toPromote;
-			//save conversation to the user
-			user.conversationData = conversationData;
-			//save the service question
-			user.conversationData.lastQuestion = question;
+	/**
+	 * process the user input
+	 */
+	processIntent(conversationData, setBotTyping, requestObj, reply) {
+		const self = this;
 
-			//get services
-			let appointmentTypes = await acuityLogic.getAppointmentTypes();
-
-			let options = {
-				appointmentTypeID: appointmentTypes[0].id,
-				date: moment().tz(user.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
-			};
-
-			//get slots
-			let slots = await acuityLogic.getAvailability(options);
-
-			if (slots.length) {
-				//save the response
-				let lastQRResponse = facebookResponse.getQRElement("Do you want me to promote your openings?",
-					[
-						facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
-						facebookResponse.getQRButton('text', 'Maybe later', {id: 2})
-					]
-				);
-				user.conversationData.lastQRResponse = lastQRResponse;
-
-				//save the user
-				self.DBManager.saveUser(user).then(function () {
-
-					let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
-					if (slots.length > 10) {
-						firstText = " noticed that you have more than 10 openings on your calendars tomorrow.";
-					}
-					if (!conversationData.skipHey) {
-						firstText = "Hey boss, I" + firstText;
-					} else {
-						firstText = "I also" + firstText;
-					}
-
-					async.series([
-						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
-						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true, delayTime),
-						MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
-					]);
-
-				});
-			} else {
-				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's good!"), false, delayTime),
-				]);
-				self.clearSession();
-			}
+		switch (conversationData.intent) {
+			case "appointment what is my schedule":
+				self.getAppointments(conversationData, reply);
+				break;
+			case "appointment show my schedule":
+				self.getAppointments(conversationData, reply);
+				break;
+			case "appointment send promotions":
+				self.sendPromotions(conversationData, reply);
+				break;
 		}
-		else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
+	};
 
-			if (conversationData.payload) {
+	/**
+	 * get appointments
+	 */
+	getAppointments(conversationData, reply) {
+		const self = this;
+		const user = self.user;
 
-				if (conversationData.payload.id === 1) {
+		async.series([
+			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
+			MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Here is your schedule for today boss:", [
+				facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
+			]), true, delayTime),
+			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
+		], MyUtils.getErrorMsg());
 
-					//ask which service
-					let question = sendPromotionsQuestions.serviceName;
-					//save conversation to the user
-					user.conversationData = conversationData;
-					//save the service question
-					user.conversationData.lastQuestion = question;
-					//save next question state
-					user.conversationData.nextAnswerState = "text";
+	};
+
+
+	/**
+	 * send promotions
+	 */
+	async sendPromotions(conversationData, reply) {
+		const self = this;
+		const user = self.user;
+
+		try {
+
+			const acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
+			const lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+
+			//if this is the start of the conversation
+			if (!user.conversationData) {
+				//ask if he wants to promote
+				const question = sendPromotionsQuestions.toPromote;
+				//save conversation to the user
+				user.conversationData = conversationData;
+				//save the service question
+				user.conversationData.lastQuestion = question;
+
+				//get services
+				const appointmentTypes = await acuityLogic.getAppointmentTypes();
+
+				const options = {
+					appointmentTypeID: appointmentTypes[0].id,
+					date: moment().tz(user.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
+				};
+
+				//get slots
+				const slots = await acuityLogic.getAvailability(options);
+
+				if (slots.length) {
+					//save the response
+					const lastQRResponse = facebookResponse.getQRElement("Do you want me to promote your openings?",
+						[
+							facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
+							facebookResponse.getQRButton('text', 'Maybe later', {id: 2})
+						]
+					);
+					user.conversationData.lastQRResponse = lastQRResponse;
 
 					//save the user
 					self.DBManager.saveUser(user).then(function () {
 
-						//send messages
+						let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
+						if (slots.length > 10) {
+							firstText = " noticed that you have more than 10 openings on your calendars tomorrow.";
+						}
+						if (!conversationData.skipHey) {
+							firstText = "Hey boss, I" + firstText;
+						} else {
+							firstText = "I also" + firstText;
+						}
+
 						async.series([
-							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
-							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(question.text), false, delayTime),
-						], MyUtils.getErrorMsg());
+							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
+							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true, delayTime),
+							MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
+						]);
 
 					});
 				} else {
-
-					user.conversationData = null;
-					user.session = null;
-
-					//save the user
-					self.DBManager.saveUser(user).then(function () {
-						reply(facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false);
-					});
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's good!"), false, delayTime),
+					]);
+					self.clearConversation();
 				}
-			} else {
-				//send qr again
-				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
-					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-				], MyUtils.getErrorMsg());
 			}
-		}
-		else if (lastQuestionId === sendPromotionsQuestions.serviceName.id) {
+			else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
 
-			//get the service list
-			let appointmentTypes = await acuityLogic.getAppointmentTypes();
+				if (conversationData.payload) {
 
-			//init the session
-			user.session = {};
+					if (conversationData.payload.id === 1) {
 
-			//get the service by the user input
-			let service = MyUtils.getSimilarityFromArray(conversationData.input, appointmentTypes, 'name');
-			user.session[user.conversationData.lastQuestion.field] = service;
+						//ask which service
+						const question = sendPromotionsQuestions.serviceName;
+						//save conversation to the user
+						user.conversationData = conversationData;
+						//save the service question
+						user.conversationData.lastQuestion = question;
+						//save next question state
+						user.conversationData.nextAnswerState = "text";
 
-			//ask for template
-			let currentQuestion = sendPromotionsQuestions.whichTemplate;
-			//set current question
-			user.conversationData.lastQuestion = currentQuestion;
-			user.conversationData.nextAnswerState = "payload";
+						//save the user
+						self.DBManager.saveUser(user).then(function () {
 
-			//save the user
-			await self.DBManager.saveUser(user);
+							//send messages
+							async.series([
+								MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+								MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(question.text), false, delayTime),
+							], MyUtils.getErrorMsg());
 
-			//send messages
-			async.series([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(currentQuestion.text), true),
-				//get coupons
-				MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
-			], MyUtils.getErrorMsg());
-		}
-		else if (lastQuestionId === sendPromotionsQuestions.whichTemplate.id) {
+						});
+					} else {
 
-			//check valid answer
-			if (MyUtils.isJson(conversationData.input)) {
+						user.conversationData = null;
+						user.session = null;
 
-				//get the template
-				let template = JSON.parse(conversationData.input);
-				user.session[user.conversationData.lastQuestion.field] = template;
+						//save the user
+						self.DBManager.saveUser(user).then(function () {
+							reply(facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false);
+						});
+					}
+				} else {
+					//send qr again
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+						MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+					], MyUtils.getErrorMsg());
+				}
+			}
+			else if (lastQuestionId === sendPromotionsQuestions.serviceName.id) {
 
-				//ask if he is sure
-				let currentQuestion = sendPromotionsQuestions.areYouSure;
-				let responseText = currentQuestion.text;
+				//get the service list
+				const appointmentTypes = await acuityLogic.getAppointmentTypes();
 
-				//parse the question text
-				responseText = responseText.replace('{serviceName}', user.session['service'].name);
-				responseText = responseText.replace('{promotionName}', template.title);
+				//init the session
+				user.session = {};
 
-				//save last qr
-				user.conversationData.lastQRResponse = facebookResponse.getQRElement(responseText, [
-					facebookResponse.getQRButton("text", "Yes, send it.", {answer: "yes"}),
-					facebookResponse.getQRButton("text", "No, don't send it.", {answer: "no"})
-				]);
+				//get the service by the user input
+				const service = MyUtils.getSimilarityFromArray(conversationData.input, appointmentTypes, 'name');
+				user.session[user.conversationData.lastQuestion.field] = service;
+
+				//ask for template
+				const currentQuestion = sendPromotionsQuestions.whichTemplate;
 				//set current question
 				user.conversationData.lastQuestion = currentQuestion;
+				user.conversationData.nextAnswerState = "payload";
 
 				//save the user
 				await self.DBManager.saveUser(user);
 
 				//send messages
 				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
-					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-				], MyUtils.getErrorMsg());
-			} else {
-				//case he was typing
-				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please select the template you like. Don't worry, I am not going to send promotions without your confirmation."), false),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(currentQuestion.text), true),
+					//get coupons
+					MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
 				], MyUtils.getErrorMsg());
 			}
+			else if (lastQuestionId === sendPromotionsQuestions.whichTemplate.id) {
 
-		} else if (lastQuestionId === sendPromotionsQuestions.areYouSure.id) {
+				//check valid answer
+				if (MyUtils.isJson(conversationData.input)) {
 
-			//check valid payload
-			if (!conversationData.payload) {
-				//send qr again
-				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
-					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-				], MyUtils.getErrorMsg());
-				return;
-			}
+					//get the template
+					const template = JSON.parse(conversationData.input);
+					user.session[user.conversationData.lastQuestion.field] = template;
 
-			if (conversationData.payload && conversationData.payload.answer === "yes") {
+					//ask if he is sure
+					const currentQuestion = sendPromotionsQuestions.areYouSure;
+					let responseText = currentQuestion.text;
 
-				let appointmentType = deepcopy(user.session['service']);
-				let template = deepcopy(user.session['template']);
+					//parse the question text
+					responseText = responseText.replace('{serviceName}', user.session['service'].name);
+					responseText = responseText.replace('{promotionName}', template.title);
 
-				//get the clients of the business
-				let clients = await acuityLogic.getClients();
-				MyLog.info("Num of clients before cleaning = " + clients.length);
+					//save last qr
+					user.conversationData.lastQRResponse = facebookResponse.getQRElement(responseText, [
+						facebookResponse.getQRButton("text", "Yes, send it.", {answer: "yes"}),
+						facebookResponse.getQRButton("text", "No, don't send it.", {answer: "no"})
+					]);
+					//set current question
+					user.conversationData.lastQuestion = currentQuestion;
 
-				//get black list
-				let blackList = await self.DBManager.getBlackList({
-					$and: [{
-						_id: {
-							$in: _.map(clients, function (obj) {
-								return obj.email;
-							})
-						}
-					}, {
-						blockDate: {
-							$gt: moment().tz(user.integrations.Acuity.userDetails.timezone).valueOf()
-						}
-					}]
-				});
+					//save the user
+					await self.DBManager.saveUser(user);
 
-				let daysRange = 7;
-				//get appointments in range of a week
-				let appointmentsInWeekRange = await acuityLogic.getAppointments({
-					minDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day')),
-					maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).add(daysRange, 'days').endOf('day'))
-				});
-
-				//remove clients from black list
-				clients = MyUtils.removeClientsExistOnList(blackList, clients, "_id");
-				MyLog.info("Num of clients after removing black list = " + clients.length);
-				//remove clients from appointments in range of a week
-				clients = MyUtils.removeClientsExistOnList(appointmentsInWeekRange, clients, "email");
-				MyLog.info("Num of clients after removing clients with appointments = " + clients.length);
-				//get 25% from the left customers
-				clients = MyUtils.getRandomFromArray(clients, (clients.length / ZoiConfig.generalPromotionDeviation).toFixed(0));
-				MyLog.info("Num of clients after deviation by " + ZoiConfig.generalPromotionDeviation + " = " + clients.length);
-
-				//iterate clients
-				clients.forEach(function (client) {
-
-					if (!client.email) {
-						return;
-					}
-
-					//send single email every loop
-					let emailList = [{
-						address: client.email,
-						from: user.integrations.Acuity.userDetails.name + ' <noreply@zoi.ai>',
-						subject: EmailConfig.promotionsEmail.subject,
-						alt: 'Appointments Promotions',
-						replyTo: user.integrations.Acuity.userDetails.email
-					}];
-
-					let emailHtml = EmailLib.getEmailByName('promotionsMail');
-
-					//parse the first part
-					emailHtml = emailHtml.replace('{{line1}}', EmailConfig.promotionsEmail.line1);
-					emailHtml = emailHtml.replace('{{line2}}', EmailConfig.promotionsEmail.line2);
-					emailHtml = emailHtml.replace('{{line3}}', EmailConfig.promotionsEmail.line3);
-					emailHtml = emailHtml.replace('{{line4}}', EmailConfig.promotionsEmail.line4);
-					emailHtml = emailHtml.replace('{{bannerSrc}}', template.image);
-					emailHtml = emailHtml.replace('{{preHeaderText}}', EmailConfig.promotionsEmail.subject);
-
-					//parse the second part
-					emailHtml = emailHtml.replace('{{firstName}}', client.firstName);
-					emailHtml = emailHtml.replace('{{service}}', appointmentType.name);
-					emailHtml = emailHtml.replace('{{discount type}}', template.title);
-					emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);
-					emailHtml = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailHtml);
-					emailHtml = MyUtils.replaceAll('{{color}}', template.color, emailHtml);
-					emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.promotionsEmail.buttonText, emailHtml);
-					emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/unsubscribe?email=" + client.email, emailHtml);
-
-					//set href
-					let appointmentParams = {
-						firstName: client.firstName,
-						lastName: client.lastName,
-						email: client.email,
-						userId: user._id,
-						serviceId: appointmentType.id,
-						serviceName: appointmentType.name,
-						price: appointmentType.price,
-						timezone: user.integrations.Acuity.userDetails.timezone,
-						date: (new Date().valueOf()).toString(16),
-						notes: template.zoiCoupon,
-						promotionTitle: template.title,
-						promotionImage: template.image
-					};
-					let iWantUrl = MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams).replace("%", "%25");
-					emailHtml = emailHtml.replace('{{href}}', iWantUrl);
-
-					//send the email to the client
-					EmailLib.sendEmail(emailHtml, emailList);
-
-					let blockRange = user.customerSendLimit && user.customerSendLimit.value ? user.customerSendLimit.value : 7;
-
-					//unsubscribe this email for X days(do it async)
-					self.DBManager.addEmailToUnsubscribe({
-						_id: client.email,
-						blockDate: moment().tz(user.integrations.Acuity.userDetails.timezone).add(blockRange, 'days').valueOf(),
-						blockDateString: moment().tz(user.integrations.Acuity.userDetails.timezone).add(blockRange, 'days').format('lll')
-					});
-				});
-
-				//save promotion times
-				let actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
-				if (user.profile[actionTime]) {
-					user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
+					//send messages
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+						MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+					], MyUtils.getErrorMsg());
 				} else {
-					user.profile[actionTime] = {
-						numOfPromotions: 1
-					}
+					//case he was typing
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please select the template you like. Don't worry, I am not going to send promotions without your confirmation."), false),
+					], MyUtils.getErrorMsg());
 				}
 
-				//clear the session and the conversation data
-				self.clearSession();
+			} else if (lastQuestionId === sendPromotionsQuestions.areYouSure.id) {
 
-				//send messages
-				async.series([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"), true),
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
-				], MyUtils.getErrorMsg());
-			} else {
-				self.clearSession();
-				reply(facebookResponse.getTextMessage("Ok boss"), false);
+				//check valid payload
+				if (!conversationData.payload) {
+					//send qr again
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+						MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+					], MyUtils.getErrorMsg());
+					return;
+				}
+
+				if (conversationData.payload && conversationData.payload.answer === "yes") {
+
+					const appointmentType = deepcopy(user.session['service']);
+					const template = deepcopy(user.session['template']);
+
+					//get the clients of the business
+					let clients = await acuityLogic.getClients();
+					MyLog.info("Num of clients before cleaning = " + clients.length);
+
+					//get black list
+					const blackList = await self.DBManager.getBlackList({
+						$and: [{
+							_id: {
+								$in: _.map(clients, function (obj) {
+									return obj.email;
+								})
+							}
+						}, {
+							blockDate: {
+								$gt: moment().tz(user.integrations.Acuity.userDetails.timezone).valueOf()
+							}
+						}]
+					});
+
+					const daysRange = 7;
+					//get appointments in range of a week
+					const appointmentsInWeekRange = await acuityLogic.getAppointments({
+						minDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).subtract(daysRange, 'days').startOf('day')),
+						maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).add(daysRange, 'days').endOf('day'))
+					});
+
+					//remove clients from black list
+					clients = MyUtils.removeClientsExistOnList(blackList, clients, "_id");
+					MyLog.info("Num of clients after removing black list = " + clients.length);
+					//remove clients from appointments in range of a week
+					clients = MyUtils.removeClientsExistOnList(appointmentsInWeekRange, clients, "email");
+					MyLog.info("Num of clients after removing clients with appointments = " + clients.length);
+					//get 25% from the left customers
+					clients = MyUtils.getRandomFromArray(clients, (clients.length / ZoiConfig.generalPromotionDeviation).toFixed(0));
+					MyLog.info("Num of clients after deviation by " + ZoiConfig.generalPromotionDeviation + " = " + clients.length);
+
+					//iterate clients
+					clients.forEach(function (client) {
+
+						if (!client.email) {
+							return;
+						}
+
+						//send single email every loop
+						const emailList = [{
+							address: client.email,
+							from: user.integrations.Acuity.userDetails.name + ' <noreply@zoi.ai>',
+							subject: EmailConfig.promotionsEmail.subject,
+							alt: 'Appointments Promotions',
+							replyTo: user.integrations.Acuity.userDetails.email
+						}];
+
+						let emailHtml = EmailLib.getEmailByName('promotionsMail');
+
+						//parse the first part
+						emailHtml = emailHtml.replace('{{line1}}', EmailConfig.promotionsEmail.line1);
+						emailHtml = emailHtml.replace('{{line2}}', EmailConfig.promotionsEmail.line2);
+						emailHtml = emailHtml.replace('{{line3}}', EmailConfig.promotionsEmail.line3);
+						emailHtml = emailHtml.replace('{{line4}}', EmailConfig.promotionsEmail.line4);
+						emailHtml = emailHtml.replace('{{bannerSrc}}', template.image);
+						emailHtml = emailHtml.replace('{{preHeaderText}}', EmailConfig.promotionsEmail.subject);
+
+						//parse the second part
+						emailHtml = emailHtml.replace('{{firstName}}', client.firstName);
+						emailHtml = emailHtml.replace('{{service}}', appointmentType.name);
+						emailHtml = emailHtml.replace('{{discount type}}', template.title);
+						emailHtml = MyUtils.replaceAll('{{business name}}', user.integrations.Acuity.userDetails.name, emailHtml);
+						emailHtml = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailHtml);
+						emailHtml = MyUtils.replaceAll('{{color}}', template.color, emailHtml);
+						emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.promotionsEmail.buttonText, emailHtml);
+						emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/unsubscribe?email=" + client.email, emailHtml);
+
+						//set href
+						const appointmentParams = {
+							firstName: client.firstName,
+							lastName: client.lastName,
+							email: client.email,
+							userId: user._id,
+							serviceId: appointmentType.id,
+							serviceName: appointmentType.name,
+							price: appointmentType.price,
+							timezone: user.integrations.Acuity.userDetails.timezone,
+							date: (new Date().valueOf()).toString(16),
+							notes: template.zoiCoupon,
+							promotionTitle: template.title,
+							promotionImage: template.image
+						};
+						const iWantUrl = MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams).replace("%", "%25");
+						emailHtml = emailHtml.replace('{{href}}', iWantUrl);
+
+						//send the email to the client
+						EmailLib.sendEmail(emailHtml, emailList);
+
+						const blockRange = user.customerSendLimit && user.customerSendLimit.value ? user.customerSendLimit.value : 7;
+
+						//unsubscribe this email for X days(do it async)
+						self.DBManager.addEmailToUnsubscribe({
+							_id: client.email,
+							blockDate: moment().tz(user.integrations.Acuity.userDetails.timezone).add(blockRange, 'days').valueOf(),
+							blockDateString: moment().tz(user.integrations.Acuity.userDetails.timezone).add(blockRange, 'days').format('lll')
+						});
+					});
+
+					//save promotion times
+					const actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
+					if (user.profile[actionTime]) {
+						user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
+					} else {
+						user.profile[actionTime] = {
+							numOfPromotions: 1
+						}
+					}
+
+					//clear the session and the conversation data
+					self.clearConversation();
+
+					//send messages
+					async.series([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"), true),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
+					], MyUtils.getErrorMsg());
+				} else {
+					self.clearConversation();
+					reply(facebookResponse.getTextMessage("Ok boss"), false);
+				}
 			}
+		} catch (err) {
+			MyLog.error(err);
+			MyLog.error("Error on send promotions. userId => " + user._id);
 		}
-	} catch (err) {
-		MyLog.error(err);
-		MyLog.error("Error on send promotions. userId => " + user._id);
 	}
-};
 
-/**
- * get coupons response object
- * @returns {*}
- */
-AppointmentLogic.getCoupons = function () {
-	return facebookResponse.getGenericTemplate([
-		//10 % off
-		facebookResponse.getGenericElement("10% discount",
-			"http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
-			"Offer a discount of 10% to selected customers",
-			[facebookResponse.getGenericButton("postback", "I like it", {
-				id: 1,
-				title: "10% Off",
-				zoiCoupon: "Zoi.10PercentOff",
-				image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
-				color: "#F99C17",
-				hoverColor: "#F4771D"
-			})]),
-		//2 plus 1
-		facebookResponse.getGenericElement("2 + 1 deal",
-			"http://res.cloudinary.com/gotime-systems/image/upload/v1502450812/2_1_deal-01_g2rrrc.png",
-			"Offer 2 + 1 deal to selected customers",
-			[facebookResponse.getGenericButton("postback", "I like it", {
-				id: 2,
-				title: "2 + 1",
-				zoiCoupon: "Zoi.2Plus1",
-				image: "http://res.cloudinary.com/gotime-systems/image/upload/v1502450812/2_1_deal-01_g2rrrc.png",
-				color: "#4AC3C4",
-				hoverColor: "#009086"
-			})]),
-		//25% off
-		facebookResponse.getGenericElement("25% discount",
-			"http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
-			"Offer a discount of 25% to selected customers",
-			[facebookResponse.getGenericButton("postback", "I like it", {
-				id: 3,
-				title: "25% Off",
-				zoiCoupon: "Zoi.25PercentOff",
-				image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
-				color: "#00b0ea",
-				hoverColor: "#00a6db"
-			})]),
-		//1 plus 1
-		facebookResponse.getGenericElement("1 + 1 deal",
-			"http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
-			"Offer 1 + 1 deal to selected customers",
-			[facebookResponse.getGenericButton("postback", "I like it", {
-				id: 4,
-				title: "1 + 1",
-				zoiCoupon: "Zoi.1Plus1",
-				image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
-				color: "#d1dd25",
-				hoverColor: "#c3c62f"
-			})]),
-		//5% off
-		facebookResponse.getGenericElement("5% discount",
-			"http://res.cloudinary.com/gotime-systems/image/upload/v1502450747/5_precent_dis-01_lvbaid.png",
-			"Offer a discount of 5% to selected customers",
-			[facebookResponse.getGenericButton("postback", "I like it", {
-				id: 5,
-				title: "5% Off",
-				zoiCoupon: "Zoi.5PercentOff",
-				image: "http://res.cloudinary.com/gotime-systems/image/upload/v1502450747/5_precent_dis-01_lvbaid.png",
-				color: "#4AC3C4",
-				hoverColor: "#009086"
-			})])
-	]);
-};
-
-/**
- * clear user session
- */
-AppointmentLogic.prototype.clearSession = function () {
-	let self = this;
-	let user = self.user;
-
-	//clear conversation data
-	user.conversationData = null;
-	user.session = null;
-	self.DBManager.saveUser(user).then(function () {
-		MyLog.log("conversation cleared!");
-	});
-};
+	/**
+	 * get coupons response object
+	 * @returns {*}
+	 */
+	static getCoupons() {
+		return facebookResponse.getGenericTemplate([
+			//10 % off
+			facebookResponse.getGenericElement("10% discount",
+				"http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
+				"Offer a discount of 10% to selected customers",
+				[facebookResponse.getGenericButton("postback", "I like it", {
+					id: 1,
+					title: "10% Off",
+					zoiCoupon: "Zoi.10PercentOff",
+					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
+					color: "#F99C17",
+					hoverColor: "#F4771D"
+				})]),
+			//2 plus 1
+			facebookResponse.getGenericElement("2 + 1 deal",
+				"http://res.cloudinary.com/gotime-systems/image/upload/v1502450812/2_1_deal-01_g2rrrc.png",
+				"Offer 2 + 1 deal to selected customers",
+				[facebookResponse.getGenericButton("postback", "I like it", {
+					id: 2,
+					title: "2 + 1",
+					zoiCoupon: "Zoi.2Plus1",
+					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1502450812/2_1_deal-01_g2rrrc.png",
+					color: "#4AC3C4",
+					hoverColor: "#009086"
+				})]),
+			//25% off
+			facebookResponse.getGenericElement("25% discount",
+				"http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
+				"Offer a discount of 25% to selected customers",
+				[facebookResponse.getGenericButton("postback", "I like it", {
+					id: 3,
+					title: "25% Off",
+					zoiCoupon: "Zoi.25PercentOff",
+					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
+					color: "#00b0ea",
+					hoverColor: "#00a6db"
+				})]),
+			//1 plus 1
+			facebookResponse.getGenericElement("1 + 1 deal",
+				"http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
+				"Offer 1 + 1 deal to selected customers",
+				[facebookResponse.getGenericButton("postback", "I like it", {
+					id: 4,
+					title: "1 + 1",
+					zoiCoupon: "Zoi.1Plus1",
+					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
+					color: "#d1dd25",
+					hoverColor: "#c3c62f"
+				})]),
+			//5% off
+			facebookResponse.getGenericElement("5% discount",
+				"http://res.cloudinary.com/gotime-systems/image/upload/v1502450747/5_precent_dis-01_lvbaid.png",
+				"Offer a discount of 5% to selected customers",
+				[facebookResponse.getGenericButton("postback", "I like it", {
+					id: 5,
+					title: "5% Off",
+					zoiCoupon: "Zoi.5PercentOff",
+					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1502450747/5_precent_dis-01_lvbaid.png",
+					color: "#4AC3C4",
+					hoverColor: "#009086"
+				})])
+		]);
+	}
+}
 
 module.exports = AppointmentLogic;

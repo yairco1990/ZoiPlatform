@@ -4,6 +4,7 @@ const moment = require('moment-timezone');
 const MyLog = require('../interfaces/MyLog');
 const GeneralLogic = require('./Intents/GeneralLogic');
 const ClientLogic = require('./Intents/ClientLogic');
+const ConversationLogic = require('./ConversationLogic');
 
 class BackgroundLogic {
 
@@ -13,8 +14,14 @@ class BackgroundLogic {
 	 */
 	static startAll(bot) {
 		BackgroundLogic.startMorningBriefInterval(bot);
-		BackgroundLogic.startCleaningOldConvosInterval(bot);
-		BackgroundLogic.startOldCustomersInterval(bot);
+		//start clean old convos with some delay
+		setTimeout(() => {
+			BackgroundLogic.startCleaningOldConvosInterval(bot);
+		}, ZoiConfig.times.morningBriefIntervalTime / 3);
+		//start the old customers interval after morning interval to prevent double messages at the same time
+		setTimeout(() => {
+			BackgroundLogic.startOldCustomersInterval(bot);
+		}, ZoiConfig.times.morningBriefIntervalTime / 2);
 	}
 
 	/**
@@ -93,8 +100,8 @@ class BackgroundLogic {
 					isAutomated: true
 				};
 
-				let replyFunction = BackgroundLogic.getBotReplyFunction(bot, user);
-				let botWritingFunction = BackgroundLogic.getBotWritingFunction(bot, user);
+				const replyFunction = bot.getBotReplyFunction(user);
+				const botWritingFunction = bot.getBotWritingFunction(user);
 
 				//start convo
 				generalLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
@@ -148,7 +155,8 @@ class BackgroundLogic {
 	static clearOldConversations(usersWithOldConvos) {
 		//iterate the users
 		usersWithOldConvos.forEach(async (user) => {
-			BackgroundLogic.clearUserConversation(user);
+			const conversationLogic = new ConversationLogic(user);
+			conversationLogic.clearConversation(user);
 		});
 	}
 
@@ -226,8 +234,8 @@ class BackgroundLogic {
 					automated: true
 				};
 
-				let replyFunction = BackgroundLogic.getBotReplyFunction(bot, user);
-				let botWritingFunction = BackgroundLogic.getBotWritingFunction(bot, user);
+				const replyFunction = bot.getBotReplyFunction(user);
+				const botWritingFunction = bot.getBotWritingFunction(user);
 
 				//start convo
 				clientLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
@@ -236,67 +244,6 @@ class BackgroundLogic {
 		});
 
 		MyLog.debug("Old customers notifications sent: " + counter);
-	}
-
-	/**
-	 * clear user conversation data
-	 * @param user
-	 */
-	static clearUserConversation(user) {
-		//clear conversation data
-		user.conversationData = null;
-		user.session = null;
-		DBManager.saveUser(user);
-	}
-
-	/**
-	 * get bot reply function
-	 * @param bot - the singleton bot object
-	 * @param user - the user that is going to get Zoi message
-	 * @returns {Function}
-	 */
-	static getBotReplyFunction(bot, user) {
-		//@param rep - the facebook json message
-		//@param isBotTyping - boolean, decide if the bot typing after the message
-		//@param delay - delay in ms to send the message
-		return function (rep, isBotTyping, delay) {
-			return new Promise(function (resolve, reject) {
-				delay = delay || 0;
-				setTimeout(() => {
-					//send reply
-					bot.sendMessage(user._id, rep, (err) => {
-						if (err) {
-							reject(err);
-							return;
-						}
-						if (isBotTyping) {
-							bot.sendSenderAction(user._id, "typing_on", () => {
-								resolve();
-							});
-						} else {
-							resolve();
-						}
-						MyLog.info(`Message returned ${user._id}] -> ${rep.text}`);
-					});
-				}, delay);
-			});
-		};
-	}
-
-	/**
-	 * get bot writing function
-	 * @param bot
-	 * @param user
-	 * @returns {Function}
-	 */
-	static getBotWritingFunction(bot, user) {
-		return function () {
-			return new Promise(function (resolve, reject) {
-				bot.sendSenderAction(user._id, "typing_on", () => {
-					resolve();
-				});
-			});
-		};
 	}
 }
 

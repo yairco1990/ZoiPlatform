@@ -172,21 +172,14 @@ module.exports = {
 			});
 		});
 
+		//end point for Zoi admins to remind the user to integrate with Acuity
+		app.post('/integrateReminder', function (req, res) {
+			MyLog.log(`${API_LOG} Integrate reminder executed. time = ${req.body.days} days`);
+			let acuityLogic = new AcuityLogic();
+			acuityLogic.sendIntegrationReminder(req.body, bot, (status, data) => {
+				res.status(status).send(data);
+			});
+		});
 
-		//set promotion types
-		// app.post('/api/setPromotionType', function (req, res) {
-		// 	let userApiLogic = new UserApiLogic();
-		// 	userApiLogic.setPromotionType(req.body, function (status, data) {
-		// 		res.status(status).send(data);
-		// 	});
-		// });
-		//get promotion types
-		// app.get('/api/getPromotionTypes', function (req, res) {
-		// 	MyLog.log(API_LOG + "getUser. userId = " + req.query.userId);
-		// 	let userApiLogic = new UserApiLogic();
-		// 	userApiLogic.getPromotionTypes(function (status, data) {
-		// 		res.status(status).send(data);
-		// 	});
-		// });
 	}
 };

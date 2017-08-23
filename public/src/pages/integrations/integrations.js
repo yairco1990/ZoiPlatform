@@ -9,7 +9,7 @@ angular.module('Zoi.controllers.integrations', [])
 			controller: 'integrationsCtrl as vm',
 			templateUrl: 'src/pages/integrations/integrations.html',
 			resolve: {
-				zoiUser: function ($http, $log, $stateParams, zoiConfig) {
+				zoiUser: function ($http, $log, $stateParams, zoiConfig, $timeout, $state) {
 					return $http({
 						url: zoiConfig.getServerUrl() + "/api/getUser",
 						method: "GET",
@@ -20,8 +20,10 @@ angular.module('Zoi.controllers.integrations', [])
 					}).then(function (result) {
 						return result.data;
 					}, function (err) {
-						$log.error(err.data);
-						return err.data;
+						$log.error(err);
+						$timeout(function () {
+							$state.go('404');
+						});
 					});
 				}
 			}

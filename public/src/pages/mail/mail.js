@@ -9,7 +9,7 @@ angular.module('Zoi.controllers.mail', [])
 			controller: 'MailCtrl as vm',
 			templateUrl: 'src/pages/mail/mail.html',
 			resolve: {
-				emails: function ($log, $http, $stateParams, zoiConfig) {
+				emails: function ($log, $http, $stateParams, zoiConfig, $timeout, $state) {
 					return $http({
 						url: zoiConfig.getServerUrl() + "/acuity/getEmails?userId=" + $stateParams.userId,
 						method: "GET"
@@ -22,7 +22,9 @@ angular.module('Zoi.controllers.mail', [])
 						return result.data;
 					}).catch(function (err) {
 						$log.error(err);
-						return [];
+						$timeout(function () {
+							$state.go('404');
+						});
 					});
 				}
 			}

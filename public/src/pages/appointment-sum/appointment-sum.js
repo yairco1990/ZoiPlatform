@@ -9,7 +9,7 @@ angular.module('Zoi.controllers.appointment-sum', [])
 			controller: 'AppointmentSumCtrl as vm',
 			templateUrl: 'src/pages/appointment-sum/appointment-sum.html',
 			resolve: {
-				openings: function ($http, $log, $stateParams, zoiConfig) {
+				openings: function ($http, $log, $stateParams, zoiConfig, $timeout, $state) {
 					return $http({
 						url: zoiConfig.getServerUrl() + "/acuity/getAvailability",
 						method: "GET",
@@ -22,8 +22,10 @@ angular.module('Zoi.controllers.appointment-sum', [])
 					}).then(function (result) {
 						return result.data;
 					}, function (err) {
-						$log.error(err.data);
-						return err.data;
+						$log.error(err);
+						$timeout(function () {
+							$state.go('404');
+						});
 					});
 				}
 			}

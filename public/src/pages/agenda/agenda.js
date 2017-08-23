@@ -9,19 +9,21 @@ angular.module('Zoi.controllers.agenda', [])
 			controller: 'AgendaCtrl as vm',
 			templateUrl: 'src/pages/agenda/agenda.html',
 			resolve: {
-				zoiUser: function ($http, $log, $stateParams, zoiConfig) {
+				zoiUser: function ($http, $log, $stateParams, zoiConfig, $timeout, $state) {
 					return $http({
 						url: zoiConfig.getServerUrl() + "/api/getUser",
 						method: "GET",
 						params: {
 							userId: $stateParams.userId
 						},
-						timeout: 5000
+						timeout: 10000
 					}).then(function (result) {
 						return result.data;
 					}, function (err) {
-						$log.error(err.data);
-						return err.data;
+						$log.error(err);
+						$timeout(function () {
+							$state.go('404');
+						});
 					});
 				},
 				appointments: function ($http, $log, zoiConfig, $stateParams) {
