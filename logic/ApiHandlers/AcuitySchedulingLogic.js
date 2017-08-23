@@ -9,7 +9,7 @@ const requestify = require('requestify');
 class AcuitySchedulingLogic {
 
 	constructor(accessToken) {
-		this.requestOptions = Object.create(zoiConfig.Acuity);
+		this.requestOptions = Object.create(zoiConfig.ACUITY_OAUTH);
 		this.requestOptions.accessToken = accessToken;
 		this.acuity = Acuity.oauth(this.requestOptions);
 	}
@@ -174,9 +174,9 @@ class AcuitySchedulingLogic {
 			let tokenRequestParams = {};
 			tokenRequestParams.grant_type = 'authorization_code';
 			tokenRequestParams.code = code;
-			tokenRequestParams.redirect_uri = zoiConfig.Acuity.redirectUri;
-			tokenRequestParams.client_id = zoiConfig.Acuity.clientId;
-			tokenRequestParams.client_secret = zoiConfig.Acuity.clientSecret;
+			tokenRequestParams.redirect_uri = zoiConfig.ACUITY_OAUTH.redirectUri;
+			tokenRequestParams.client_id = zoiConfig.ACUITY_OAUTH.clientId;
+			tokenRequestParams.client_secret = zoiConfig.ACUITY_OAUTH.clientSecret;
 
 			requestify.request('https://acuityscheduling.com/oauth2/token', {
 				method: 'POST',
