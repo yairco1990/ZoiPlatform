@@ -182,7 +182,9 @@ class AppointmentLogic extends ConversationLogic {
 			]);
 
 			if (!user.isOnBoarded) {
-				await self.checkAndFinishOnBoarding(true);
+				setTimeout(() => {
+					self.checkAndFinishOnBoarding(true);
+				}, 3000);
 			}
 		}
 	}
@@ -424,9 +426,11 @@ class AppointmentLogic extends ConversationLogic {
 			]);
 
 			if (!user.isOnBoarded) {
-				await self.checkAndFinishOnBoarding(true);
+				setTimeout(() => {
+					self.checkAndFinishOnBoarding(true);
+				}, 3000);
 			}
-			
+
 		} else {
 			if (!user.isOnBoarded) {
 				await self.checkAndFinishOnBoarding(false);

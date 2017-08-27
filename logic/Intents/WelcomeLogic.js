@@ -252,16 +252,16 @@ class WelcomeLogic extends ConversationLogic {
 			const messages = [];
 
 			if (conversationData.userFinishedFirstPromotion) {
-				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Good job boss 👍"), true, delayTime));
+				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Good job boss 👍"), true));
 			} else {
-				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("No problem, boss!"), true, delayTime));
+				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("No problem, boss!"), true));
 			}
 
-			self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with your morning brief"), true, delayTime),
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Remember, You can always press the menu button below (☰) to see my preset actions and settings."), true, delayTime),
-				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
-			]);
+			messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with your morning brief"), true, delayTime));
+			messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Remember, You can always press the menu button below (☰) to see my preset actions and settings."), true, delayTime));
+			messages.push(MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime));
+
+			self.sendMessages(messages);
 
 			//set user onboarded
 			await self.setUserOnBoared();
