@@ -102,8 +102,7 @@ class AcuityLogic {
 			let calendars = await acuityApi.getCalendars();
 
 			callback(Response.SUCCESS, calendars);
-		}
-		catch (err) {
+		} catch (err) {
 			callback(Response.ERROR, err);
 			MyLog.error("Error on getCalendars", err);
 		}

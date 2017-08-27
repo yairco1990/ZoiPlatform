@@ -46,13 +46,13 @@ class EmailLib {
 		let client = ses.createClient(ZoiConfig.AWS);
 
 		if (!emailHtml) {
-			emailHtml = "<div>Test Message</div>";
+			emailHtml = "<div>Hey, it's Zoi.</div>";
 		}
 
-		// emailHtml = emailHtml.replace('{{botPage}}', '');
 		try {
 			emails.forEach(function (email) {
-				if (email.address) {
+				//@email.com domain is saved for Zoi testing
+				if (email.address && !email.address.includes("@email.com")) {
 					// Give SES the details and let it construct the message for you.
 					client.sendEmail({
 						to: email.address,

@@ -147,9 +147,27 @@ module.exports = {
 		};
 	},
 
-	getShareButton: function () {
+	getShareButton: function (title, description, imageUrl) {
 		return {
-			"type": "element_share"
-		};
+			"attachment": {
+				"type": "template",
+				"payload": {
+					"template_type": "generic",
+					"elements": [
+						{
+							"title": title,
+							"subtitle": description,
+							"image_url": imageUrl,
+							"buttons": [
+								{
+									"type": "element_share"
+								}
+							]
+						}
+					]
+				}
+			}
+
+		}
 	}
 };

@@ -77,9 +77,9 @@ class GeneralLogic extends ConversationLogic {
 
 			//check if the user wants to get the brief
 
-			let appointmentLogic = new AppointmentLogic(user);
+			const appointmentLogic = new AppointmentLogic(user, conversationData);
 
-			let acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
+			const acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 
 			//if the morning brief sent from the interval and not by the user
 			if (!user.conversationData && conversationData.isAutomated) {
@@ -172,7 +172,7 @@ class GeneralLogic extends ConversationLogic {
 				});
 
 				//function for starting send promotions dialog
-				let startSendPromotions = function () {
+				const startSendPromotions = function () {
 					appointmentLogic.processIntent({
 						intent: "appointment send promotions",
 						context: "APPOINTMENT",

@@ -57,7 +57,13 @@ class GenericLogic extends ConversationLogic {
 				if (!responseText) {
 					responseText = fallbackText;
 				}
-				reply(facebookResponse.getTextMessage(responseText));
+				//TODO
+				// reply(facebookResponse.getTextMessage(responseText));
+				// const shareUrl = "https://www.facebook.com/sharer/sharer.php?u=" + "https://zoi.ai" + "&description=" + "My Description!!" + "&picture=" + "www.pic.com/a.png" + "&caption=" + "MyCaption";
+				const shareUrl = `https://www.facebook.com/dialog/feed?app_id=${ZoiConfig.appId}&link=https%3A%2F%2Fzoi.ai&picture=https%3A%2F%2Fzoi.ai%2Fwp-content%2Fuploads%2F2015%2F12%2Fzoi-logo-white.png&name=I%20just%20hired%20Zoi%20AI&caption=%20&description=Share%20it%20too!&redirect_uri=http%3A%2F%2Fwww.facebook.com%2F`;
+				reply(facebookResponse.getButtonMessage("Share me:", [
+					facebookResponse.getGenericButton("web_url", "Share Zoi", null, shareUrl)
+				]));
 				break;
 		}
 	};

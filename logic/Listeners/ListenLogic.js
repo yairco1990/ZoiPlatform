@@ -12,6 +12,7 @@ const ClientLogic = require('../Intents/ClientLogic');
 const GeneralLogic = require('../Intents/GeneralLogic');
 const GenericLogic = require('../Intents/GenericLogic');
 const ZoiConfig = require('../../config');
+const Acuity = require('acuityscheduling');
 
 //fall back message
 const fallbackText = "I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu.";
@@ -125,10 +126,16 @@ class ListenLogic {
 				conversationData.intent = user.conversationData.intent;
 			}
 			//block user from proceed without integration with Acuity
-			else if (!user.integrations || !user.integrations.Acuity) {
-				reply(facebookResponse.getButtonMessage("To start working together, I'll have to work with the tools you work with to run your business. Press on the link to help me integrate with Acuity Scheduling and Gmail.", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
-				]));
+			else if (!user.integrations.Acuity) {
+
+				//create the redirect url
+				const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
+				const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
+
+				(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
+					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
+				]), false))();
+
 				return;
 			}
 
@@ -143,7 +150,7 @@ class ListenLogic {
 					welcomeLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "APPOINTMENT":
-					let appointmentLogic = new AppointmentLogic(user);
+					let appointmentLogic = new AppointmentLogic(user, conversationData);
 					appointmentLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "CLIENT":

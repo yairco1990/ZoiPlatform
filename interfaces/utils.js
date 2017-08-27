@@ -10,26 +10,6 @@ const _ = require('underscore');
 
 let Utils = {
 
-	serverResponse: {
-		SUCCESS: "success",
-		ERROR: "error"
-	},
-
-	/**
-	 * log functions
-	 */
-	log: {
-		error: function (text) {
-			console.error(moment().format("D MMM HH:mm:ss - ") + text);
-		},
-		info: function (text) {
-			console.info(moment().format("D MMM HH:mm:ss - ") + text);
-		},
-		debug: function (text) {
-			console.debug(moment().format("D MMM HH:mm:ss - ") + text);
-		}
-	},
-
 	/**
 	 * getJSON:  REST get request returning JSON object(s)
 	 * @param options: http options object
@@ -84,11 +64,6 @@ let Utils = {
 		}
 
 		return path;
-	},
-
-	logicType: {
-		MOCK: "Mock",
-		REAL_WORLD: "Real world"
 	},
 
 	/**
@@ -161,27 +136,6 @@ let Utils = {
 		return result;
 	},
 
-	getSimilarityFromMocks: function (input, mocks) {
-
-		let self = this;
-
-		let maxSimilarity = 0;
-
-		let result = null;
-
-		for (let key in mocks) {
-			if (mocks.hasOwnProperty(key)) {
-				let currentSimilarity = self.similarity(input, mocks[key]);
-				if (currentSimilarity > maxSimilarity) {
-					result = mocks[key];
-					maxSimilarity = currentSimilarity;
-				}
-			}
-		}
-
-		return result;
-	},
-
 	similarity: function (s1, s2) {
 
 		let self = this;
@@ -231,18 +185,6 @@ let Utils = {
 		return re.test(email);
 	},
 
-	// addParamsToUrlArray: function (url, params) {
-	// 	let newUrl = url + '?';
-	// 	params.forEach(function (p, index) {
-	// 		if (index > 0) {
-	// 			newUrl += "&";
-	// 		}
-	// 		newUrl += p.key + "=" + p.value;
-	// 	});
-	//
-	// 	return newUrl;
-	// },
-
 	addParamsToUrl: function (url, params) {
 		let newUrl = url + '?';
 		let index = 0;
@@ -261,9 +203,9 @@ let Utils = {
 
 	/**
 	 * check if in the arr there is key with the selected value
-	 * @param arr
-	 * @param key
-	 * @param value
+	 * @param arr - the arr we want to search on
+	 * @param key - run on the array objects, and look for values with this key
+	 * @param value - the value we want to find for the given key
 	 * @returns {boolean}
 	 */
 	isExist: function (arr, key, value) {
@@ -285,9 +227,10 @@ let Utils = {
 	},
 
 	removeDuplicates: function (arr, key) {
-		let newArr = [];
+		const self = this;
+		const newArr = [];
 		arr.forEach(function (item) {
-			if (!this.isExist(newArr, key, item[key])) {
+			if (!self.isExist(newArr, key, item[key])) {
 				newArr.push(item);
 			}
 		});

@@ -108,7 +108,9 @@ class BackgroundLogic {
 			}
 		});
 
-		MyLog.debug("Morning briefs sent: " + counter);
+		if (counter) {
+			MyLog.debug("Morning briefs sent: " + counter);
+		}
 	}
 
 	/**
@@ -140,7 +142,9 @@ class BackgroundLogic {
 				//clear them
 				BackgroundLogic.clearOldConversations(usersWithOldConversation);
 
-				MyLog.debug("Conversation cleared: " + usersWithOldConversation.length);
+				if (usersWithOldConversation.length) {
+					MyLog.debug("Conversation cleared: " + usersWithOldConversation.length);
+				}
 			} catch (err) {
 				MyLog.error(err);
 				MyLog.error("Error on startCleaningOldConvosInterval");
@@ -243,7 +247,9 @@ class BackgroundLogic {
 			}
 		});
 
-		MyLog.debug("Old customers notifications sent: " + counter);
+		if (counter) {
+			MyLog.debug("Old customers notifications sent: " + counter);
+		}
 	}
 }
 

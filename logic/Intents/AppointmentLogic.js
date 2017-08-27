@@ -128,28 +128,34 @@ class AppointmentLogic extends ConversationLogic {
 					//save the user
 					self.DBManager.saveUser(user).then(function () {
 
-						let firstText = " noticed that you have " + slots.length + " openings on your calendars tomorrow.";
+						let firstText = ` noticed that you have ${slots.length} openings on your calendars tomorrow.`;
+						let secondText = "I can help you fill the openings by promoting to your customers";
 						if (slots.length > 10) {
 							firstText = " noticed that you have more than 10 openings on your calendars tomorrow.";
 						}
-						if (!conversationData.skipHey) {
-							firstText = "Hey boss, I" + firstText;
-						} else {
+						if (conversationData.skipHey) {
 							firstText = "I also" + firstText;
+						} else if (conversationData.firstPromotion) {
+							//replace the order
+							secondText = "I" + firstText;
+							firstText = "Hey boss, this is your first promotion with Zoi! :)"
+						} else {
+							firstText = "Hey boss, I" + firstText;
 						}
 
 						async.series([
 							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
-							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I can help you fill the openings by promoting to your customers"), true, delayTime),
+							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(secondText), true, delayTime),
 							MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 						]);
 
 					});
 				} else {
+					await self.clearConversation();
+
 					async.series([
 						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's good!"), false, delayTime),
 					]);
-					self.clearConversation();
 				}
 			}
 			else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {

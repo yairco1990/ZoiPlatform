@@ -11,10 +11,11 @@ const PRODUCTION_BOT_DETAILS = {
 
 const Environments = {
 	LOCAL: {
+		appId: "358701207893441",
 		serverUrl: "http://localhost:3000",
 		clientUrl: "http://local.host:443/p/#",
 		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
-		NLP_URL: "http://52.177.185.253:5000",
+		NLP_URL: "http://13.82.50.249:5000",
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
@@ -47,6 +48,7 @@ const Environments = {
 		}
 	},
 	NGROK: {
+		appId: "358701207893441",
 		serverUrl: "https://2fc4a7c1.ngrok.io",
 		clientUrl: "https://2fc4a7c1.ngrok.io/p/#",
 		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
@@ -83,6 +85,7 @@ const Environments = {
 		}
 	},
 	DEV: {
+		appId: "358701207893441",
 		serverUrl: "https://bdd1bb96.ngrok.io",
 		clientUrl: "https://bdd1bb96.ngrok.io/p/#",
 		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
@@ -120,6 +123,7 @@ const Environments = {
 	},
 	/**************PRODUCTION****************/
 	PRODUCTION: {
+		appId: "1357774290981012",
 		serverUrl: "https://zoiai.com:3000",
 		clientUrl: "https://zoiai.com/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
@@ -159,6 +163,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.DEV;
+const selectedEnvironment = Environments.LOCAL;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

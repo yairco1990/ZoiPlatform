@@ -11,6 +11,7 @@ const SharedLogic = require('../SharedLogic');
 const WelcomeLogic = require('../Intents/WelcomeLogic');
 const AppointmentLogic = require('../Intents/AppointmentLogic');
 const ZoiConfig = require('../../config');
+const Acuity = require('acuityscheduling');
 
 /**
  * PostbackLogic constructor
@@ -67,9 +68,12 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			let user = await self.DBManager.getUser({_id: userId});
 
 			if (!user.integrations || !user.integrations.Acuity) {
-				reply(facebookResponse.getButtonMessage("To start working together, I'll have to work with the tools you work with to run your business. Press on the link to help me integrate with Acuity Scheduling and Gmail.", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
-				]));
+				//create the redirect url
+				const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
+				const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
+				(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
+					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
+				]), false))();
 				return;
 			}
 

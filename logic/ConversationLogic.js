@@ -16,17 +16,18 @@ class ConversationLogic {
 	 * @param reply
 	 * @param sendLastMessage
 	 */
-	clearConversation(reply, sendLastMessage) {
+	async clearConversation(reply, sendLastMessage) {
 		const self = this;
-		let user = self.user;
+		const user = self.user;
 
 		user.conversationData = null;
 		user.session = null;
-		self.DBManager.saveUser(user).then(function () {
-			if (sendLastMessage) {
-				(MyUtils.resolveMessage(reply, FacebookResponse.getTextMessage("I'll be right here if you need me ☺"), false, ZoiConfig.delayTime))();
-			}
-		});
+
+		await self.DBManager.saveUser(user);
+
+		if (sendLastMessage) {
+			(MyUtils.resolveMessage(reply, FacebookResponse.getTextMessage("I'll be right here if you need me ☺"), false, ZoiConfig.delayTime))();
+		}
 	};
 
 	/**
@@ -59,7 +60,7 @@ class ConversationLogic {
 				let profit = stats.profitFromAppointments + " " + user.integrations.Acuity.userDetails.currency;
 				relevantMessages.push("Dollar, Dollar Bills... 💵 We earned " + profit + " this month, amazing work boss");
 				relevantMessages.push("Now that's progress, we earned " + profit + " from the beginning of the month!");
-				relevantMessages.push("Boss, we maid " + profit + " this month, I think it's just great! 🤗");
+				relevantMessages.push("Boss, we made " + profit + " this month, I think it's just great! 🤗");
 			}
 
 			if (stats.numOfPromotions) {
