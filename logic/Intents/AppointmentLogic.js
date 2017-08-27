@@ -182,7 +182,7 @@ class AppointmentLogic extends ConversationLogic {
 			]);
 
 			if (!user.isOnBoarded) {
-				await self.checkAndFinishOnBoarding();
+				await self.checkAndFinishOnBoarding(true);
 			}
 		}
 	}
@@ -232,7 +232,7 @@ class AppointmentLogic extends ConversationLogic {
 			else {
 
 				if (!user.isOnBoarded) {
-					await self.checkAndFinishOnBoarding();
+					await self.checkAndFinishOnBoarding(false);
 				} else {
 					user.conversationData = null;
 					user.session = null;
@@ -422,9 +422,14 @@ class AppointmentLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
 			]);
+
+			if (!user.isOnBoarded) {
+				await self.checkAndFinishOnBoarding(true);
+			}
+			
 		} else {
 			if (!user.isOnBoarded) {
-				await self.checkAndFinishOnBoarding();
+				await self.checkAndFinishOnBoarding(false);
 			} else {
 				await self.clearConversation();
 				reply(facebookResponse.getTextMessage("Ok boss"), false);
@@ -436,11 +441,12 @@ class AppointmentLogic extends ConversationLogic {
 	 * finish on boarding in case the user still didn't finish it
 	 * @returns {Promise.<void>}
 	 */
-	async checkAndFinishOnBoarding() {
+	async checkAndFinishOnBoarding(userFinishedFirstPromotion) {
 		const self = this;
 		const {user, reply} = self;
 
 		const conversationData = {
+			userFinishedFirstPromotion,
 			context: "WELCOME",
 			intent: "welcome acuity integrated",
 			lastQuestion: {id: 4},

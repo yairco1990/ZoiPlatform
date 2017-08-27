@@ -249,8 +249,15 @@ class WelcomeLogic extends ConversationLogic {
 
 			await self.DBManager.saveUser(user);
 
+			const messages = [];
+
+			if (conversationData.userFinishedFirstPromotion) {
+				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Good job boss 👍"), true, delayTime));
+			} else {
+				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("No problem, boss!"), true, delayTime));
+			}
+
 			self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("No problem, boss!"), true),
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with your morning brief"), true, delayTime),
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Remember, You can always press the menu button below (☰) to see my preset actions and settings."), true, delayTime),
 				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
