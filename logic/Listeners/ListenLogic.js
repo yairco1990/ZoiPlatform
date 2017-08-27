@@ -87,7 +87,7 @@ class ListenLogic {
 				});
 
 			} else {
-				intent = isQuickReply ? "Quick Reply" : isPayloadRequest ? "Payload Button" : isWaitForText ? "Text Answer" : "What the intent?(Maybe new user)";
+				intent = isQuickReply ? "Quick Reply" : isPayloadRequest ? "Payload Button" : isWaitForText ? "Text Answer" : "Text Answer";
 				entities = "No entities";
 				intentScore = 0;
 			}

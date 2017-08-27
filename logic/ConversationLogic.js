@@ -16,10 +16,12 @@ class ConversationLogic {
 		const zoiBot = require('../bot/ZoiBot');
 		this.user = user;
 		this.conversationData = conversationData;
-		this.acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 		this.reply = zoiBot.getBotReplyFunction(user);
 		this.botTyping = zoiBot.getBotWritingFunction(user);
 		this.DBManager = require('../dal/DBManager');
+		if (user.integrations.Acuity) {
+			this.acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
+		}
 	}
 
 	/**
