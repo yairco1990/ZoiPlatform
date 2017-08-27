@@ -146,23 +146,23 @@ class ListenLogic {
 			//check the intent
 			switch (conversationData.context) {
 				case "WELCOME":
-					let welcomeLogic = new WelcomeLogic(user);
+					let welcomeLogic = new WelcomeLogic(user, conversationData);
 					welcomeLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "APPOINTMENT":
 					let appointmentLogic = new AppointmentLogic(user, conversationData);
-					appointmentLogic.processIntent(conversationData, setBotTyping, payload, reply);
+					appointmentLogic.processIntent();
 					break;
 				case "CLIENT":
-					let clientLogic = new ClientLogic(user);
+					let clientLogic = new ClientLogic(user, conversationData);
 					clientLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERAL":
-					let generalLogic = new GeneralLogic(user);
+					let generalLogic = new GeneralLogic(user, conversationData);
 					generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERIC":
-					let genericLogic = new GenericLogic(user);
+					let genericLogic = new GenericLogic(user, conversationData);
 					genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				default:

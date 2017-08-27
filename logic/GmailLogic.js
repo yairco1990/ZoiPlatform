@@ -97,9 +97,6 @@ class GmailLogic {
 	 */
 	static getAuthObject() {
 		let OAuth2 = google.auth.OAuth2;
-		//TODO change the localhost to zoiai.com after review in google
-		// http://192.168.43.233.xip.io:3000/gmail/oauthcallback
-		// http://localhost:3000/gmail/oauthcallback
 		return new OAuth2("514803140347-utj3lmcijoj5flqo2i5c393m0gf8sq6r.apps.googleusercontent.com", "N7WGFdSUY02RqdhaEm-BbVia", ZoiConfig.GOOGLE_AUTH_REDIRECT);
 	}
 
@@ -108,6 +105,7 @@ class GmailLogic {
 	 * @param tokens
 	 * @param queryString
 	 * @param userId
+	 * @param user
 	 * @returns {Promise}
 	 */
 	static getEmailsList(tokens, queryString, userId, user) {

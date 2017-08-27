@@ -77,8 +77,6 @@ class GeneralLogic extends ConversationLogic {
 
 			//check if the user wants to get the brief
 
-			const appointmentLogic = new AppointmentLogic(user, conversationData);
-
 			const acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 
 			//if the morning brief sent from the interval and not by the user
@@ -171,15 +169,12 @@ class GeneralLogic extends ConversationLogic {
 					maxDate: MyUtils.convertToAcuityDate(moment().tz(user.integrations.Acuity.userDetails.timezone).endOf('day'))
 				});
 
-				//function for starting send promotions dialog
-				const startSendPromotions = function () {
-					appointmentLogic.processIntent({
-						intent: "appointment send promotions",
-						context: "APPOINTMENT",
-						skipHey: true
-					}, setBotTyping, requestObj, reply);
+				const newConversationData = {
+					intent: "appointment send promotions",
+					context: "APPOINTMENT",
+					skipHey: true
 				};
-
+				const appointmentLogic = new AppointmentLogic(user, newConversationData);
 
 				if (appointments.length) {
 
@@ -211,14 +206,14 @@ class GeneralLogic extends ConversationLogic {
 					}
 
 					async.series(messages, function () {
-						startSendPromotions();
+						appointmentLogic.processIntent();
 					});
 
 				} else {
 					async.series([
 						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have appointments today"), true, delayTime)
 					], function () {
-						startSendPromotions();
+						appointmentLogic.processIntent();
 					});
 				}
 			}

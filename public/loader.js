@@ -38,7 +38,7 @@ Promise.all([
 	loadFile('src/pages/404/404.css', 'css'),
 ]).then(function () {
 
-	//TODO change to min
+	//change to min
 	return loadFile('https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.5/angular.min.js', 'js', null, false);
 
 }).then(function () {

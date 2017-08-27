@@ -3,12 +3,42 @@ const MyLog = require('../interfaces/MyLog');
 const FacebookResponse = require('../interfaces/FacebookResponse');
 const moment = require('moment-timezone');
 const ZoiConfig = require('../config');
+const AcuityLogic = require('./ApiHandlers/AcuitySchedulingLogic');
 
 class ConversationLogic {
 
-	constructor(user) {
+	/**
+	 * constructor
+	 * @param user - represent the user object
+	 * @param conversationData - represent the current conversation data by the last input
+	 */
+	constructor(user, conversationData) {
+		const zoiBot = require('../bot/ZoiBot');
 		this.user = user;
+		this.conversationData = conversationData;
+		this.acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
+		this.reply = zoiBot.getBotReplyFunction(user);
+		this.botTyping = zoiBot.getBotWritingFunction(user);
 		this.DBManager = require('../dal/DBManager');
+	}
+
+	/**
+	 * set current question to the user object
+	 * @param question
+	 * @param nextAnswerState
+	 * @returns {*}
+	 */
+	setCurrentQuestion(question, nextAnswerState) {
+		//save conversation to the user
+		this.user.conversationData = this.conversationData;
+		//save the service question
+		this.user.conversationData.lastQuestion = question;
+		if (nextAnswerState) {
+			//save next answer state
+			this.user.conversationData.nextAnswerState = nextAnswerState;
+		}
+		//return the selected question
+		return question;
 	}
 
 	/**

@@ -26,9 +26,9 @@ const Environments = {
 		adminToken: "zoiIsTheBestInTheWorld",
 		delayTime: 1,
 		generalPromotionDeviation: 2,
-		writeDebug: true,
-		writeErrors: true,
-		writeInfo: true,
+		writeDebug: false,
+		writeErrors: false,
+		writeInfo: false,
 		times: {
 			oldCustomersIntervalTime: 1000 * 60 * 2,
 			morningBriefIntervalTime: 1000 * 60 * 2,

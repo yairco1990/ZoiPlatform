@@ -22,8 +22,8 @@ function PostbackLogic() {
 	this.DBManager = require('../../dal/DBManager');
 }
 
-//for now, if the user sent ACTION - listen logic class will handle it and decide if its valid request.
-//for MENU buttons - we do the logic here and check if the request is valid.
+//for now, if the user sent ACTION - listen logic class will handle it and decide if it's a valid request.
+//for MENU buttons - we do the logic here and check if it's a valid request.
 //TODO: change it!
 /**
  * process action and return response

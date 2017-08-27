@@ -224,13 +224,13 @@ class WelcomeLogic extends ConversationLogic {
 					//clean the user conversation
 					user.conversationData = null;
 
-					const appointmentLogic = new AppointmentLogic(user, conversationData);
 					//start send promotions dialog
-					appointmentLogic.processIntent({
+					const appointmentLogic = new AppointmentLogic(user, {
 						intent: "appointment send promotions",
 						context: "APPOINTMENT",
 						firstPromotion: true
-					}, setBotTyping, requestObj, reply);
+					});
+					appointmentLogic.processIntent();
 				}
 			}
 			//user said no problem or wrote something
@@ -239,10 +239,14 @@ class WelcomeLogic extends ConversationLogic {
 				//clear the conversation
 				await self.clearConversation();
 
+				const shareUrl = `https://www.facebook.com/dialog/feed?app_id=${ZoiConfig.appId}&link=https%3A%2F%2Fzoi.ai&picture=https%3A%2F%2Fzoi.ai%2Fwp-content%2Fuploads%2F2015%2F12%2Fzoi-logo-white.png&name=I%20just%20hired%20Zoi%20AI&caption=%20&description=Share%20it%20too!&redirect_uri=http%3A%2F%2Fwww.facebook.com%2F`;
+
 				async.series([
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("No problem!"), true),
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I will really appreciate if you will share my new hiring on facebook :)"), true, delayTime),
-					MyUtils.resolveMessage(reply, facebookResponse.getShareButton("Share Zoi", "Zoi Description", "http://qsf.ec.quoracdn.net/-3-images.logo.wordmark_default.svg-26-32753849bf197b54.svg"), false, delayTime)
+					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Share me:", [
+						facebookResponse.getGenericButton("web_url", "Share Zoi", null, shareUrl)
+					]), false, delayTime)
 				], MyUtils.getErrorMsg());
 			}
 		} catch (err) {
