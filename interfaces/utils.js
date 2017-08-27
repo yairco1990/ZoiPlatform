@@ -321,13 +321,13 @@ let Utils = {
 	 * @returns {Array}
 	 */
 	getRandomFromArray: function (arr, n) {
-		var result = new Array(n),
+		let result = new Array(n),
 			len = arr.length,
 			taken = new Array(len);
 		if (n > len)
-			throw new RangeError("getRandom: more elements taken than available");
+			return arr;
 		while (n--) {
-			var x = Math.floor(Math.random() * len);
+			let x = Math.floor(Math.random() * len);
 			result[n] = arr[x in taken ? taken[x] : x];
 			taken[x] = --len;
 		}

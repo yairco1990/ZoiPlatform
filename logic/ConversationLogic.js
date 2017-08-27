@@ -4,6 +4,7 @@ const FacebookResponse = require('../interfaces/FacebookResponse');
 const moment = require('moment-timezone');
 const ZoiConfig = require('../config');
 const AcuityLogic = require('./ApiHandlers/AcuitySchedulingLogic');
+const async = require('async');
 
 class ConversationLogic {
 
@@ -14,6 +15,7 @@ class ConversationLogic {
 	 */
 	constructor(user, conversationData) {
 		const zoiBot = require('../bot/ZoiBot');
+		this.zoiBot = zoiBot;
 		this.user = user;
 		this.conversationData = conversationData;
 		this.reply = zoiBot.getBotReplyFunction(user);
@@ -22,6 +24,24 @@ class ConversationLogic {
 		if (user.integrations && user.integrations.Acuity) {
 			this.acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 		}
+	}
+
+	/**
+	 * set user
+	 * @param user
+	 */
+	setUser(user) {
+		this.user = user;
+		this.reply = this.zoiBot.getBotReplyFunction(user);
+		this.botTyping = this.zoiBot.getBotWritingFunction(user);
+	}
+
+	/**
+	 * set conversation data
+	 * @param conversationData
+	 */
+	setConversationData(conversationData) {
+		this.conversationData = conversationData;
 	}
 
 	/**
@@ -41,6 +61,35 @@ class ConversationLogic {
 		}
 		//return the selected question
 		return question;
+	}
+
+	/**
+	 * set user onboarded
+	 * @returns {Promise.<void>}
+	 */
+	async setUserOnBoared() {
+		this.user.isOnBoarded = true;
+		this.DBManager.saveUser(this.user);
+		MyLog.log("User finished onboarding step. userId = " + this.user._id);
+	}
+
+	/**
+	 * save last qr response
+	 * @param qr
+	 * @returns {*}
+	 */
+	setLastQRResponse(qr) {
+		this.user.conversationData.lastQRResponse = qr;
+		return qr;
+	}
+
+
+	/**
+	 * send messages in order
+	 * @param messages
+	 */
+	sendMessages(messages) {
+		async.series(messages, MyUtils.getErrorMsg());
 	}
 
 	/**

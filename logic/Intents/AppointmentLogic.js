@@ -72,13 +72,13 @@ class AppointmentLogic extends ConversationLogic {
 		const {user} = self;
 		const {reply} = self;
 
-		async.series([
+		self.sendMessages([
 			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
 			MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Here is your schedule for today boss:", [
 				facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
 			]), true, delayTime),
 			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
-		], MyUtils.getErrorMsg());
+		]);
 
 	};
 
@@ -142,33 +142,32 @@ class AppointmentLogic extends ConversationLogic {
 
 		if (slots.length) {
 			//save the response
-			const lastQRResponse = facebookResponse.getQRElement("Do you want me to promote your openings?",
+			const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("Do you want me to promote your openings?",
 				[
 					facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
 					facebookResponse.getQRButton('text', 'Maybe later', {id: 2})
 				]
-			);
-			user.conversationData.lastQRResponse = lastQRResponse;
+			));
 
 			//save the user
 			self.DBManager.saveUser(user).then(function () {
 
-				let firstText = ` noticed that you have ${slots.length} openings on your calendars tomorrow.`;
+				let firstText = ` noticed that you have ${slots.length} openings on your calendars tomorrow`;
 				let secondText = "I can help you fill the openings by promoting to your customers";
 				if (slots.length > 10) {
-					firstText = " noticed that you have more than 10 openings on your calendars tomorrow.";
+					firstText = " noticed that you have more than 10 openings on your calendars tomorrow";
 				}
 				if (conversationData.skipHey) {
 					firstText = "I also" + firstText;
 				} else if (conversationData.firstPromotion) {
 					//replace the order
 					secondText = "I" + firstText;
-					firstText = "Hey boss, this is your first promotion with Zoi! :)"
+					firstText = "Hey boss, we are going to launch our first promotion together! *Excited* ☺";
 				} else {
-					firstText = "Hey boss, I" + firstText;
+					firstText = "Hey boss, I" + firstText + ".";
 				}
 
-				async.series([
+				self.sendMessages([
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(secondText), true, delayTime),
 					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
@@ -178,9 +177,13 @@ class AppointmentLogic extends ConversationLogic {
 		} else {
 			await self.clearConversation();
 
-			async.series([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's good!"), false, delayTime),
+			self.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's great!"), false, delayTime),
 			]);
+
+			if (!user.isOnBoarded) {
+				await self.checkAndFinishOnBoarding();
+			}
 		}
 	}
 
@@ -191,42 +194,62 @@ class AppointmentLogic extends ConversationLogic {
 	async askForServiceName() {
 
 		const self = this;
-		const {user} = self;
-		const {reply} = self;
-		const {conversationData} = self;
+		const {user, reply, conversationData} = self;
 
 		if (conversationData.payload) {
 
+			//if the user said he wants to send promotion
 			if (conversationData.payload.id === 1) {
 
 				//ask which service
 				const question = self.setCurrentQuestion(sendPromotionsQuestions.serviceName, "text");
 
+				//get the service list
+				let appointmentTypes = await self.acuityLogic.getAppointmentTypes();
+
+				//facebook allow maximum 11 qr buttons
+				const appointmentTypesArray = MyUtils.getRandomFromArray(appointmentTypes, 11);
+
+				//create array of qr with the services
+				const servicesInQrButtons = appointmentTypesArray.map((service) => {
+					return facebookResponse.getQRButton("text", service.name, service);
+				});
+
+				//save last qr
+				const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement(question.text, servicesInQrButtons));
+
 				//save the user
 				await self.DBManager.saveUser(user);
 
 				//send messages
-				async.series([
+				self.sendMessages([
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(question.text), false, delayTime),
-				], MyUtils.getErrorMsg());
+					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
+				]);
 
-			} else {
-
-				user.conversationData = null;
-				user.session = null;
-
-				//save the user
-				self.DBManager.saveUser(user).then(function () {
-					reply(facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false);
-				});
 			}
-		} else {
-			//send qr again
-			async.series([
+			//if the user wants to quit
+			else {
+
+				if (!user.isOnBoarded) {
+					await self.checkAndFinishOnBoarding();
+				} else {
+					user.conversationData = null;
+					user.session = null;
+
+					//save the user
+					self.DBManager.saveUser(user).then(function () {
+						reply(facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false);
+					});
+				}
+			}
+		}
+		//send qr again
+		else {
+			self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-			], MyUtils.getErrorMsg());
+			]);
 		}
 	}
 
@@ -237,32 +260,35 @@ class AppointmentLogic extends ConversationLogic {
 	async askForTemplate() {
 
 		const self = this;
-		const {user} = self;
-		const {reply} = self;
-		const {conversationData} = self;
+		const {user, reply, conversationData} = self;
 
-		//get the service list
-		const appointmentTypes = await self.acuityLogic.getAppointmentTypes();
+		if (conversationData.payload) {
 
-		//init the session
-		user.session = {};
+			//init the session
+			user.session = {};
 
-		//get the service by the user input
-		const service = MyUtils.getSimilarityFromArray(conversationData.input, appointmentTypes, 'name');
-		user.session[user.conversationData.lastQuestion.field] = service;
+			//get the service by the user input
+			user.session[user.conversationData.lastQuestion.field] = conversationData.payload;
 
-		//set current question
-		const question = self.setCurrentQuestion(sendPromotionsQuestions.whichTemplate, "payload");
+			//set current question
+			const question = self.setCurrentQuestion(sendPromotionsQuestions.whichTemplate, "payload");
 
-		//save the user
-		await self.DBManager.saveUser(user);
+			//save the user
+			await self.DBManager.saveUser(user);
 
-		//send messages
-		async.series([
-			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(question.text), true),
-			//get coupons
-			MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
-		], MyUtils.getErrorMsg());
+			//send messages
+			self.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(question.text), true),
+				//get coupons
+				MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
+			]);
+		} else {
+			//send qr again
+			self.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+			]);
+		}
 	}
 
 	/**
@@ -271,9 +297,7 @@ class AppointmentLogic extends ConversationLogic {
 	 */
 	async askForPromotionConfirmation() {
 		const self = this;
-		const {user} = self;
-		const {reply} = self;
-		const {conversationData} = self;
+		const {user, reply, conversationData} = self;
 
 		//check valid answer
 		if (MyUtils.isJson(conversationData.input)) {
@@ -295,6 +319,7 @@ class AppointmentLogic extends ConversationLogic {
 				facebookResponse.getQRButton("text", "Yes, send it.", {answer: "yes"}),
 				facebookResponse.getQRButton("text", "No, don't send it.", {answer: "no"})
 			]);
+
 			//set current question
 			user.conversationData.lastQuestion = currentQuestion;
 
@@ -302,15 +327,15 @@ class AppointmentLogic extends ConversationLogic {
 			await self.DBManager.saveUser(user);
 
 			//send messages
-			async.series([
+			self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-			], MyUtils.getErrorMsg());
+			]);
 		} else {
 			//case he was typing
-			async.series([
+			self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please select the template you like. Don't worry, I am not going to send promotions without your confirmation."), false),
-			], MyUtils.getErrorMsg());
+			]);
 		}
 	}
 
@@ -320,17 +345,15 @@ class AppointmentLogic extends ConversationLogic {
 	 */
 	async sendPromotionToUsers() {
 		const self = this;
-		const {user} = self;
-		const {reply} = self;
-		const {conversationData} = self;
+		const {user, reply, conversationData} = self;
 
 		//check valid payload
 		if (!conversationData.payload) {
 			//send qr again
-			async.series([
+			self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-			], MyUtils.getErrorMsg());
+			]);
 			return;
 		}
 
@@ -394,15 +417,39 @@ class AppointmentLogic extends ConversationLogic {
 			await self.clearConversation();
 
 			//send messages
-			async.series([
+			self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"), true),
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
-			], MyUtils.getErrorMsg());
+			]);
 		} else {
-			await self.clearConversation();
-			reply(facebookResponse.getTextMessage("Ok boss"), false);
+			if (!user.isOnBoarded) {
+				await self.checkAndFinishOnBoarding();
+			} else {
+				await self.clearConversation();
+				reply(facebookResponse.getTextMessage("Ok boss"), false);
+			}
 		}
+	}
+
+	/**
+	 * finish on boarding in case the user still didn't finish it
+	 * @returns {Promise.<void>}
+	 */
+	async checkAndFinishOnBoarding() {
+		const self = this;
+		const {user, reply} = self;
+
+		const conversationData = {
+			context: "WELCOME",
+			intent: "welcome acuity integrated",
+			lastQuestion: {id: 4},
+			payload: {id: 1}
+		};
+		user.conversationData = conversationData;
+		const WelcomeLogic = require('./WelcomeLogic');
+		const welcomeLogic = new WelcomeLogic(user, conversationData);
+		await welcomeLogic.processIntent();
 	}
 
 	/**
@@ -482,7 +529,7 @@ class AppointmentLogic extends ConversationLogic {
 	 */
 	sendEmailToClient(client, appointmentType, template) {
 		const self = this;
-		const {user} = self;
+		const {user, reply, conversationData} = self;
 
 		if (!client.email) {
 			return;

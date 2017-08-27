@@ -36,7 +36,8 @@ class DBManager {
 			customerSendLimit: Object,
 			oldCustomersRange: Object,
 			lastMessageTime: Number,
-			timezone: String
+			timezone: String,
+			isOnBoarded: Boolean
 		}, {minimize: false});
 
 		let blackListSchema = new Schema({

@@ -508,17 +508,17 @@ class AcuityLogic {
 				user.lastMessageTime = new Date().valueOf();
 
 				//start the conversation in the welcomeLogic class
-				const welcomeLogic = new WelcomeLogic(user);
-				const conversationData = {
+				const welcomeLogic = new WelcomeLogic(user, {
 					intent: "welcome acuity integrated",
 					context: "WELCOME",
 					setDelay: true
-				};
+				});
 
-				const replyFunction = zoiBot.getBotReplyFunction(user);
-				const botTypingFunction = zoiBot.getBotWritingFunction(user);
+				//wait a little bit before continue with the conversation
+				setTimeout(function () {
+					welcomeLogic.processIntent();
+				}, ZoiConfig.times.firstIntegratedDelay);
 
-				welcomeLogic.processIntent(conversationData, botTypingFunction, null, replyFunction);
 			} else {
 				MyLog.log("Already integrated with Acuity");
 			}

@@ -146,23 +146,23 @@ class ListenLogic {
 			//check the intent
 			switch (conversationData.context) {
 				case "WELCOME":
-					let welcomeLogic = new WelcomeLogic(user, conversationData);
-					welcomeLogic.processIntent(conversationData, setBotTyping, payload, reply);
+					const welcomeLogic = new WelcomeLogic(user, conversationData);
+					welcomeLogic.processIntent(payload);
 					break;
 				case "APPOINTMENT":
-					let appointmentLogic = new AppointmentLogic(user, conversationData);
+					const appointmentLogic = new AppointmentLogic(user, conversationData);
 					appointmentLogic.processIntent();
 					break;
 				case "CLIENT":
-					let clientLogic = new ClientLogic(user, conversationData);
+					const clientLogic = new ClientLogic(user, conversationData);
 					clientLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERAL":
-					let generalLogic = new GeneralLogic(user, conversationData);
+					const generalLogic = new GeneralLogic(user, conversationData);
 					generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERIC":
-					let genericLogic = new GenericLogic(user, conversationData);
+					const genericLogic = new GenericLogic(user, conversationData);
 					genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				default:
@@ -176,7 +176,7 @@ class ListenLogic {
 
 			try {
 
-				let user = await self.DBManager.getUser({_id: payload.sender.id});
+				const user = await self.DBManager.getUser({_id: payload.sender.id});
 
 				user.conversationData = null;
 				await self.DBManager.saveUser(user).then(function () {
