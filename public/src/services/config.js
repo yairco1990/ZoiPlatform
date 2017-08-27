@@ -18,7 +18,7 @@ angular.module('Zoi.services.config', [])
 				}
 			};
 
-			var selectedEnvironment = ENVIRONMENTS.LOCAL;
+			var selectedEnvironment = ENVIRONMENTS.DEV;
 
 			return {
 				getServerUrl: function () {

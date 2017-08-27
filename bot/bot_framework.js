@@ -5,7 +5,6 @@ const EventEmitter = require('events').EventEmitter;
 const request = require('request-promise');
 const crypto = require('crypto');
 const MyUtils = require('../interfaces/utils');
-const GeneralTest = require('../tests/general');
 const RequestLogic = require('../logic/Listeners/RequestLogic');
 const MyLog = require('../interfaces/MyLog');
 
