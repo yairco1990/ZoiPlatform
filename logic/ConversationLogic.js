@@ -88,8 +88,14 @@ class ConversationLogic {
 	 * send messages in order
 	 * @param messages
 	 */
-	sendMessages(messages) {
-		async.series(messages, MyUtils.getErrorMsg());
+	async sendMessages(messages) {
+		async.series(messages, function (err) {
+			if (err) {
+				MyLog.error("Failed to send messages", err);
+				return false;
+			}
+			return true;
+		});
 	}
 
 	/**

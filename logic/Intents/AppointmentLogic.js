@@ -150,41 +150,38 @@ class AppointmentLogic extends ConversationLogic {
 			));
 
 			//save the user
-			self.DBManager.saveUser(user).then(function () {
+			await self.DBManager.saveUser(user);
 
-				let firstText = ` noticed that you have ${slots.length} openings on your calendars tomorrow`;
-				let secondText = "I can help you fill the openings by promoting to your customers";
-				if (slots.length > 10) {
-					firstText = " noticed that you have more than 10 openings on your calendars tomorrow";
-				}
-				if (conversationData.skipHey) {
-					firstText = "I also" + firstText;
-				} else if (conversationData.firstPromotion) {
-					//replace the order
-					secondText = "I" + firstText;
-					firstText = "Hey boss, we are going to launch our first promotion together! *Excited* ☺";
-				} else {
-					firstText = "Hey boss, I" + firstText + ".";
-				}
+			let firstText = ` noticed that you have ${slots.length} openings on your calendars tomorrow`;
+			let secondText = "I can help you fill the openings by promoting to your customers";
+			if (slots.length > 10) {
+				firstText = " noticed that you have more than 10 openings on your calendars tomorrow";
+			}
+			if (conversationData.skipHey) {
+				firstText = "I also" + firstText;
+			} else if (conversationData.firstPromotion) {
+				//replace the order
+				secondText = "I" + firstText;
+				firstText = "Hey boss, we are going to launch our first promotion together! *Excited* ☺";
+			} else {
+				firstText = "Hey boss, I" + firstText + ".";
+			}
 
-				self.sendMessages([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(secondText), true, delayTime),
-					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
-				]);
+			await self.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(secondText), true, delayTime),
+				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
+			]);
 
-			});
 		} else {
 			await self.clearConversation();
 
-			self.sendMessages([
+			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's great!"), false, delayTime),
 			]);
 
 			if (!user.isOnBoarded) {
-				setTimeout(() => {
-					self.checkAndFinishOnBoarding(true);
-				}, 3000);
+				await self.checkAndFinishOnBoarding(true);
 			}
 		}
 	}
@@ -224,7 +221,7 @@ class AppointmentLogic extends ConversationLogic {
 				await self.DBManager.saveUser(user);
 
 				//send messages
-				self.sendMessages([
+				await self.sendMessages([
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
 					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 				]);
@@ -240,9 +237,9 @@ class AppointmentLogic extends ConversationLogic {
 					user.session = null;
 
 					//save the user
-					self.DBManager.saveUser(user).then(function () {
-						reply(facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false);
-					});
+					await self.DBManager.saveUser(user);
+
+					reply(facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false);
 				}
 			}
 		}
@@ -419,16 +416,14 @@ class AppointmentLogic extends ConversationLogic {
 			await self.clearConversation();
 
 			//send messages
-			self.sendMessages([
+			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll send it right away. 👏"), true),
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + clients.length + " of your customers."), true, delayTime),
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
 			]);
 
 			if (!user.isOnBoarded) {
-				setTimeout(() => {
-					self.checkAndFinishOnBoarding(true);
-				}, 3000);
+				self.checkAndFinishOnBoarding(true);
 			}
 
 		} else {
