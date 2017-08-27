@@ -19,7 +19,7 @@ class ConversationLogic {
 		this.reply = zoiBot.getBotReplyFunction(user);
 		this.botTyping = zoiBot.getBotWritingFunction(user);
 		this.DBManager = require('../dal/DBManager');
-		if (user.integrations.Acuity) {
+		if (user.integrations && user.integrations.Acuity) {
 			this.acuityLogic = new AcuityLogic(user.integrations.Acuity.accessToken);
 		}
 	}
