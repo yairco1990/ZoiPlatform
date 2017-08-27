@@ -24,7 +24,7 @@ const sendPromotionsQuestions = {
 	},
 	serviceName: {
 		id: 1,
-		text: "Which service (from your Acuity appointment types) would you like to promote?",
+		text: "Which service would you like to promote?",
 		field: "service"
 	},
 	whichTemplate: {

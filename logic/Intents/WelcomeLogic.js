@@ -193,7 +193,7 @@ class WelcomeLogic extends ConversationLogic {
 		await self.DBManager.saveUser(user);
 
 		self.sendMessages([
-			MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Awesome! You made your first integration! 👏. Can we proceed?", [
+			MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Awesome! You made your first integration! 👏 Can we proceed?", [
 				facebookResponse.getQRButton('text', "Yes we can!", {id: 1})
 			]), false, delayTime)
 		]);
