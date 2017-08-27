@@ -2,7 +2,6 @@
  * In this class we process the user intent after we realized
  * that the intent was about the welcome conversation
  */
-const ZoiBot = require('../../bot/ZoiBot');
 const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment-timezone');
@@ -83,8 +82,9 @@ class WelcomeLogic extends ConversationLogic {
 
 			try {
 
+				const zoiBot = require('../../bot/ZoiBot');
 				//get user profile
-				const profile = await ZoiBot.getProfile(senderId);
+				const profile = await zoiBot.getProfile(senderId);
 				const displayName = profile.first_name + ' ' + profile.last_name;
 
 				//delete the user if exist
