@@ -89,7 +89,7 @@ const Environments = {
 		serverUrl: "https://bdd1bb96.ngrok.io",
 		clientUrl: "https://bdd1bb96.ngrok.io/p/#",
 		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
-		NLP_URL: "http://52.177.185.253:5000",
+		NLP_URL: "http://13.82.50.249:5000",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
