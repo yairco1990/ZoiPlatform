@@ -474,6 +474,12 @@ class AcuityLogic {
 			//set timezone
 			user.timezone = userData.userDetails.timezone;
 
+			//if the user has a default timezone - change it
+			if (user.timezone === "ampm") {
+				user.timezone = "America/Los_Angeles";
+				user.integrations.Acuity.userDetails.timezone = "America/Los_Angeles";
+			}
+
 			//set default values
 			user.nextMorningBriefDate = moment().tz(user.timezone).hours(ZoiConfig.times.defaultMorningBriefHours).minutes(0).add(1, 'days').valueOf();
 			user.nextOldCustomersDate = moment().tz(user.timezone).hours(ZoiConfig.times.defaultOldCustomersHours).minutes(0).add(1, 'days').valueOf();
