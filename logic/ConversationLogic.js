@@ -88,13 +88,15 @@ class ConversationLogic {
 	 * send messages in order
 	 * @param messages
 	 */
-	async sendMessages(messages) {
-		async.series(messages, function (err) {
-			if (err) {
-				MyLog.error("Failed to send messages", err);
-				return false;
-			}
-			return true;
+	sendMessages(messages) {
+		return new Promise((resolve, reject) => {
+			async.series(messages, function (err) {
+				if (err) {
+					MyLog.error("Failed to send messages", err);
+					reject(false);
+				}
+				resolve(true);
+			});
 		});
 	}
 
