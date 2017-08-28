@@ -252,7 +252,7 @@ class WelcomeLogic extends ConversationLogic {
 			const messages = [];
 
 			if (conversationData.userFinishedFirstPromotion) {
-				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Good job boss 👍"), true), delayTime * 2);
+				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Good job boss 👍"), true, delayTime * 2));
 			} else {
 				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("No problem, boss!"), true));
 			}
