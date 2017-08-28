@@ -475,7 +475,7 @@ class AcuityLogic {
 			user.timezone = userData.userDetails.timezone;
 
 			//if the user has a default timezone - change it
-			if (user.timezone === "ampm") {
+			if (!user.timezone || user.timezone === "ampm") {
 				user.timezone = "America/Los_Angeles";
 				user.integrations.Acuity.userDetails.timezone = "America/Los_Angeles";
 			}
