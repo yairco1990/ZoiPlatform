@@ -241,7 +241,7 @@ class WelcomeLogic extends ConversationLogic {
 			self.setCurrentQuestion(welcomeQuestions.noProblem);
 
 			//save the response
-			const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("Can't wait to start getting more action to your business!  💪",
+			const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("We are going to bring a lot of customers to our business together! 💪",
 				[
 					facebookResponse.getQRButton('text', "Thank's, Zoi.", {id: 0}),
 				]
