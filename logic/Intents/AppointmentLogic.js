@@ -67,12 +67,12 @@ class AppointmentLogic extends ConversationLogic {
 	/**
 	 * get appointments
 	 */
-	getAppointments() {
+	async getAppointments() {
 		const self = this;
 		const {user} = self;
 		const {reply} = self;
 
-		self.sendMessages([
+		await self.sendMessages([
 			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
 			MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Here is your schedule for today boss:", [
 				facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
@@ -140,6 +140,7 @@ class AppointmentLogic extends ConversationLogic {
 		//get slots
 		const slots = await self.acuityLogic.getAvailability(options);
 
+		//if there are open slots
 		if (slots.length) {
 			//save the response
 			const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("Do you want me to promote your openings?",
@@ -173,7 +174,9 @@ class AppointmentLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 			]);
 
-		} else {
+		}
+		//if there aren't open slots
+		else {
 			await self.clearConversation();
 
 			await self.sendMessages([
@@ -245,7 +248,7 @@ class AppointmentLogic extends ConversationLogic {
 		}
 		//send qr again
 		else {
-			self.sendMessages([
+			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			]);
@@ -276,14 +279,14 @@ class AppointmentLogic extends ConversationLogic {
 			await self.DBManager.saveUser(user);
 
 			//send messages
-			self.sendMessages([
+			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(question.text), true),
 				//get coupons
 				MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
 			]);
 		} else {
 			//send qr again
-			self.sendMessages([
+			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			]);
@@ -326,13 +329,13 @@ class AppointmentLogic extends ConversationLogic {
 			await self.DBManager.saveUser(user);
 
 			//send messages
-			self.sendMessages([
+			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			]);
 		} else {
 			//case he was typing
-			self.sendMessages([
+			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please select the template you like. Don't worry, I am not going to send promotions without your confirmation."), false),
 			]);
 		}
@@ -349,7 +352,7 @@ class AppointmentLogic extends ConversationLogic {
 		//check valid payload
 		if (!conversationData.payload) {
 			//send qr again
-			self.sendMessages([
+			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			]);
@@ -423,7 +426,7 @@ class AppointmentLogic extends ConversationLogic {
 			]);
 
 			if (!user.isOnBoarded) {
-				self.checkAndFinishOnBoarding(true);
+				await self.checkAndFinishOnBoarding(true);
 			}
 
 		} else {
