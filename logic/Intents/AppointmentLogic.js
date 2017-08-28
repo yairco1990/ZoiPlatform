@@ -34,7 +34,7 @@ const sendPromotionsQuestions = {
 	},
 	areYouSure: {
 		id: 3,
-		text: "Just so we clear, I am about to send {promotionName} promotion for {serviceName} to your customers?"
+		text: "Just to be clear, I am about to send {promotionName} promotion for {serviceName} to your customers?"
 	}
 };
 
