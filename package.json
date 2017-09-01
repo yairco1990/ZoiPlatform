@@ -4,7 +4,7 @@
   "description": "Test Facebook messenger bot",
   "main": "bot/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --timeout 15000 tests"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +16,7 @@
     "async": "2.5.0",
     "body-parser": "1.17.2",
     "cookie-parser": "1.4.3",
+    "cors": "^2.8.4",
     "deepcopy": "0.6.3",
     "express": "4.15.3",
     "express-session": "1.15.4",
@@ -43,7 +44,9 @@
   },
   "devDependencies": {
     "ava": "0.19.1",
+    "chai": "^4.1.1",
     "proxyquire": "1.8.0",
+    "require-inject": "^1.4.2",
     "sinon": "2.3.4"
   },
   "cloud-repo-tools": {

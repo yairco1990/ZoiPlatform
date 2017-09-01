@@ -10,6 +10,9 @@ const _ = require('underscore');
 
 let Utils = {
 
+	SUCCESS: "success",
+	ERROR: "error",
+
 	/**
 	 * getJSON:  REST get request returning JSON object(s)
 	 * @param options: http options object

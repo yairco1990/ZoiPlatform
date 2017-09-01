@@ -1,3 +1,8 @@
+const ONE_SECOND = 1000;
+const ONE_MINUTE = 60 * ONE_SECOND;
+const ONE_HOUR = ONE_MINUTE * 60;
+const ONE_DAY = ONE_HOUR * 24;
+
 const DEV_BOT_DETAILS = {
 	token: "EAAFGPKITtcEBAEoxVuLcraZCX6Ip22dKaBFxQ6Kmz8XBC96VMR43edopkuDc7tXPA4FKtzOBavmG6d9StvKGZCc64vAKTmOphZBdthhgp8ClAZCLXRvijEY9MJqPMFzAVZCcaxlDZAXjkmSOJYJ08gCcwoSnIGZB3ZBCiZCNVXNm6xgZDZD",
 	verify: "testtoken",
@@ -14,7 +19,7 @@ const Environments = {
 		appId: "358701207893441",
 		serverUrl: "http://localhost:3000",
 		clientUrl: "http://local.host:443/p/#",
-		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
+		mongoUrl: "mongodb://localhost:27017/zoi_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
@@ -30,14 +35,15 @@ const Environments = {
 		writeErrors: false,
 		writeInfo: false,
 		times: {
-			oldCustomersIntervalTime: 1000 * 60 * 2,
-			morningBriefIntervalTime: 1000 * 60 * 2,
-			oneDay: 1000 * 60 * 60 * 24,
-			clearOldConversationRange: 1000 * 60 * 60 * 4,
+			oldCustomersIntervalTime: ONE_MINUTE * 2,
+			morningBriefIntervalTime: ONE_MINUTE * 2,
+			oldConversationIntervalTime: ONE_MINUTE * 2,
+			oneDay: ONE_DAY,
+			clearOldConversationRange: ONE_MINUTE,
 			oldCustomersForwardDays: 30,
 			oldCustomersPreviousDays: 30,
-			wishZoiWillDelay: 2000,
-			firstIntegratedDelay: 6000,
+			wishZoiWillDelay: 1,
+			firstIntegratedDelay: ONE_SECOND * 6,
 			defaultMorningBriefHours: 9,
 			defaultOldCustomersHours: 12
 		},
@@ -51,7 +57,7 @@ const Environments = {
 		appId: "358701207893441",
 		serverUrl: "https://2fc4a7c1.ngrok.io",
 		clientUrl: "https://2fc4a7c1.ngrok.io/p/#",
-		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
+		mongoUrl: "mongodb://localhost:27017/zoi_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
@@ -67,14 +73,15 @@ const Environments = {
 		writeErrors: true,
 		writeInfo: true,
 		times: {
-			oldCustomersIntervalTime: 1000 * 60 * 2,
-			morningBriefIntervalTime: 1000 * 60 * 2,
-			oneDay: 1000 * 60 * 60 * 24,
-			clearOldConversationRange: 1000 * 60 * 60 * 4,
+			oldCustomersIntervalTime: ONE_MINUTE * 2,
+			morningBriefIntervalTime: ONE_MINUTE * 2,
+			oldConversationIntervalTime: ONE_MINUTE * 2,
+			oneDay: ONE_DAY,
+			clearOldConversationRange: ONE_MINUTE,
 			oldCustomersForwardDays: 30,
 			oldCustomersPreviousDays: 30,
-			wishZoiWillDelay: 2000,
-			firstIntegratedDelay: 6000,
+			wishZoiWillDelay: 1,
+			firstIntegratedDelay: ONE_SECOND * 6,
 			defaultMorningBriefHours: 9,
 			defaultOldCustomersHours: 12
 		},
@@ -104,14 +111,15 @@ const Environments = {
 		writeErrors: true,
 		writeInfo: true,
 		times: {
-			oldCustomersIntervalTime: 1000 * 60 * 2,
-			morningBriefIntervalTime: 1000 * 60 * 2,
-			oneDay: 1000 * 60 * 60 * 24,
-			clearOldConversationRange: 1000 * 60 * 60 * 4,
+			oldCustomersIntervalTime: ONE_MINUTE * 2,
+			morningBriefIntervalTime: ONE_MINUTE * 2,
+			oldConversationIntervalTime: ONE_MINUTE * 2,
+			oneDay: ONE_DAY,
+			clearOldConversationRange: ONE_HOUR * 4,
 			oldCustomersForwardDays: 30,
 			oldCustomersPreviousDays: 30,
-			wishZoiWillDelay: 2000,
-			firstIntegratedDelay: 6000,
+			wishZoiWillDelay: 1,
+			firstIntegratedDelay: ONE_SECOND * 6,
 			defaultMorningBriefHours: 9,
 			defaultOldCustomersHours: 12
 		},
@@ -136,20 +144,21 @@ const Environments = {
 			"redirectUri": "https://zoiai.com:3000/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
-		delayTime: 2500,
+		delayTime: ONE_SECOND * 2.5,
 		generalPromotionDeviation: 3,
 		writeDebug: true,
 		writeErrors: true,
 		writeInfo: true,
 		times: {
-			oldCustomersIntervalTime: 1000 * 60 * 3,
-			morningBriefIntervalTime: 1000 * 60 * 3,
-			oneDay: 1000 * 60 * 60 * 24,
-			clearOldConversationRange: 1000 * 60 * 60 * 4,
+			oldCustomersIntervalTime: ONE_MINUTE * 3,
+			morningBriefIntervalTime: ONE_MINUTE * 3,
+			oldConversationIntervalTime: ONE_MINUTE * 3,
+			oneDay: ONE_DAY,
+			clearOldConversationRange: ONE_HOUR * 4,
 			oldCustomersForwardDays: 30,
 			oldCustomersPreviousDays: 30,
-			wishZoiWillDelay: 2000,
-			firstIntegratedDelay: 6000,
+			wishZoiWillDelay: ONE_SECOND,
+			firstIntegratedDelay: ONE_SECOND * 6,
 			defaultMorningBriefHours: 9,
 			defaultOldCustomersHours: 12
 		},
@@ -163,6 +172,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.PRODUCTION;
+const selectedEnvironment = Environments.LOCAL;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

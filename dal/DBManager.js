@@ -5,6 +5,12 @@ const mongoose = require('mongoose');
 const MyLog = require('../interfaces/MyLog');
 const ZoiConfig = require('../config');
 
+//models
+const User = require('./models/User');
+const BlackList = require('./models/BlackList');
+const Input = require('./models/Input');
+const PromotionTypes = require('./models/PromotionType');
+
 class DBManager {
 
 	constructor() {
@@ -13,62 +19,9 @@ class DBManager {
 			useMongoClient: true
 		};
 
-		mongoose.connect(ZoiConfig.mongoUrl, options);
-
-		let Schema = mongoose.Schema;
-
-		let userSchema = new Schema({
-			_id: String,
-			fullname: String,
-			email: String,
-			conversationData: Object,
-			session: Object,
-			integrations: Object,
-			metadata: Object,
-			wishList: [String],
-			profile: Object,
-			startedAt: String,
-			nextMorningBriefDate: Number,
-			nextOldCustomersDate: Number,
-			morningBriefTime: String,
-			defaultCalendar: Object,
-			promptNewCustomers: Boolean,
-			customerSendLimit: Object,
-			oldCustomersRange: Object,
-			lastMessageTime: Number,
-			timezone: String,
-			isOnBoarded: Boolean
-		}, {minimize: false});
-
-		let blackListSchema = new Schema({
-			_id: String,
-			blockDate: Number,
-			blockDateString: String
-		});
-
-		let inputsSchema = new Schema({
-			_id: {
-				type: Schema.ObjectId, default: function () {
-					return new mongoose.Types.ObjectId()
-				}
-			},
-			userId: String,
-			input: String,
-			intent: String,
-			score: Number
-		}, {minimize: false});
-
-		let promotionTypesSchema = new Schema({
-			_id: Number,
-			name: String
-		});
-
-		this.User = mongoose.model('User', userSchema);
-		this.BlackList = mongoose.model('BlackList', blackListSchema);
-		this.Inputs = mongoose.model('Inputs', inputsSchema);
-		this.PromotionTypes = mongoose.model('PromotionTypes', promotionTypesSchema);
-
-		MyLog.log("DB synced");
+		mongoose.connect(ZoiConfig.mongoUrl, options)
+			.once('open', () => MyLog.log(`DB Synced. Mongo Url = ${ZoiConfig.mongoUrl}`))
+			.on('error', (err) => MyLog.error("Failed to sync DB", err));
 	}
 
 	/**
@@ -77,10 +30,8 @@ class DBManager {
 	 */
 	getUsers(where) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
-			self.User.find(where, function (err, users) {
+			User.find(where, function (err, users) {
 				if (err) {
 					reject(err);
 				} else {
@@ -95,10 +46,8 @@ class DBManager {
 	 */
 	getUser(where, throwErrorIfNull = true) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
-			self.User.findOne(where, function (err, user) {
+			User.findOne(where, function (err, user) {
 				if (err) {
 					reject(err);
 				} else if (throwErrorIfNull && !user) {
@@ -116,13 +65,11 @@ class DBManager {
 	 */
 	saveUser(user) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
 
-			let userObj = new self.User(user);
+			let userObj = new User(user);
 
-			self.User.findOneAndUpdate(
+			User.findOneAndUpdate(
 				{_id: user._id}, // find a document with that filter
 				userObj, // document to insert when nothing was found
 				{upsert: true, new: true}, // options
@@ -143,10 +90,8 @@ class DBManager {
 	 */
 	deleteUser(where) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
-			self.User.remove(where, function (err) {
+			User.remove(where, function (err) {
 				if (err) {
 					reject(err);
 				}
@@ -162,11 +107,9 @@ class DBManager {
 	 */
 	getBlackList(where) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
 
-			self.BlackList.find(where, function (err, user) {
+			BlackList.find(where, function (err, user) {
 				if (err) {
 					reject(err);
 				} else {
@@ -182,13 +125,11 @@ class DBManager {
 	 */
 	addEmailToUnsubscribe(email) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
 
-			let emailObj = new self.BlackList(email);
+			let emailObj = new BlackList(email);
 
-			self.BlackList.findOneAndUpdate(
+			BlackList.findOneAndUpdate(
 				{_id: email}, // find a document with that filter
 				emailObj, // document to insert when nothing was found
 				{upsert: true, new: true}, // options
@@ -209,10 +150,8 @@ class DBManager {
 	 */
 	getPromotionsTypes(where) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
-			self.PromotionTypes.find(where, function (err, users) {
+			PromotionTypes.find(where, function (err, users) {
 				if (err) {
 					reject(err);
 				} else {
@@ -228,10 +167,8 @@ class DBManager {
 	 */
 	addPromotionsType(promotionType) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
-			self.PromotionTypes.create(promotionType, function (err, doc) { // callback
+			PromotionTypes.create(promotionType, function (err, doc) { // callback
 					if (err) {
 						reject(err);
 					} else {
@@ -248,11 +185,9 @@ class DBManager {
 	 */
 	addInput(inputObj) {
 
-		let self = this;
-
 		return new Promise(function (resolve, reject) {
 
-			self.Inputs.create(inputObj, function (err, doc) { // callback
+			Input.create(inputObj, function (err, doc) { // callback
 					if (err) {
 						reject(err);
 					} else {

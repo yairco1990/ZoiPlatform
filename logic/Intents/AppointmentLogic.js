@@ -48,18 +48,18 @@ class AppointmentLogic extends ConversationLogic {
 	/**
 	 * process the user input
 	 */
-	processIntent() {
+	async processIntent() {
 		const self = this;
 
 		switch (self.conversationData.intent) {
 			case "appointment what is my schedule":
-				self.getAppointments();
+				await self.getAppointments();
 				break;
 			case "appointment show my schedule":
-				self.getAppointments();
+				await self.getAppointments();
 				break;
 			case "appointment send promotions":
-				self.startPromotionsConvo();
+				await self.startPromotionsConvo();
 				break;
 		}
 	};
@@ -72,14 +72,20 @@ class AppointmentLogic extends ConversationLogic {
 		const {user} = self;
 		const {reply} = self;
 
-		await self.sendMessages([
-			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
-			MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Here is your schedule for today boss:", [
-				facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
-			]), true, delayTime),
-			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
-		]);
+		try {
+			await self.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Here is your schedule for today boss:", [
+					facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
+				]), true, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
+			]);
 
+			return MyUtils.SUCCESS;
+		} catch (err) {
+			MyLog.error("Failed to get appointments", err);
+			return MyUtils.ERROR;
+		}
 	};
 
 
@@ -98,7 +104,7 @@ class AppointmentLogic extends ConversationLogic {
 				await this.askForPromotion();
 			}
 			else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
-				await this.askForServiceName();
+				await this.askForService();
 			}
 			else if (lastQuestionId === sendPromotionsQuestions.serviceName.id) {
 				await this.askForTemplate();
@@ -109,22 +115,21 @@ class AppointmentLogic extends ConversationLogic {
 			else if (lastQuestionId === sendPromotionsQuestions.areYouSure.id) {
 				await this.sendPromotionToUsers();
 			}
+			return MyUtils.SUCCESS;
 		} catch (err) {
 			MyLog.error(err);
 			MyLog.error("Error on send promotions. userId => " + user._id);
 			await self.clearConversation();
+			return MyUtils.ERROR;
 		}
 	}
 
 	/**
 	 * ask the user if he want to promote openings
-	 * @returns {Promise.<void>}
 	 */
 	async askForPromotion() {
 		const self = this;
-		const {user} = self;
-		const {reply} = self;
-		const {conversationData} = self;
+		const {user, reply, conversationData} = self;
 
 		//set current question
 		self.setCurrentQuestion(sendPromotionsQuestions.toPromote);
@@ -174,6 +179,7 @@ class AppointmentLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 			]);
 
+			return "ThereAreOpenSlots";
 		}
 		//if there aren't open slots
 		else {
@@ -185,15 +191,18 @@ class AppointmentLogic extends ConversationLogic {
 
 			if (!user.isOnBoarded) {
 				await self.checkAndFinishOnBoarding(true);
+
+				return "ThereAreNoOpenSlots - userNotOnBoarded";
 			}
+
+			return "ThereAreNoOpenSlots - userOnBoarded";
 		}
 	}
 
 	/**
 	 * ask for service name
-	 * @returns {Promise.<void>}
 	 */
-	async askForServiceName() {
+	async askForService() {
 
 		const self = this;
 		const {user, reply, conversationData} = self;
@@ -229,12 +238,15 @@ class AppointmentLogic extends ConversationLogic {
 					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 				]);
 
+				return "userGotServicesList";
 			}
 			//if the user wants to quit
 			else {
 
 				if (!user.isOnBoarded) {
 					await self.checkAndFinishOnBoarding(false);
+
+					return "userQuitPromotionProcess - finishOnBoarding";
 				} else {
 					user.conversationData = null;
 					user.session = null;
@@ -242,7 +254,12 @@ class AppointmentLogic extends ConversationLogic {
 					//save the user
 					await self.DBManager.saveUser(user);
 
-					reply(facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false);
+					//send messages
+					await self.sendMessages([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false)
+					]);
+
+					return "userQuitPromotionProcess";
 				}
 			}
 		}
@@ -252,12 +269,13 @@ class AppointmentLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			]);
+
+			return "sendPromotionsQuestionAgain";
 		}
 	}
 
 	/**
 	 * ask for template for promotion
-	 * @returns {Promise.<void>}
 	 */
 	async askForTemplate() {
 
@@ -284,18 +302,21 @@ class AppointmentLogic extends ConversationLogic {
 				//get coupons
 				MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
 			]);
+
+			return "userGotTemplateList";
 		} else {
 			//send qr again
 			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			]);
+
+			return "sendServicesAgain";
 		}
 	}
 
 	/**
 	 * ask from the owner to confirm the promotion
-	 * @returns {Promise.<void>}
 	 */
 	async askForPromotionConfirmation() {
 		const self = this;
@@ -333,17 +354,20 @@ class AppointmentLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			]);
+
+			return "userGotConfirmationMessage";
 		} else {
 			//case he was typing
 			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please select the template you like. Don't worry, I am not going to send promotions without your confirmation."), false),
 			]);
+
+			return "askForTemplateAgain";
 		}
 	}
 
 	/**
 	 * send the selected promotion to the users
-	 * @returns {Promise.<void>}
 	 */
 	async sendPromotionToUsers() {
 		const self = this;
@@ -356,7 +380,7 @@ class AppointmentLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
 				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 			]);
-			return;
+			return "sendConfirmationAgain";
 		}
 
 		if (conversationData.payload && conversationData.payload.answer === "yes") {
@@ -427,21 +451,28 @@ class AppointmentLogic extends ConversationLogic {
 
 			if (!user.isOnBoarded) {
 				await self.checkAndFinishOnBoarding(true);
+
+				return "promotionSent - proceed with onboarding";
 			}
+
+			return "promotionSent";
 
 		} else {
 			if (!user.isOnBoarded) {
 				await self.checkAndFinishOnBoarding(false);
+
+				return "finishOnBoarding";
 			} else {
 				await self.clearConversation();
 				reply(facebookResponse.getTextMessage("Ok boss"), false);
+
+				return "promotionRejected";
 			}
 		}
 	}
 
 	/**
 	 * finish on boarding in case the user still didn't finish it
-	 * @returns {Promise.<void>}
 	 */
 	async checkAndFinishOnBoarding(userFinishedFirstPromotion) {
 		const self = this;
@@ -458,6 +489,8 @@ class AppointmentLogic extends ConversationLogic {
 		const WelcomeLogic = require('./WelcomeLogic');
 		const welcomeLogic = new WelcomeLogic(user, conversationData);
 		await welcomeLogic.processIntent();
+
+		return MyUtils.SUCCESS;
 	}
 
 	/**
@@ -540,7 +573,7 @@ class AppointmentLogic extends ConversationLogic {
 		const {user, reply, conversationData} = self;
 
 		if (!client.email) {
-			return;
+			return false;
 		}
 
 		//send single email every loop
@@ -570,7 +603,7 @@ class AppointmentLogic extends ConversationLogic {
 		emailHtml = MyUtils.replaceAll('{{hoverColor}}', template.hoverColor, emailHtml);
 		emailHtml = MyUtils.replaceAll('{{color}}', template.color, emailHtml);
 		emailHtml = MyUtils.replaceAll('{{buttonText}}', EmailConfig.promotionsEmail.buttonText, emailHtml);
-		emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/unsubscribe?email=" + client.email, emailHtml);
+		emailHtml = MyUtils.replaceAll('{{unsubscribeHref}}', ZoiConfig.serverUrl + "/api/unsubscribe?email=" + client.email, emailHtml);
 
 		//set href
 		const appointmentParams = {
@@ -601,6 +634,8 @@ class AppointmentLogic extends ConversationLogic {
 			blockDate: moment().tz(user.integrations.Acuity.userDetails.timezone).add(blockRange, 'days').valueOf(),
 			blockDateString: moment().tz(user.integrations.Acuity.userDetails.timezone).add(blockRange, 'days').format('lll')
 		});
+
+		return true;
 	}
 }
 

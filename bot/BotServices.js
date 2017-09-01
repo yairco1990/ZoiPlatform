@@ -35,7 +35,7 @@ async function onMessageArrived(payload, reply) {
 		const textMessage = payload.message.text;
 
 		//process the input and return an answer to the sender
-		listenLogic.processInput(textMessage, payload, setTypingFunction, zoiBot, replyFunction);
+		listenLogic.processInput(textMessage, payload, setTypingFunction, replyFunction);
 	};
 
 	try {
@@ -99,7 +99,7 @@ async function onPostbackArrived(payload, reply) {
 			postbackLogic.processAction(postbackPayload, payload, setTypingFunction, zoiBot, replyFunction);
 		} else {
 			const listenLogic = new ListenLogic();
-			listenLogic.processInput(postbackPayload, payload, setTypingFunction, zoiBot, replyFunction);
+			listenLogic.processInput(postbackPayload, payload, setTypingFunction, replyFunction);
 		}
 	} catch (err) {
 		MyLog.error("Failed on onPostbackArrived", err);
@@ -108,7 +108,7 @@ async function onPostbackArrived(payload, reply) {
 
 module.exports = {
 	//set server routing
-	setRouting: function (app) {
+	setBotRouting: function (app) {
 
 		//ping request
 		app.get('/ping', function (req, res) {

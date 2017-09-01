@@ -5,6 +5,7 @@ const MyLog = require('../interfaces/MyLog');
 const GeneralLogic = require('./Intents/GeneralLogic');
 const ClientLogic = require('./Intents/ClientLogic');
 const ConversationLogic = require('./ConversationLogic');
+const facebookResponse = require('../interfaces/FacebookResponse');
 
 class BackgroundLogic {
 
@@ -116,7 +117,7 @@ class BackgroundLogic {
 	/**
 	 * clean old convos
 	 */
-	static startCleaningOldConvosInterval() {
+	static startCleaningOldConvosInterval(bot) {
 
 		setInterval(async () => {
 			try {
@@ -140,7 +141,7 @@ class BackgroundLogic {
 				});
 
 				//clear them
-				BackgroundLogic.clearOldConversations(usersWithOldConversation);
+				BackgroundLogic.clearOldConversations(bot, usersWithOldConversation);
 
 				if (usersWithOldConversation.length) {
 					MyLog.debug("Conversation cleared: " + usersWithOldConversation.length);
@@ -149,18 +150,24 @@ class BackgroundLogic {
 				MyLog.error(err);
 				MyLog.error("Error on startCleaningOldConvosInterval");
 			}
-		}, ZoiConfig.times.morningBriefIntervalTime);
+		}, ZoiConfig.times.oldConversationIntervalTime);
 	}
 
 	/**
 	 * clear customers with old conversation
 	 * @param usersWithOldConvos
+	 * @param bot
 	 */
-	static clearOldConversations(usersWithOldConvos) {
+	static clearOldConversations(bot, usersWithOldConvos) {
 		//iterate the users
 		usersWithOldConvos.forEach(async (user) => {
 			const conversationLogic = new ConversationLogic(user);
-			conversationLogic.clearConversation(user);
+			await conversationLogic.clearConversation(user);
+
+			const replyFunction = bot.getBotReplyFunction(user);
+
+			//send message to clean the last message(if there are some qr or buttons..)
+			replyFunction(facebookResponse.getTextMessage("I took a short break. Tell me if you need anything! :)"));
 		});
 	}
 

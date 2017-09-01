@@ -38,24 +38,24 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 		if (input.includes("ACTION")) {
 
 			if (input === "ACTION_BRIEF") {
-				self.listenLogic.processInput("morning brief", payload, setBotTyping, bot, reply);
+				self.listenLogic.processInput("morning brief", payload, setBotTyping, reply);
 			} else if (input === "ACTION_PROMOTIONS") {
-				self.listenLogic.processInput("send promotions", payload, setBotTyping, bot, reply);
+				self.listenLogic.processInput("send promotions", payload, setBotTyping, reply);
 			} else if (input === "ACTION_OLD_CUSTOMERS") {
-				self.listenLogic.processInput("old customers", payload, setBotTyping, bot, reply);
+				self.listenLogic.processInput("old customers", payload, setBotTyping, reply);
 			} else if (input === "ACTION_LEARN") {
-				self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, reply);
+				self.listenLogic.processInput("I want to leave review", payload, setBotTyping, reply);
 			} else if (input === "ACTION_GET_STARTED") {
-				self.listenLogic.processInput("resetzoi", payload, setBotTyping, bot, reply);
+				self.listenLogic.processInput("resetzoi", payload, setBotTyping, reply);
 			} else if (input === "ACTION_AGENDA") {
-				self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, bot, reply);
+				self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, reply);
 			} else if (input === "ACTION_LEARN") {
-				self.listenLogic.processInput("I want to leave review", payload, setBotTyping, bot, reply);
+				self.listenLogic.processInput("I want to leave review", payload, setBotTyping, reply);
 			} else if (input === "ACTION_MAILS") {
 				//check that the user made first integration with gmail
 				let user = await self.DBManager.getUser({_id: userId});
 				if (user.integrations.Gmail) {
-					self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, bot, reply);
+					self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, reply);
 				} else {
 					reply(facebookResponse.getButtonMessage("To see your unread emails, I need you to integrate with Gmail first... :)", [
 						facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, "full")

@@ -30,12 +30,11 @@ class ListenLogic {
 	/**
 	 * process intent with NLP and return response
 	 * @param setBotTyping - function, launch it if you want to send to the user that the bot is typing
-	 * @param bot - the bot object
 	 * @param payload - request object, contains sender details, message and other stuff
 	 * @param input - the user input
 	 * @param reply - send message to the user function
 	 */
-	async processInput(input, payload, setBotTyping, bot, reply) {
+	async processInput(input, payload, setBotTyping, reply) {
 
 		const self = this;
 
@@ -147,23 +146,23 @@ class ListenLogic {
 			switch (conversationData.context) {
 				case "WELCOME":
 					const welcomeLogic = new WelcomeLogic(user, conversationData);
-					welcomeLogic.processIntent(payload);
+					return await welcomeLogic.processIntent(payload);
 					break;
 				case "APPOINTMENT":
 					const appointmentLogic = new AppointmentLogic(user, conversationData);
-					appointmentLogic.processIntent();
+					return await appointmentLogic.processIntent();
 					break;
 				case "CLIENT":
 					const clientLogic = new ClientLogic(user, conversationData);
-					clientLogic.processIntent(conversationData, setBotTyping, payload, reply);
+					return await clientLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERAL":
 					const generalLogic = new GeneralLogic(user, conversationData);
-					generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
+					return await generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				case "GENERIC":
 					const genericLogic = new GenericLogic(user, conversationData);
-					genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
+					return await genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
 					break;
 				default:
 					reply(facebookResponse.getTextMessage(fallbackText));

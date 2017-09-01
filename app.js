@@ -3,17 +3,15 @@ const fs = require('fs');
 const zoiBot = require('./bot/ZoiBot');
 const ListenLogic = require('./logic/Listeners/ListenLogic');
 const MyLog = require('./interfaces/MyLog');
-const MyUtils = require('./interfaces/utils');
+const cors = require('cors');
 const PostbackLogic = require('./logic/Listeners/PostbackLogic');
 const express = require('express');
 const app = express();
-const Services = require('./bot/Services');
-const ApiRouting = require('./bot/ApiRouting');
 const BackgroundLogic = require('./logic/BackgroundLogic');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const EmailLib = require('./interfaces/EmailLib');
-const ZoiConfig = require('./config');
+const BotServices = require('./bot/BotServices');
 
 //load emails and database
 EmailLib.loadEmails();
@@ -41,32 +39,29 @@ let server;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Add headers
-app.use(function (req, res, next) {
-	// Website you wish to allow to connect
-	res.setHeader('Access-Control-Allow-Origin', '*');
-	// Request methods you wish to allow
-	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-	// Request headers you wish to allow
-	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-	// Set to true if you need the website to include cookies in the requests sent
-	// to the API (e.g. in case you use sessions)
-	res.setHeader('Access-Control-Allow-Credentials', true);
-	// Pass to next layer of middleware
-	next();
-});
+app.use(cors());
 
+//route to the client project
 app.use('/p', express.static('public'));
+
 //parse body for every request
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+
 //sign that the server got the request
 app.use(function (req, res, next) {
 	MyLog.log("-------------------------------------");
 	next();
 });
 
-//set the routing
-Services.setRouting(app);
-Services.setBotListeners();
-ApiRouting.setApiRouting(app, zoiBot);
+//manage the routing
+app.use(require('./services/RoutingManager'));
+
+//set facebook bot services
+BotServices.setBotRouting(app);
+
+//set facebook bot listeners
+BotServices.setBotListeners();
+
+//start background tasks
 BackgroundLogic.startAll(zoiBot);
