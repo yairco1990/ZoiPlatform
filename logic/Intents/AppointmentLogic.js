@@ -383,7 +383,8 @@ class AppointmentLogic extends ConversationLogic {
 			return "sendConfirmationAgain";
 		}
 
-		if (conversationData.payload && conversationData.payload.answer === "yes") {
+		//check that user said yes
+		if (MyUtils.nestedValue(conversationData, "payload.answer") === "yes") {
 
 			const appointmentType = deepcopy(user.session['service']);
 			const template = deepcopy(user.session['template']);

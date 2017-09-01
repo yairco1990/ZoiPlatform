@@ -335,6 +335,30 @@ let Utils = {
 			taken[x] = --len;
 		}
 		return result;
+	},
+
+	/**
+	 * because a.b.c.d return error if b is not exist - I made this function
+	 * when you call this function with this scenario you will get null
+	 * @param obj(Object) - the object, in our case - a
+	 * @param nestedKey(String) - the nested key, in our case = "b.c.d"
+	 * @returns {*}
+	 */
+	nestedValue: function (obj, nestedKey) {
+		try {
+			const nestedKeySplit = nestedKey.split('.');
+			let currentResult = obj;
+			for (let key of nestedKeySplit) {
+				if (currentResult[key]) {
+					currentResult = currentResult[key];
+				} else {
+					return null;
+				}
+			}
+			return currentResult;
+		} catch (err) {
+			return null;
+		}
 	}
 };
 

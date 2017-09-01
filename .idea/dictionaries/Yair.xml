@@ -6,10 +6,12 @@
       <w>deepcopy</w>
       <w>dont</w>
       <w>ffmpeg</w>
+      <w>firstname</w>
       <w>fullname</w>
       <w>gmail</w>
       <w>gotime</w>
       <w>hgroup</w>
+      <w>lastname</w>
       <w>memwatch</w>
       <w>mongo</w>
       <w>ngrok</w>
