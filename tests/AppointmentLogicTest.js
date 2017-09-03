@@ -82,36 +82,37 @@ const mockUser = {
 	"timezone": "Asia/Jerusalem"
 };
 
-let AppointmentLogic, user, APPOINTMENT_TYPES, SLOTS;
+let DBManager, AppointmentLogic, user, APPOINTMENT_TYPES, SLOTS;
 describe('AppointmentLogic Class', function () {
 
 	//prepare before all the tests running
 	before(() => {
 
 		//disable logs
-		// MyLog.log = () => {
-		// };
-		//
-		// MyLog.info = () => {
-		// };
-		//
-		// MyLog.debug = () => {
-		// };
+		MyLog.log = () => {
+		};
+		MyLog.info = () => {
+		};
+		MyLog.debug = () => {
+		};
 
 		//connect to test db
 		ZoiConfig.mongoUrl = 'mongodb://localhost:27017/zoitest_db';
 
 		AppointmentLogic = require('../logic/Intents/AppointmentLogic');
 
-		let DBManager = require('../dal/DBManager');
-		DBManager = {
-			saveUser: function () {
-				MyLog.log("User Saved");
-			},
-			getUser: function () {
-				MyLog.log("Got User");
-			}
-		}
+		DBManager = require('../dal/DBManager');
+	});
+
+	let saveUserStubbed, getUserStubbed;
+	beforeEach(() => {
+		saveUserStubbed = sinon.stub(DBManager, "saveUser");
+		getUserStubbed = sinon.stub(DBManager, "getUser");
+	});
+
+	afterEach(() => {
+		saveUserStubbed.restore();
+		getUserStubbed.restore();
 	});
 
 	beforeEach("deep copy of user before each test", function () {
@@ -210,6 +211,8 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForPromotion();
 
 			expect(result).to.equals("ThereAreOpenSlots");
+			assert(appointmentLogic.sendMessages.called);
+			assert(saveUserStubbed.called);
 		});
 
 		it("check when slot doesn't exist", async function () {
@@ -223,6 +226,8 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForPromotion();
 
 			expect(result).to.equals("ThereAreNoOpenSlots - userOnBoarded");
+			assert(appointmentLogic.sendMessages.called);
+			assert(saveUserStubbed.called);
 		});
 
 		it("check when slot doesn't exist and user not onboarded", async function () {
@@ -237,6 +242,8 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForPromotion();
 
 			expect(result).to.equals("ThereAreNoOpenSlots - userNotOnBoarded");
+			assert(appointmentLogic.sendMessages.called);
+			assert(saveUserStubbed.called);
 		});
 
 	});
@@ -259,6 +266,8 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("userGotServicesList");
+			assert(appointmentLogic.sendMessages.called);
+			assert(saveUserStubbed.called);
 		});
 
 		it("if user refuses to send promotion", async function () {
@@ -277,6 +286,8 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("userQuitPromotionProcess");
+			assert(appointmentLogic.sendMessages.called);
+			assert(saveUserStubbed.called);
 		});
 
 		it("if user refuses to send promotion(by 'No' button) and he is not onboarded", async function () {
@@ -295,6 +306,7 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("userQuitPromotionProcess - finishOnBoarding");
+			assert(appointmentLogic.checkAndFinishOnBoarding.called);
 		});
 
 		it("if user didn't press on button", async function () {
@@ -309,6 +321,7 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("sendPromotionsQuestionAgain");
+			assert(appointmentLogic.sendMessages.called);
 		});
 	});
 
@@ -329,6 +342,8 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForTemplate();
 
 			expect(result).to.equals("userGotTemplateList");
+			assert(appointmentLogic.sendMessages.called);
+			assert(saveUserStubbed.called);
 		});
 
 		it("check that services send again when user didn't chose any service", async function () {
@@ -343,6 +358,7 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForTemplate();
 
 			expect(result).to.equals("sendServicesAgain");
+			assert(appointmentLogic.sendMessages.called);
 		});
 	});
 
@@ -363,6 +379,8 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForPromotionConfirmation();
 
 			expect(result).to.equals("userGotConfirmationMessage");
+			assert(appointmentLogic.sendMessages.called);
+			assert(saveUserStubbed.called);
 		});
 
 		it("check that templates send again when user didn't chose any template", async function () {
@@ -377,6 +395,7 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForPromotionConfirmation();
 
 			expect(result).to.equals("askForTemplateAgain");
+			assert(appointmentLogic.sendMessages.called);
 		});
 	});
 
@@ -396,14 +415,22 @@ describe('AppointmentLogic Class', function () {
 
 			const onBoardedTestResult = await sendPromotionToUserTestFunction(true);
 
-			expect(onBoardedTestResult).to.equals("promotionSent");
+			expect(onBoardedTestResult.functionReturnValue).to.equals("promotionSent");
+			assert(onBoardedTestResult.sendEmailToClient.called);
+			assert(onBoardedTestResult.getAppointments.called);
+			assert(onBoardedTestResult.getClients.called);
+			assert(saveUserStubbed.called);
 		});
 
 		it("check that after the user said he confirm the promotion - the promotion has been sent and proceed to onboarding(the user not onboarded)", async function () {
 
 			const notOnBoardedTestResult = await sendPromotionToUserTestFunction(false);
 
-			expect(notOnBoardedTestResult).to.equals("promotionSent - proceed with onboarding");
+			expect(notOnBoardedTestResult.functionReturnValue).to.equals("promotionSent - proceed with onboarding");
+			assert(notOnBoardedTestResult.sendEmailToClient.called);
+			assert(notOnBoardedTestResult.getAppointments.called);
+			assert(notOnBoardedTestResult.getClients.called);
+			assert(saveUserStubbed.called);
 		});
 
 		async function sendPromotionToUserTestFunction(isOnBoarded) {
@@ -419,7 +446,7 @@ describe('AppointmentLogic Class', function () {
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
 			//mock get clients function
-			sinon.stub(appointmentLogic.acuityLogic, "getClients").callsFake(function () {
+			const getClients = sinon.stub(appointmentLogic.acuityLogic, "getClients").callsFake(function () {
 				MyLog.log("got clients");
 				return [{
 					email: "yairco1990@gmail.com",
@@ -429,16 +456,20 @@ describe('AppointmentLogic Class', function () {
 			});
 
 			//mock get appointments function
-			sinon.stub(appointmentLogic.acuityLogic, "getAppointments").callsFake(function () {
+			const getAppointments = sinon.stub(appointmentLogic.acuityLogic, "getAppointments").callsFake(function () {
 				MyLog.log("got appointments");
 				return [];
 			});
 
-			sinon.stub(appointmentLogic, "sendEmailToClient").callsFake(function (user) {
+			const sendEmailToClient = sinon.stub(appointmentLogic, "sendEmailToClient").callsFake(function (user) {
 				MyLog.log(`send email to ${user.firstName} ${user.lastName} ${user.email}`);
 			});
 
-			return await appointmentLogic.sendPromotionToUsers();
+			const functionReturnValue = await appointmentLogic.sendPromotionToUsers();
+
+			return {
+				functionReturnValue, sendEmailToClient, getAppointments, getClients, appointmentLogic, user
+			};
 		}
 	});
 });
@@ -449,10 +480,12 @@ describe('AppointmentLogic Class', function () {
  * @param slots - can be changed from test to test
  */
 function mockCommonFunctions(appointmentLogic, slots) {
-	fakeSendMessagesFunction(appointmentLogic);
-	fakeGetAppointmentTypesFunction(appointmentLogic, APPOINTMENT_TYPES);
-	fakeGetAvailabilityFunction(appointmentLogic, slots);
-	fakeCheckAndFinishOnBoardingFunction(appointmentLogic);
+	return {
+		sendMessages: fakeSendMessagesFunction(appointmentLogic),
+		getAppointmentTypes: fakeGetAppointmentTypesFunction(appointmentLogic, APPOINTMENT_TYPES),
+		getAvailability: fakeGetAvailabilityFunction(appointmentLogic, slots),
+		checkAndFinishOnBoarding: fakeCheckAndFinishOnBoardingFunction(appointmentLogic)
+	};
 }
 
 function fakeSendMessagesFunction(appointmentLogic) {

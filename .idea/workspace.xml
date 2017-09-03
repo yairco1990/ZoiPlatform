@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
+    <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="add tests for AppointmentLogic class">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Intents/AppointmentLogic.js" afterPath="$PROJECT_DIR$/logic/Intents/AppointmentLogic.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/AppointmentLogicTest.js" afterPath="$PROJECT_DIR$/tests/AppointmentLogicTest.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -22,8 +24,28 @@
       <file leaf-file-name="AppointmentLogicTest.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/AppointmentLogicTest.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-51">
-              <caret line="27" column="32" lean-forward="true" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
+            <state relative-caret-position="5972">
+              <caret line="397" column="57" lean-forward="false" selection-start-line="397" selection-start-column="57" selection-end-line="397" selection-end-column="57" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AppointmentLogic.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/logic/Intents/AppointmentLogic.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="281">
+              <caret line="499" column="11" lean-forward="false" selection-start-line="499" selection-start-column="11" selection-end-line="499" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ConversationLogic.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/logic/ConversationLogic.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="408">
+              <caret line="24" column="71" lean-forward="false" selection-start-line="24" selection-start-column="71" selection-end-line="24" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -33,27 +55,17 @@
         <entry file="file://$PROJECT_DIR$/tests/MyUtilsTest.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="527">
-              <caret line="31" column="17" lean-forward="true" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
+              <caret line="31" column="17" lean-forward="false" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="utils.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="utils.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/interfaces/utils.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5814">
+            <state relative-caret-position="4743">
               <caret line="342" column="42" lean-forward="false" selection-start-line="342" selection-start-column="42" selection-end-line="342" selection-end-column="42" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AppointmentLogic.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/logic/Intents/AppointmentLogic.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="385" column="34" lean-forward="false" selection-start-line="385" selection-start-column="34" selection-end-line="385" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -72,18 +84,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>setBotTyping</find>
-      <find>function</find>
-      <find>user</find>
-      <find>reply</find>
-      <find>fake</find>
-      <find>started</find>
-      <find>integration</find>
-      <find>integrate(</find>
-      <find>quick_reply</find>
-      <find>delete</find>
-      <find>getAppointme</find>
-      <find>onl</find>
       <find>console.lo</find>
       <find>console</find>
       <find>resetzoi</find>
@@ -102,6 +102,18 @@
       <find>sendEmail</find>
       <find>getBlack</find>
       <find>&amp;&amp;</find>
+      <find>== &quot;y</find>
+      <find>{us</find>
+      <find>await</find>
+      <find>askForPromotion</find>
+      <find>{sendM</find>
+      <find>{sendMessages</find>
+      <find>ThereAreOpenSlots</find>
+      <find>askForTemplateAgain</find>
+      <find>userGotConfirmationMessage</find>
+      <find>DBManager</find>
+      <find>saveUser</find>
+      <find>userQuitPromotionProcess - finishOnBoarding</find>
     </findStrings>
     <replaceStrings>
       <replace>DATABASE</replace>
@@ -196,10 +208,10 @@
         <option value="$PROJECT_DIR$/tests/ConversationTest.js" />
         <option value="$PROJECT_DIR$/tests/test.js" />
         <option value="$PROJECT_DIR$/dal/DBManager.js" />
-        <option value="$PROJECT_DIR$/tests/AppointmentLogicTest.js" />
-        <option value="$PROJECT_DIR$/logic/Intents/AppointmentLogic.js" />
         <option value="$PROJECT_DIR$/interfaces/utils.js" />
         <option value="$PROJECT_DIR$/tests/MyUtilsTest.js" />
+        <option value="$PROJECT_DIR$/logic/Intents/AppointmentLogic.js" />
+        <option value="$PROJECT_DIR$/tests/AppointmentLogicTest.js" />
       </list>
     </option>
   </component>
@@ -223,10 +235,9 @@
     <handled-path value="$PROJECT_DIR$/public/node_modules" />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-62" />
-    <option name="y" value="-11" />
+    <option name="x" value="-7" />
     <option name="width" value="1932" />
-    <option name="height" value="1056" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectLevelVcsManager">
     <OptionsSetting value="false" id="Update" />
@@ -502,7 +513,7 @@
       <workItem from="1501433137355" duration="23748000" />
       <workItem from="1502013125844" duration="66116000" />
       <workItem from="1502302821707" duration="21347000" />
-      <workItem from="1504262478221" duration="14462000" />
+      <workItem from="1504262478221" duration="20459000" />
     </task>
     <task id="LOCAL-00019" summary="mock the down in the revenue dialog">
       <created>1497351813245</created>
@@ -833,43 +844,50 @@
       <option name="project" value="LOCAL" />
       <updated>1504280517361</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="add tests for AppointmentLogic class">
+      <created>1504371132027</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1504371132027</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 36m 13s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 22m 36s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 36m 20s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 22m 50s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 36m 30s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 22m 59s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 36m 54s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 23m 29s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 38m 03s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 24m 01s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 38m 14s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 24m 12s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 38m 20s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 24m 24s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 40m 43s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 24m 32s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 41m 17s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 25m 05s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Zoi_Tests - 2017.09.01 at 18h 41m 42s.xml">
+    <history-entry file="Zoi_Tests - 2017.09.02 at 21h 26m 09s.xml">
       <configuration name="Zoi Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="711884000" />
+    <option name="totallyTimeSpent" value="717881000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -884,14 +902,14 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17650159" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21812434" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38913044" sideWeight="0.50421494" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32717392" sideWeight="0.49789253" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35543478" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35543478" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24973656" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.49789253" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36847827" sideWeight="0.49578503" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -990,12 +1008,15 @@
           <option name="timeStamp" value="1069" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="1412" />
+      <option name="time" value="1417" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="NodeJSConfigurationType">
         <watch expression="moment().tz(user.integrations.Acuity.userDetails.timezone)" language="JavaScript" />
         <watch expression="user._id" language="JavaScript" />
+      </configuration>
+      <configuration name="mocha-javascript-test-runner">
+        <watch expression="saveUserStubbed.restore()" language="JavaScript" />
       </configuration>
     </watches-manager>
   </component>
@@ -1324,14 +1345,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logic/ConversationLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="24" column="12" lean-forward="false" selection-start-line="24" selection-start-column="12" selection-end-line="24" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/src/utils/utils.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1340,34 +1353,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logic/Intents/AppointmentLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="385" column="34" lean-forward="false" selection-start-line="385" selection-start-column="34" selection-end-line="385" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/MyUtilsTest.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="527">
-          <caret line="31" column="17" lean-forward="true" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/AppointmentLogicTest.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-51">
-          <caret line="27" column="32" lean-forward="true" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
+          <caret line="31" column="17" lean-forward="false" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/interfaces/utils.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5814">
+        <state relative-caret-position="4743">
           <caret line="342" column="42" lean-forward="false" selection-start-line="342" selection-start-column="42" selection-end-line="342" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/AppointmentLogicTest.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5972">
+          <caret line="397" column="57" lean-forward="false" selection-start-line="397" selection-start-column="57" selection-end-line="397" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/Intents/AppointmentLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="499" column="11" lean-forward="false" selection-start-line="499" selection-start-column="11" selection-end-line="499" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/ConversationLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="24" column="71" lean-forward="false" selection-start-line="24" selection-start-column="71" selection-end-line="24" selection-end-column="71" />
           <folding />
         </state>
       </provider>

@@ -65,12 +65,11 @@ class AppointmentLogic extends ConversationLogic {
 	};
 
 	/**
-	 * get appointments
+	 * get business's schedule
 	 */
 	async getAppointments() {
 		const self = this;
-		const {user} = self;
-		const {reply} = self;
+		const {user, reply} = self;
 
 		try {
 			await self.sendMessages([
@@ -125,7 +124,7 @@ class AppointmentLogic extends ConversationLogic {
 	}
 
 	/**
-	 * ask the user if he want to promote openings
+	 * ask the user if he wants to promote openings
 	 */
 	async askForPromotion() {
 		const self = this;
@@ -200,7 +199,7 @@ class AppointmentLogic extends ConversationLogic {
 	}
 
 	/**
-	 * ask for service name
+	 * ask which service
 	 */
 	async askForService() {
 
@@ -275,7 +274,7 @@ class AppointmentLogic extends ConversationLogic {
 	}
 
 	/**
-	 * ask for template for promotion
+	 * ask for promotion's template
 	 */
 	async askForTemplate() {
 
@@ -316,7 +315,7 @@ class AppointmentLogic extends ConversationLogic {
 	}
 
 	/**
-	 * ask from the owner to confirm the promotion
+	 * ask the owner to confirm the promotion
 	 */
 	async askForPromotionConfirmation() {
 		const self = this;
