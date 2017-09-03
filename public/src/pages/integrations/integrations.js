@@ -57,7 +57,7 @@ function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser
  */
 integrationsCtrl.prototype.$onInit = function () {
 	var vm = this;
-	if (vm.zoiUser != "NO_SUCH_USER") {
+	if (vm.zoiUser !== "NO_SUCH_USER") {
 		vm.isAcuityAssociated = vm.zoiUser.integrations.Acuity;
 		vm.isMindbodyAssociated = vm.zoiUser.integrations.Mindbody;
 		vm.isGmailAssociated = vm.zoiUser.integrations.Gmail;
@@ -72,6 +72,12 @@ integrationsCtrl.prototype.onAcuityClicked = function () {
 	var vm = this;
 
 	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/acuity/authorize?userId=' + vm.zoiUser._id;
+};
+
+integrationsCtrl.prototype.onGmailClicked = function () {
+	var vm = this;
+
+	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id;
 };
 
 integrationsCtrl.prototype.onGmailClicked = function () {

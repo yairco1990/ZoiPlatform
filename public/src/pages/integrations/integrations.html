@@ -24,14 +24,14 @@
                             ng-click="vm.onGmailClicked()"
                             name="Gmail"
                             is-associated="vm.isGmailAssociated"
-                            is-closed-for-beta="vm.isClosedForBeta"
+                            is-closed-for-beta="false"
                             icon="src/assets/images/Integrations-logos/gmail.png">
                     </integration-element>
                     <integration-element
-                            ng-click=""
+                            ng-click="vm.onFacebookClicked()"
                             name="Facebook"
-                            is-associated="true"
-                            is-closed-for-beta="vm.isClosedForBeta"
+                            is-associated="isFacebookAssociated"
+                            is-closed-for-beta="false"
                             icon="src/assets/images/Integrations-logos/Facebook.png">
                     </integration-element>
                 </div>
@@ -64,10 +64,10 @@
             <div class="box-body">
                 <div class="integration-elements">
                     <integration-element
-                            ng-click=""
+                            ng-click="vm.onFacebookClicked()"
                             name="Facebook"
-                            is-associated="true"
-                            is-closed-for-beta="vm.isClosedForBeta"
+                            is-associated="isFacebookAssociated"
+                            is-closed-for-beta="false"
                             icon="src/assets/images/Integrations-logos/Facebook.png">
                     </integration-element>
                     <integration-element

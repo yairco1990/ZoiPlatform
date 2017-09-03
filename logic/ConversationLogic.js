@@ -67,7 +67,7 @@ class ConversationLogic {
 	 * set user onboarded
 	 * @returns {Promise.<void>}
 	 */
-	async setUserOnBoared() {
+	async setUserOnBoarded() {
 		this.user.isOnBoarded = true;
 		this.DBManager.saveUser(this.user);
 		MyLog.log("User finished onboarding step. userId = " + this.user._id);

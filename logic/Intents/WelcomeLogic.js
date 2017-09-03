@@ -269,7 +269,7 @@ class WelcomeLogic extends ConversationLogic {
 			messages.push(MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime));
 
 			//set user onboarded
-			await self.setUserOnBoared();
+			await self.setUserOnBoarded();
 
 			await self.sendMessages(messages);
 
