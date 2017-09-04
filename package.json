@@ -20,6 +20,7 @@
     "deepcopy": "0.6.3",
     "express": "4.15.3",
     "express-session": "1.15.4",
+    "fbgraph": "^1.4.1",
     "fluent-ffmpeg": "2.1.2",
     "gmail-batch-stream": "0.3.0",
     "google-api-batch-utils": "1.0.1",

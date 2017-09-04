@@ -13,190 +13,208 @@ const PromotionTypes = require('./models/PromotionType');
 
 class DBManager {
 
-	constructor() {
+    constructor() {
 
-		const options = {
-			useMongoClient: true
-		};
+        const options = {
+            useMongoClient: true
+        };
 
-		mongoose.connect(ZoiConfig.mongoUrl, options)
-			.once('open', () => MyLog.log(`DB Synced. Mongo Url = ${ZoiConfig.mongoUrl}`))
-			.on('error', (err) => MyLog.error("Failed to sync DB", err));
-	}
+        mongoose.connect(ZoiConfig.mongoUrl, options)
+            .once('open', () => MyLog.log(`DB Synced. Mongo Url = ${ZoiConfig.mongoUrl}`))
+            .on('error', (err) => MyLog.error("Failed to sync DB", err));
+    }
 
-	/**
-	 * get users
-	 * @param where
-	 */
-	getUsers(where) {
+    /**
+     * get users
+     * @param where
+     */
+    getUsers(where) {
 
-		return new Promise(function (resolve, reject) {
-			User.find(where, function (err, users) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(users);
-				}
-			});
-		});
-	}
+        return new Promise(function (resolve, reject) {
+            User.find(where, function (err, users) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(users);
+                }
+            });
+        });
+    }
 
-	/**
-	 * get user
-	 */
-	getUser(where, throwErrorIfNull = true) {
+    /**
+     * get user
+     */
+    getUser(where, throwErrorIfNull = true) {
 
-		return new Promise(function (resolve, reject) {
-			User.findOne(where, function (err, user) {
-				if (err) {
-					reject(err);
-				} else if (throwErrorIfNull && !user) {
-					reject("NO SUCH USER");
-				} else {
-					resolve(user);
-				}
-			});
-		});
-	}
+        return new Promise(function (resolve, reject) {
+            User.findOne(where, function (err, user) {
+                if (err) {
+                    reject(err);
+                } else if (throwErrorIfNull && !user) {
+                    reject("NO SUCH USER");
+                } else {
+                    resolve(user);
+                }
+            });
+        });
+    }
 
-	/**
-	 * save user
-	 * @param user
-	 */
-	saveUser(user) {
+    /**
+     * get user
+     */
+    getUserById(id, throwErrorIfNull = true) {
 
-		return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
+            User.findOne({_id: id}, function (err, user) {
+                if (err) {
+                    reject(err);
+                } else if (throwErrorIfNull && !user) {
+                    reject("NO SUCH USER");
+                } else {
+                    resolve(user);
+                }
+            });
+        });
+    }
 
-			let userObj = new User(user);
+    /**
+     * save user
+     * @param user
+     */
+    saveUser(user) {
 
-			User.findOneAndUpdate(
-				{_id: user._id}, // find a document with that filter
-				userObj, // document to insert when nothing was found
-				{upsert: true, new: true}, // options
-				function (err, doc) { // callback
-					if (err) {
-						reject(err);
-					} else {
-						resolve(doc);
-					}
-				}
-			);
-		});
-	}
+        return new Promise(function (resolve, reject) {
 
-	/**
-	 * delete user
-	 * @returns {Promise}
-	 */
-	deleteUser(where) {
+            let userObj = new User(user);
 
-		return new Promise(function (resolve, reject) {
-			User.remove(where, function (err) {
-				if (err) {
-					reject(err);
-				}
-				else {
-					resolve();
-				}
-			});
-		});
-	};
+            User.findOneAndUpdate(
+                {_id: user._id}, // find a document with that filter
+                userObj, // document to insert when nothing was found
+                {upsert: true, new: true}, // options
+                function (err, doc) { // callback
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc);
+                    }
+                }
+            );
+        });
+    }
 
-	/**
-	 * get black list
-	 */
-	getBlackList(where) {
+    /**
+     * delete user
+     * @returns {Promise}
+     */
+    deleteUser(where) {
 
-		return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
+            User.remove(where, function (err) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve();
+                }
+            });
+        });
+    };
 
-			BlackList.find(where, function (err, user) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(user);
-				}
-			});
-		});
-	}
+    /**
+     * get black list
+     */
+    getBlackList(where) {
 
-	/**
-	 * save email to unsubscribe
-	 * @param email
-	 */
-	addEmailToUnsubscribe(email) {
+        return new Promise(function (resolve, reject) {
 
-		return new Promise(function (resolve, reject) {
+            BlackList.find(where, function (err, user) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(user);
+                }
+            });
+        });
+    }
 
-			let emailObj = new BlackList(email);
+    /**
+     * save email to unsubscribe
+     * @param email
+     */
+    addEmailToUnsubscribe(email) {
 
-			BlackList.findOneAndUpdate(
-				{_id: email}, // find a document with that filter
-				emailObj, // document to insert when nothing was found
-				{upsert: true, new: true}, // options
-				function (err, doc) { // callback
-					if (err) {
-						reject(err);
-					} else {
-						resolve(doc);
-					}
-				}
-			);
-		});
-	}
+        return new Promise(function (resolve, reject) {
 
-	/**
-	 * get promotion types
-	 * @param where
-	 */
-	getPromotionsTypes(where) {
+            let emailObj = new BlackList(email);
 
-		return new Promise(function (resolve, reject) {
-			PromotionTypes.find(where, function (err, users) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(users);
-				}
-			});
-		});
-	}
+            BlackList.findOneAndUpdate(
+                {_id: email}, // find a document with that filter
+                emailObj, // document to insert when nothing was found
+                {upsert: true, new: true}, // options
+                function (err, doc) { // callback
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc);
+                    }
+                }
+            );
+        });
+    }
 
-	/**
-	 * set promotion type
-	 * @param where
-	 */
-	addPromotionsType(promotionType) {
+    /**
+     * get promotion types
+     * @param where
+     */
+    getPromotionsTypes(where) {
 
-		return new Promise(function (resolve, reject) {
-			PromotionTypes.create(promotionType, function (err, doc) { // callback
-					if (err) {
-						reject(err);
-					} else {
-						resolve(doc);
-					}
-				}
-			);
-		});
-	}
+        return new Promise(function (resolve, reject) {
+            PromotionTypes.find(where, function (err, users) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(users);
+                }
+            });
+        });
+    }
+
+    /**
+     * set promotion type
+     * @param where
+     */
+    addPromotionsType(promotionType) {
+
+        return new Promise(function (resolve, reject) {
+            PromotionTypes.create(promotionType, function (err, doc) { // callback
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc);
+                    }
+                }
+            );
+        });
+    }
 
 
-	/**
-	 * save input and intention
-	 */
-	addInput(inputObj) {
+    /**
+     * save input and intention
+     */
+    addInput(inputObj) {
 
-		return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
-			Input.create(inputObj, function (err, doc) { // callback
-					if (err) {
-						reject(err);
-					} else {
-						resolve(doc);
-					}
-				}
-			);
-		});
-	}
+            Input.create(inputObj, function (err, doc) { // callback
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(doc);
+                    }
+                }
+            );
+        });
+    }
 }
 
 

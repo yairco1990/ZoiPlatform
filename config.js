@@ -18,7 +18,7 @@ const Environments = {
 	LOCAL: {
 		appId: "358701207893441",
 		serverUrl: "http://localhost:3000",
-		clientUrl: "http://local.host:443/p/#",
+		clientUrl: "http://localhost:443/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
