@@ -157,13 +157,13 @@ describe('AppointmentLogic Class', function () {
 			user.conversationData = {lastQuestion: {id: 0}};
 			const appointmentLogic = new AppointmentLogic(user);
 
-			appointmentLogic.askForService = sinon.stub();
+			appointmentLogic.askForServiceOrText = sinon.stub();
 
 			appointmentLogic.sendMessages = fakeSendMessagesFunction(appointmentLogic);
 
 			await appointmentLogic.startPromotionsConvo();
 
-			assert(appointmentLogic.askForService.called);
+			assert(appointmentLogic.askForServiceOrText.called);
 		});
 
 		it('ask for template', async function () {
@@ -249,23 +249,43 @@ describe('AppointmentLogic Class', function () {
 	});
 
 	//test 'ask for service name'
-	describe('askForService function', function () {
-		it("check that the user said he wants promotion and he gets the services", async function () {
+	describe('askForServiceOrText function', function () {
+		it("check that the user said he wants promotion via email and he gets the services", async function () {
 
 			//set last question
 			user.conversationData = {lastQuestion: {id: 3}};
 			user.isOnBoarded = false;
 			const appointmentLogic = new AppointmentLogic(user, {
 				payload: {
-					id: 1
+					id: "emailPromotion"
 				}
 			});
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForService();
+			const result = await appointmentLogic.askForServiceOrText();
 
 			expect(result).to.equals("userGotServicesList");
+			assert(appointmentLogic.sendMessages.called);
+			assert(saveUserStubbed.called);
+		});
+
+		it("check that the user said he wants promotion via facebook post and he gets the services", async function () {
+
+			//set last question
+			user.conversationData = {lastQuestion: {id: 3}};
+			user.isOnBoarded = false;
+			const appointmentLogic = new AppointmentLogic(user, {
+				payload: {
+					id: "postOnFacebook"
+				}
+			});
+
+			mockCommonFunctions(appointmentLogic, SLOTS);
+
+			const result = await appointmentLogic.askForServiceOrText();
+
+			expect(result).to.equals("userAskedForPostText");
 			assert(appointmentLogic.sendMessages.called);
 			assert(saveUserStubbed.called);
 		});
@@ -277,13 +297,13 @@ describe('AppointmentLogic Class', function () {
 			user.isOnBoarded = true;
 			const appointmentLogic = new AppointmentLogic(user, {
 				payload: {
-					id: 2
+					id: "dontPromote"
 				}
 			});
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForService();
+			const result = await appointmentLogic.askForServiceOrText();
 
 			expect(result).to.equals("userQuitPromotionProcess");
 			assert(appointmentLogic.sendMessages.called);
@@ -297,13 +317,13 @@ describe('AppointmentLogic Class', function () {
 			user.isOnBoarded = false;
 			const appointmentLogic = new AppointmentLogic(user, {
 				payload: {
-					id: 2
+					id: "dontPromote"
 				}
 			});
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForService();
+			const result = await appointmentLogic.askForServiceOrText();
 
 			expect(result).to.equals("userQuitPromotionProcess - finishOnBoarding");
 			assert(appointmentLogic.checkAndFinishOnBoarding.called);
@@ -318,7 +338,7 @@ describe('AppointmentLogic Class', function () {
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForService();
+			const result = await appointmentLogic.askForServiceOrText();
 
 			expect(result).to.equals("sendPromotionsQuestionAgain");
 			assert(appointmentLogic.sendMessages.called);
@@ -358,6 +378,26 @@ describe('AppointmentLogic Class', function () {
 			const result = await appointmentLogic.askForTemplate();
 
 			expect(result).to.equals("sendServicesAgain");
+			assert(appointmentLogic.sendMessages.called);
+		});
+	});
+
+	//test 'ask for post image'
+	describe('askForPostImage function', function () {
+		it("check that services send again when user didn't chose any service", async function () {
+
+			const postText = "someText";
+
+			//set last question
+			user.conversationData = {lastQuestion: {id: "askForPostText", field: "postText"}};
+			const appointmentLogic = new AppointmentLogic(user, {input: postText});
+
+			mockCommonFunctions(appointmentLogic, SLOTS);
+
+			const result = await appointmentLogic.askForPostImage();
+
+			expect(result).to.equals("userAskedForPostImage");
+			expect(user.session.postText).to.equals(postText);
 			assert(appointmentLogic.sendMessages.called);
 		});
 	});

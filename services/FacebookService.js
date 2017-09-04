@@ -9,7 +9,7 @@ const PREFIX_LOG = "Facebook Request -> ";
 router.post('/auth', function (req, res) {
     MyLog.log(PREFIX_LOG + "integrateWithFacebook. userId = " + req.query.userId);
     let authResponse = JSON.parse(req.query.authResponse);
-    FacebookLogic.authUser(req.query.userId, authResponse, function (status, data) {
+    FacebookLogic.addFacebookIntegration(req.query.userId, authResponse, function (status, data) {
         res.writeHead(status, data);
         res.send();
     });

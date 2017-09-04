@@ -36,6 +36,10 @@ UserApiLogic.prototype.getUser = async function (userId, callback) {
 			delete user.integrations.Gmail;
 			user.integrations.Gmail = true;
 		}
+		if (user.integrations.Facebook) {
+			delete user.integrations.Facebook;
+			user.integrations.Facebook = true;
+		}
 
 		if (user) {
 			callback(Response.SUCCESS, user);
@@ -70,6 +74,9 @@ UserApiLogic.prototype.saveUser = async function (user, callback) {
 		}
 		if (oldUser.integrations.Gmail) {
 			user.integrations.Gmail = oldUser.integrations.Gmail;
+		}
+		if (oldUser.integrations.Facebook) {
+			user.integrations.Facebook = oldUser.integrations.Facebook;
 		}
 
 		//calculate morning brief if the user set it

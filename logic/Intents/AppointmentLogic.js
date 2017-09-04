@@ -14,6 +14,7 @@ const EmailConfig = require('../../interfaces/assets/EmailsConfig');
 const async = require('async');
 const _ = require('underscore');
 const ConversationLogic = require('../ConversationLogic');
+const FacebookLogic = require('../FacebookLogic');
 
 const delayTime = ZoiConfig.delayTime;
 
@@ -26,6 +27,20 @@ const sendPromotionsQuestions = {
 		id: 1,
 		text: "Which service would you like to promote?",
 		field: "service"
+	},
+	askForPostText: {
+		id: "askForPostText",
+		field: "postText"
+	},
+	askForPostImage: {
+		id: "askForPostImage",
+		field: "postImage"
+	},
+	askForPostConfirmation: {
+		id: "askForPostConfirmation"
+	},
+	postOnFacebookPage: {
+		id: "postOnFacebookPage"
 	},
 	whichTemplate: {
 		id: 2,
@@ -92,8 +107,7 @@ class AppointmentLogic extends ConversationLogic {
 	 * send promotions
 	 */
 	async startPromotionsConvo() {
-		const self = this;
-		const {user} = self;
+		const {user} = this;
 
 		try {
 			const lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
@@ -103,7 +117,16 @@ class AppointmentLogic extends ConversationLogic {
 				await this.askForPromotion();
 			}
 			else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
-				await this.askForService();
+				await this.askForServiceOrText();
+			}
+			else if (lastQuestionId === sendPromotionsQuestions.askForPostText.id) {
+				await this.askForPostImage();
+			}
+			else if (lastQuestionId === sendPromotionsQuestions.askForPostImage.id) {
+				await this.askForPostConfirmation();
+			}
+			else if (lastQuestionId === sendPromotionsQuestions.askForPostConfirmation.id) {
+				await this.postOnFacebookPage();
 			}
 			else if (lastQuestionId === sendPromotionsQuestions.serviceName.id) {
 				await this.askForTemplate();
@@ -118,7 +141,7 @@ class AppointmentLogic extends ConversationLogic {
 		} catch (err) {
 			MyLog.error(err);
 			MyLog.error("Error on send promotions. userId => " + user._id);
-			await self.clearConversation();
+			await this.clearConversation();
 			return MyUtils.ERROR;
 		}
 	}
@@ -149,8 +172,9 @@ class AppointmentLogic extends ConversationLogic {
 			//save the response
 			const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("Do you want me to promote your openings?",
 				[
-					facebookResponse.getQRButton('text', 'Email Promotion', {id: 1}),
-					facebookResponse.getQRButton('text', 'Maybe later', {id: 2})
+					facebookResponse.getQRButton('text', 'Email Promotion', {id: "emailPromotion"}),
+					facebookResponse.getQRButton('text', 'Post on facebook', {id: "postOnFacebook"}),
+					facebookResponse.getQRButton('text', 'Maybe later', {id: "dontPromote"})
 				]
 			));
 
@@ -200,8 +224,9 @@ class AppointmentLogic extends ConversationLogic {
 
 	/**
 	 * ask which service
+	 * TODO: change the name, from now he can post on facebook without getting the services list
 	 */
-	async askForService() {
+	async askForServiceOrText() {
 
 		const self = this;
 		const {user, reply, conversationData} = self;
@@ -209,7 +234,7 @@ class AppointmentLogic extends ConversationLogic {
 		if (conversationData.payload) {
 
 			//if the user said he wants to send promotion
-			if (conversationData.payload.id === 1) {
+			if (conversationData.payload.id === "emailPromotion") {
 
 				//ask which service
 				const question = self.setCurrentQuestion(sendPromotionsQuestions.serviceName, "text");
@@ -238,6 +263,23 @@ class AppointmentLogic extends ConversationLogic {
 				]);
 
 				return "userGotServicesList";
+			}
+			//if he wants to post on facebook
+			else if (conversationData.payload.id === "postOnFacebook") {
+
+				//ask for post text
+				self.setCurrentQuestion(sendPromotionsQuestions.askForPostText, "text");
+
+				//save the user
+				await self.DBManager.saveUser(user);
+
+				//send messages
+				await self.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Excellent! 😊"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("What the text you want me to write on your facebook page?"), false, delayTime),
+				]);
+
+				return "userAskedForPostText";
 			}
 			//if the user wants to quit
 			else {
@@ -270,6 +312,121 @@ class AppointmentLogic extends ConversationLogic {
 			]);
 
 			return "sendPromotionsQuestionAgain";
+		}
+	}
+
+	/**
+	 * ask for post image
+	 */
+	async askForPostImage() {
+
+		const {user, reply, conversationData} = this;
+
+		try {
+			//init the session
+			user.session = {};
+
+			//set the post text to the session
+			user.session[user.conversationData.lastQuestion.field] = conversationData.input;
+
+			//ask for post text
+			this.setCurrentQuestion(sendPromotionsQuestions.askForPostImage, "text");
+
+			//save the user
+			await this.DBManager.saveUser(user);
+
+			//send messages
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please send me the picture you want to post"), false, delayTime)
+			]);
+
+			return "userAskedForPostImage";
+		} catch (err) {
+			MyLog.error("Failed to ask for post image", err);
+		}
+	}
+
+	/**
+	 * ask for post confirmation
+	 */
+	async askForPostConfirmation() {
+
+		const {user, reply, conversationData} = this;
+
+		try {
+
+			//set the post text to the session
+			user.session[user.conversationData.lastQuestion.field] = conversationData.input;
+
+			//ask for post text
+			this.setCurrentQuestion(sendPromotionsQuestions.askForPostConfirmation, "qr");
+
+			//save last qr
+			user.conversationData.lastQRResponse = facebookResponse.getQRElement("Just to be clear, I am about to post the text and the image you sent me on your facebook page?", [
+				facebookResponse.getQRButton("text", "Yes, post it.", {answer: "yes"}),
+				facebookResponse.getQRButton("text", "No, don't post it.", {answer: "no"})
+			]);
+
+			//save the user
+			await this.DBManager.saveUser(user);
+
+			//send messages
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+			]);
+
+			return "userAskedForPostConfirmation";
+		} catch (err) {
+			MyLog.error("Failed to ask for post confirmation", err);
+			return "failed";
+		}
+	}
+
+	/**
+	 * post on user's facebook page
+	 */
+	async postOnFacebookPage() {
+
+		const {user, reply, conversationData} = this;
+
+		try {
+
+			if (MyUtils.nestedValue(conversationData, "payload.answer") === "yes") {
+
+				//TODO add the image
+				const postText = user.session['postText'];
+				const postImage = user.session['postImage'];
+
+				//start posting on user's pages
+				user.integrations.Facebook.pages.forEach((page) => {
+					FacebookLogic.postOnFacebookPage(page.id, page.access_token, {message: postText || postImage});
+				});
+
+				//save the user
+				await this.DBManager.saveUser(user);
+
+				await this.clearConversation();
+
+				//send messages
+				await this.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll post it right away. 👏"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I posted the promotion on your facebook pages."), false, delayTime)
+				]);
+
+				return "userAskedForPostConfirmation";
+			}
+			//send qr again
+			else {
+				await this.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's finish what we started"), true),
+					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+				]);
+
+				return "sendConfirmationAgain";
+			}
+		} catch (err) {
+			MyLog.error("Failed to post on facebook pages", err);
+			return "failed";
 		}
 	}
 

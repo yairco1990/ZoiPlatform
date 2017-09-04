@@ -4,9 +4,9 @@ const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
 
 const DEV_BOT_DETAILS = {
-	token: "EAAFGPKITtcEBAEoxVuLcraZCX6Ip22dKaBFxQ6Kmz8XBC96VMR43edopkuDc7tXPA4FKtzOBavmG6d9StvKGZCc64vAKTmOphZBdthhgp8ClAZCLXRvijEY9MJqPMFzAVZCcaxlDZAXjkmSOJYJ08gCcwoSnIGZB3ZBCiZCNVXNm6xgZDZD",
+	token: "EAAFGPKITtcEBABah8cTmDHJwjatPKjLZBAmpP8c1Q5ZBtw6R9jICabMBZBlaXJ0wZCAYZBgySNBpniLY63PeM7l4lqD893XTs4SIuWAHGxYAQ6O93uLQi6q5u7vtGhi4Agw49GiZAaSPzQZCHNEsjuR0ZBk7fwcRHaSZAb6fbqQIY4AZDZD",
 	verify: "testtoken",
-	app_secret: "1b27655a518d7d7ee75312074afabe09"
+	app_secret: "364a4ac6971784586eb91066e04d0c80"
 };
 const PRODUCTION_BOT_DETAILS = {
 	token: "EAATS43ZAMkJQBANoXinzXRjPuZC0525CMDtesm8yIdYdBTt9IKftGgyQTfEBlONO04m08CkI4rU2Fv9tPQQmn7wD2m5GMUIUxPKG2u1ZCH3eYJZBFQNH2EeZCL8YSg4RCO5qgIK6roZCfnjaseNCDBBGszIj40AlYjMZCkgxMOzMQZDZD",
@@ -17,6 +17,7 @@ const PRODUCTION_BOT_DETAILS = {
 const Environments = {
 	LOCAL: {
 		appId: "358701207893441",
+		appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "http://localhost:3000",
 		clientUrl: "http://localhost:443/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",

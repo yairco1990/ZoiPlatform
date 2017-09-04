@@ -48,6 +48,22 @@ describe("MyUtils class", () => {
 		result = MyUtils.nestedValue(obj, "oo.bb.stam");
 
 		expect(result).to.equals(null);
+
+		obj = {
+			message: {
+				attachments: [
+					{
+						payload: {
+							url: "http://localhost:3000"
+						}
+					}
+				]
+			}
+		};
+
+		result = MyUtils.nestedValue(obj, "message.attachments[0].payload.url");
+
+		expect(result).to.equals("http://localhost:3000");
 	});
 
 });
