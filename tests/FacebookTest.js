@@ -22,7 +22,7 @@ describe("test facebook graph api", () => {
 		});
 
 		expect(response.postId).to.includes(facebookPageId);
-		// console.log(response);
+
 	});
 
 	it.skip("post a link with message to facebook page", async () => {
