@@ -47,17 +47,17 @@ class ConversationLogic {
 	/**
 	 * set current question to the user object
 	 * @param question
-	 * @param nextAnswerState
+	 * @param nextAnswerType
 	 * @returns {*}
 	 */
-	setCurrentQuestion(question, nextAnswerState) {
+	setCurrentQuestion(question, nextAnswerType) {
 		//save conversation to the user
 		this.user.conversationData = this.conversationData;
 		//save the service question
 		this.user.conversationData.lastQuestion = question;
-		if (nextAnswerState) {
+		if (nextAnswerType) {
 			//save next answer state
-			this.user.conversationData.nextAnswerState = nextAnswerState;
+			this.user.conversationData.nextAnswerState = nextAnswerType;
 		}
 		//return the selected question
 		return question;
@@ -164,7 +164,16 @@ class ConversationLogic {
 		}
 
 		return MyUtils.getRandomValueFromArray(relevantMessages);
-	};
+	}
+
+	/**
+	 * get last question id
+	 * @returns {*}
+	 */
+	getLastQuestionId() {
+		const {user} = this;
+		return user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+	}
 }
 
 module.exports = ConversationLogic;

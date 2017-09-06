@@ -39,24 +39,24 @@ const promoteOldCustomersQuestions = {
 
 class ClientLogic extends ConversationLogic {
 
-	constructor(user) {
-		super(user);
+	constructor(user, conversationData) {
+		super(user, conversationData);
 	}
 
 	/**
 	 * process the user input
 	 */
-	processIntent(conversationData, setBotTyping, requestObj, reply) {
+	async processIntent() {
 
-		const self = this;
+		const {conversationData, reply} = this;
 
 		switch (conversationData.intent) {
 			case "client new customer join":
-				self.newCustomerJoin(conversationData, reply);
+				await this.newCustomerJoin(conversationData, reply);
 				break;
 			case "client old customers":
-				setBotTyping && setBotTyping();
-				self.promoteOldCustomers(conversationData, reply);
+				this.botTyping();
+				await this.promoteOldCustomers(conversationData, reply);
 				break;
 		}
 	};
@@ -65,7 +65,6 @@ class ClientLogic extends ConversationLogic {
 	 * customer scheduled for the first time
 	 * @param conversationData
 	 * @param reply
-	 * @returns {Promise.<void>}
 	 */
 	async newCustomerJoin(conversationData, reply) {
 

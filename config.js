@@ -4,15 +4,18 @@ const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
 
 const DEV_BOT_DETAILS = {
-	token: "EAAFGPKITtcEBABah8cTmDHJwjatPKjLZBAmpP8c1Q5ZBtw6R9jICabMBZBlaXJ0wZCAYZBgySNBpniLY63PeM7l4lqD893XTs4SIuWAHGxYAQ6O93uLQi6q5u7vtGhi4Agw49GiZAaSPzQZCHNEsjuR0ZBk7fwcRHaSZAb6fbqQIY4AZDZD",
+	token: "EAAFGPKITtcEBAM6mDRfTI04X9uZBW0asiAQQTVcaPZCEZBMnVXtMElWZBFGFj4oZCFoT31fyZBZBeT9FuAP3Eb0xatLGElkZCZCSKc1RyCe6cYZB7AkPIxjzaBKaMrl87KHag0tAJmENZAzEWI9Lcshu7APvLaA9gDw31bG0MBzpzp4FQZDZD",
 	verify: "testtoken",
 	app_secret: "364a4ac6971784586eb91066e04d0c80"
 };
+
+//////////////////////START PRODUCTION//////////////////////////
 const PRODUCTION_BOT_DETAILS = {
 	token: "EAATS43ZAMkJQBANoXinzXRjPuZC0525CMDtesm8yIdYdBTt9IKftGgyQTfEBlONO04m08CkI4rU2Fv9tPQQmn7wD2m5GMUIUxPKG2u1ZCH3eYJZBFQNH2EeZCL8YSg4RCO5qgIK6roZCfnjaseNCDBBGszIj40AlYjMZCkgxMOzMQZDZD",
 	verify: "40NCkrPUPaALsV4NJz",
 	app_secret: "1b27655a518d7d7ee75312074afabe09"
 };
+///////////////////////END PRODUCTION///////////////////////////
 
 const Environments = {
 	LOCAL: {
@@ -30,6 +33,7 @@ const Environments = {
 			"redirectUri": "http://localhost:3000/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
+		isProduction: false,
 		delayTime: 1,
 		generalPromotionDeviation: 2,
 		writeDebug: false,
@@ -40,7 +44,7 @@ const Environments = {
 			morningBriefIntervalTime: ONE_MINUTE * 2,
 			oldConversationIntervalTime: ONE_MINUTE * 2,
 			oneDay: ONE_DAY,
-			clearOldConversationRange: ONE_MINUTE,
+			clearOldConversationRange: ONE_MINUTE * 30,
 			oldCustomersForwardDays: 30,
 			oldCustomersPreviousDays: 30,
 			wishZoiWillDelay: 1,
@@ -68,6 +72,7 @@ const Environments = {
 			"redirectUri": "http://localhost:3000/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
+		isProduction: false,
 		delayTime: 1,
 		generalPromotionDeviation: 2,
 		writeDebug: true,
@@ -106,6 +111,7 @@ const Environments = {
 			"redirectUri": "http://52.174.244.154:3000/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
+		isProduction: false,
 		delayTime: 1,
 		generalPromotionDeviation: 2,
 		writeDebug: true,
@@ -145,6 +151,7 @@ const Environments = {
 			"redirectUri": "https://zoiai.com:3000/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
+		isProduction: true,
 		delayTime: ONE_SECOND * 2.5,
 		generalPromotionDeviation: 3,
 		writeDebug: true,

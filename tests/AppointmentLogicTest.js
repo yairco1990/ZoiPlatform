@@ -4,75 +4,29 @@ const expect = require('chai').expect;
 const deepcopy = require('deepcopy');
 const assert = require('assert');
 const MyLog = require('../interfaces/MyLog');
-const ZoiConfig = require('../config');
 
 const mockSlots = [
-	{
-		time: "13:20"
-	},
-	{
-		time: "13:40"
-	},
-	{
-		time: "14:00"
-	}
+	{time: "13:20"},
+	{time: "13:40"},
+	{time: "14:00"}
 ];
 
 const mockAppointmentTypes = [
-	{
-		id: 1,
-		name: "TRX"
-	},
-	{
-		id: 2,
-		name: "Personal Trainer"
-	}
+	{id: 1, name: "TRX"},
+	{id: 2, name: "Personal Trainer"}
 ];
 
 const mockUser = {
 	"_id": "1651444801564063",
-	"__v": 0,
-	"wishList": [],
 	"conversationData": null,
 	"fullname": "Yair Cohen",
-	"lastMessageTime": 1503883336524,
-	"oldCustomersRange": {
-		"text": "1 month",
-		"value": 30
-	},
-	"customerSendLimit": {
-		"text": "1 promo per week",
-		"value": 7
-	},
-	"promptNewCustomers": true,
-	"defaultCalendar": {
-		"id": -1,
-		"name": "All calendars"
-	},
-	"morningBriefTime": "09:00",
 	"isOnBoarded": true,
-	"nextOldCustomersDate": 1503997255206,
-	"nextMorningBriefDate": 1503986455205,
-	"startedAt": "August 28th 2017",
 	"profile": {},
 	"metadata": {},
 	"integrations": {
 		"Acuity": {
 			"userDetails": {
-				"id": 13928644,
-				"email": "yairco1990@gmail.com",
 				"timezone": "Asia/Jerusalem",
-				"firstDayOfWeek": 0,
-				"timeFormat": "ampm",
-				"currency": "ILS",
-				"schedulingPage": "https://app.acuityscheduling.com/schedule.php?owner=13928644",
-				"embedCode": "<iframe src=\"https://app.acuityscheduling.com/schedule.php?owner=13928644\" width=\"100%\" height=\"800\" frameBorder=\"0\"><\/iframe>\n<script src=\"https://d3gxy7nm8y4yjr.cloudfront.net/js/embed.js\" type=\"text/javascript\"><\/script>",
-				"plan": "Free",
-				"name": "Yair's Spa",
-				"description": "",
-				"isHIPAA": false,
-				"cardPayments": false,
-				"clientsDistinctByPhone": false,
 				"accessToken": "4MURTnMVGM8Xd3PWjf8LEfXzTVXn1wFg2OL1Gi13"
 			},
 			"accessToken": "4MURTnMVGM8Xd3PWjf8LEfXzTVXn1wFg2OL1Gi13"
@@ -87,20 +41,7 @@ describe('AppointmentLogic Class', function () {
 
 	//prepare before all the tests running
 	before(() => {
-
-		//disable logs
-		MyLog.log = () => {
-		};
-		MyLog.info = () => {
-		};
-		MyLog.debug = () => {
-		};
-
-		//connect to test db
-		ZoiConfig.mongoUrl = 'mongodb://localhost:27017/zoitest_db';
-
 		AppointmentLogic = require('../logic/Intents/AppointmentLogic');
-
 		DBManager = require('../dal/DBManager');
 	});
 
@@ -108,17 +49,14 @@ describe('AppointmentLogic Class', function () {
 	beforeEach(() => {
 		saveUserStubbed = sinon.stub(DBManager, "saveUser");
 		getUserStubbed = sinon.stub(DBManager, "getUser");
+		user = deepcopy(mockUser);
+		APPOINTMENT_TYPES = deepcopy(mockAppointmentTypes);
+		SLOTS = deepcopy(mockSlots);
 	});
 
 	afterEach(() => {
 		saveUserStubbed.restore();
 		getUserStubbed.restore();
-	});
-
-	beforeEach("deep copy of user before each test", function () {
-		user = deepcopy(mockUser);
-		APPOINTMENT_TYPES = deepcopy(mockAppointmentTypes);
-		SLOTS = deepcopy(mockSlots);
 	});
 
 	//test get appointment function
@@ -294,7 +232,6 @@ describe('AppointmentLogic Class', function () {
 
 			//set last question
 			user.conversationData = {lastQuestion: {id: 3}};
-			user.isOnBoarded = true;
 			const appointmentLogic = new AppointmentLogic(user, {
 				payload: {
 					id: "dontPromote"
@@ -352,7 +289,6 @@ describe('AppointmentLogic Class', function () {
 
 			//set last question
 			user.conversationData = {lastQuestion: {id: 4}};
-			user.isOnBoarded = true;
 			const appointmentLogic = new AppointmentLogic(user, {
 				payload: {}
 			});
@@ -370,7 +306,6 @@ describe('AppointmentLogic Class', function () {
 
 			//set last question
 			user.conversationData = {lastQuestion: {id: 4}};
-			user.isOnBoarded = true;
 			const appointmentLogic = new AppointmentLogic(user, {});
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
@@ -411,7 +346,6 @@ describe('AppointmentLogic Class', function () {
 			//set last question
 			user.conversationData = {lastQuestion: {id: 5, field: "template"}};
 			user.session = {template: {}, service: {name: "haha"}};
-			user.isOnBoarded = true;
 			const appointmentLogic = new AppointmentLogic(user, {input: "{}"});//function looks for valid json to the template
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
@@ -427,7 +361,6 @@ describe('AppointmentLogic Class', function () {
 
 			//set last question
 			user.conversationData = {lastQuestion: {id: 5}};
-			user.isOnBoarded = true;
 			const appointmentLogic = new AppointmentLogic(user, {input: "I want the 1+1"});
 
 			mockCommonFunctions(appointmentLogic, SLOTS);

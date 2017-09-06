@@ -40,7 +40,7 @@ const sendPromotionsQuestions = {
 		id: "askForPostConfirmation"
 	},
 	postOnFacebookPage: {
-		id: "postOnFacebookPage"
+		id: "postPhotoOnFacebookPage"
 	},
 	whichTemplate: {
 		id: 2,
@@ -362,7 +362,7 @@ class AppointmentLogic extends ConversationLogic {
 			this.setCurrentQuestion(sendPromotionsQuestions.askForPostConfirmation, "qr");
 
 			//save last qr
-			user.conversationData.lastQRResponse = facebookResponse.getQRElement("Just to be clear, I am about to post the text and the image you sent me on your facebook page?", [
+			user.conversationData.lastQRResponse = facebookResponse.getQRElement("Just to be clear, I am about to post the text and the image you sent me on your facebook pages.", [
 				facebookResponse.getQRButton("text", "Yes, post it.", {answer: "yes"}),
 				facebookResponse.getQRButton("text", "No, don't post it.", {answer: "no"})
 			]);
@@ -393,14 +393,15 @@ class AppointmentLogic extends ConversationLogic {
 
 			if (MyUtils.nestedValue(conversationData, "payload.answer") === "yes") {
 
-				//TODO add the image
 				const postText = user.session['postText'];
 				const postImage = user.session['postImage'];
 
 				//start posting on user's pages
-				user.integrations.Facebook.pages.forEach((page) => {
-					FacebookLogic.postOnFacebookPage(page.id, page.access_token, {message: postText || postImage});
-				});
+				user.integrations.Facebook.pages.forEach((page) => FacebookLogic.postPhotoOnFacebookPage(page.id, {
+					access_token: page.access_token,
+					message: postText,
+					url: postImage
+				}));
 
 				//save the user
 				await this.DBManager.saveUser(user);
@@ -414,6 +415,27 @@ class AppointmentLogic extends ConversationLogic {
 				]);
 
 				return "userAskedForPostConfirmation";
+			}
+			//
+			else if (MyUtils.nestedValue(conversationData, "payload.answer") === "no") {
+				if (!user.isOnBoarded) {
+					await this.checkAndFinishOnBoarding(false);
+
+					return "userQuitPostOnFacebookProcess - finishOnBoarding";
+				} else {
+					user.conversationData = null;
+					user.session = null;
+
+					//save the user
+					await this.DBManager.saveUser(user);
+
+					//send messages
+					await this.sendMessages([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false)
+					]);
+
+					return "userQuitPostOnFacebookProcess";
+				}
 			}
 			//send qr again
 			else {

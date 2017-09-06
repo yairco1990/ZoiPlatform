@@ -138,9 +138,14 @@ class ListenLogic {
 				return;
 			}
 
-
 			//save the last message time
 			user.lastMessageTime = new Date().valueOf();
+
+			//check if force conversation(only in non-production mode)
+			if (!ZoiConfig.isProduction && input.toLowerCase().startsWith("f:")) {
+				user.conversationData = null;
+				conversationData = ListenLogic.getForceConversationData(input);
+			}
 
 			//check the intent
 			switch (conversationData.context) {
@@ -154,11 +159,11 @@ class ListenLogic {
 					break;
 				case "CLIENT":
 					const clientLogic = new ClientLogic(user, conversationData);
-					return await clientLogic.processIntent(conversationData, setBotTyping, payload, reply);
+					return await clientLogic.processIntent();
 					break;
 				case "GENERAL":
 					const generalLogic = new GeneralLogic(user, conversationData);
-					return await generalLogic.processIntent(conversationData, setBotTyping, payload, reply);
+					return await generalLogic.processIntent();
 					break;
 				case "GENERIC":
 					const genericLogic = new GenericLogic(user, conversationData);
@@ -189,7 +194,51 @@ class ListenLogic {
 				(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(fallbackText), false))();
 			}
 		}
-	};
+	}
+
+	/**
+	 * @param input
+	 */
+	static getForceConversationData(input) {
+
+		const selectedConvo = (input.substring(input.indexOf(":") + 1, input.length)).trim();
+
+		const conversations = {
+			"morning-brief": {
+				context: "GENERAL",
+				intent: "general morning brief",
+			},
+			"morning-brief-auto": {
+				context: "GENERAL",
+				intent: "general morning brief",
+			},
+			"rss": {
+				context: "GENERAL",
+				intent: "general suggest to post article"
+			},
+			"schedule": {
+				context: "APPOINTMENT",
+				intent: "appointment what is my schedule"
+			},
+			"promotions": {
+				context: "APPOINTMENT",
+				intent: "appointment send promotions"
+			},
+			"old-customers": {
+				context: "CLIENT",
+				intent: "client old customers"
+			},
+			"new-customer": {
+				context: "CLIENT",
+				intent: "client new customer join"
+			}
+		};
+
+		const convoObj = conversations[selectedConvo];
+		convoObj.input = input;
+
+		return convoObj;
+	}
 }
 
 module.exports = ListenLogic;

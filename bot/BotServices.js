@@ -58,13 +58,7 @@ async function onMessageArrived(payload, reply) {
 					imageUrl = attachment.payload.url;
 
 					if (imageUrl) {
-						///Upload the image
-						cloudinary.uploader.upload(imageUrl, function (result) {
-							let public_id = result.public_id;
-							//Resize the image
-							let resizedImg = cloudinary.url(public_id, {width: 544, height: 544, crop: "fill"});
-							onMessageReady(profile, resizedImg);
-						});
+						onMessageReady(profile, imageUrl);
 					}
 
 				} catch (err) {

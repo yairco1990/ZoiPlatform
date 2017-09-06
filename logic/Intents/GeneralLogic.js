@@ -6,13 +6,13 @@ const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment-timezone');
 const facebookResponse = require('../../interfaces/FacebookResponse');
-const google = require('googleapis');
 const GmailLogic = require('../GmailLogic');
 const AcuityLogic = require('../ApiHandlers/AcuitySchedulingLogic');
 const AppointmentLogic = require('./AppointmentLogic');
 const _ = require('underscore');
-const async = require('async');
 const ZoiConfig = require('../../config');
+const RssLogic = require('../RssLogic');
+const FacebookLogic = require('../FacebookLogic');
 
 const delayTime = ZoiConfig.delayTime;
 const fallbackText = "I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu.";
@@ -25,54 +25,155 @@ const wishZoiQuestions = {
 };
 const morningBriefQuestions = {
 	areYouReady: {
-		id: 1,
-		text: "Hey boss! Are you ready for your morning brief?"
+		id: 1
+	}
+};
+const suggestToPostQuestions = {
+	suggestArticle: {
+		id: "suggestArticle"
 	}
 };
 
 class GeneralLogic extends ConversationLogic {
 
-	constructor(user) {
-		super(user);
+	constructor(user, conversationData) {
+		super(user, conversationData);
 	}
 
 	/**
 	 * process the user input
 	 */
-	processIntent(conversationData, setBotTyping, requestObj, reply) {
-		const self = this;
+	async processIntent() {
 
-		switch (conversationData.intent) {
+		switch (this.conversationData.intent) {
 			case "general no thanks":
-				self.clearConversation(reply, true);
+				await this.clearConversation();
 				break;
 			case "general bye zoi":
-				self.clearConversation(reply, true);
+				await this.clearConversation();
 				break;
 			case "general leave review":
-				self.wishZoi(conversationData, setBotTyping, requestObj, reply);
+				await this.wishZoi();
 				break;
 			case "general suggest idea":
-				self.wishZoi(conversationData, setBotTyping, requestObj, reply);
+				await this.wishZoi();
 				break;
 			case "general morning brief":
-				setBotTyping && setBotTyping();
-				self.sendMorningBrief(conversationData, setBotTyping, requestObj, reply);
+				await this.botTyping();
+				await this.sendMorningBrief();
+				break;
+			case "general suggest to post article":
+				await this.botTyping();
+				await this.startArticleToPostConvo();
 				break;
 			default:
-				reply(facebookResponse.getTextMessage(fallbackText));
+				this.reply(facebookResponse.getTextMessage(fallbackText));
 				break;
+		}
+	}
+
+	/**
+	 * start article to post convo
+	 */
+	async startArticleToPostConvo() {
+
+		const {user, conversationData, reply} = this;
+		const lastQuestionId = this.getLastQuestionId();
+
+		if (!user.conversationData) {
+			await this.suggestRandomArticle();
+		} else if (suggestToPostQuestions.suggestArticle.id === lastQuestionId) {
+			await this.postArticleOnFacebook();
+		}
+
+		return MyUtils.SUCCESS;
+	}
+
+	/**
+	 * suggest to post some article from rss list
+	 */
+	async suggestRandomArticle() {
+
+		try {
+			const {user, conversationData, reply} = this;
+
+			this.setCurrentQuestion(suggestToPostQuestions.suggestArticle);
+
+			const selectedArticle = await RssLogic.getRandomArticle();
+
+			//save last qr
+			user.conversationData.lastQRResponse = facebookResponse.getQRElement("I found this article really interesting! What do say about letting me post it on your page?", [
+				facebookResponse.getQRButton("text", "Let's post it!", {answer: "yes!"}),
+				facebookResponse.getQRButton("text", "Don't post it", {answer: "no"})
+			]);
+
+			//set the selected article to the session
+			user.session = {
+				selectedArticle: selectedArticle
+			};
+
+			await this.DBManager.saveUser(user);
+
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's post some professional article on you facebook page"), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getGenericTemplate([
+					facebookResponse.getGenericElement(selectedArticle.title, selectedArticle.image, selectedArticle.description, [
+						facebookResponse.getGenericButton("web_url", "Open Article", null, selectedArticle.link, "tall")
+					])
+				]), true, delayTime),
+				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime)
+			]);
+
+			return MyUtils.SUCCESS;
+
+		} catch (err) {
+
+			MyLog.error("Failed to suggest random article", err);
+			return MyUtils.ERROR;
+		}
+	}
+
+	/**
+	 * post the article on facebook page
+	 */
+	async postArticleOnFacebook() {
+
+		try {
+			const {user, conversationData, reply} = this;
+
+			const selectedArticle = user.session.selectedArticle;
+
+			//start posting on user's pages
+			user.integrations.Facebook.pages.forEach((page) => {
+				FacebookLogic.postContentOnFacebookPage(page.id, {
+					access_token: page.access_token,
+					message: selectedArticle.title,
+					link: selectedArticle.link
+				})
+			});
+
+			//clear convo
+			await this.clearConversation();
+
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I just posted the article! Moshe will give me some good text here..."), false)
+			]);
+
+			return MyUtils.SUCCESS;
+		} catch (err) {
+
+			MyLog.error("Failed to post article on facebook page", err);
+			return MyUtils.ERROR;
 		}
 	}
 
 	/**
 	 * send morning brief
 	 */
+	async sendMorningBrief() {
 
-	async sendMorningBrief(conversationData, setBotTyping, requestObj, reply) {
+		const {user, conversationData, reply} = this;
 
-		const self = this;
-		let user = self.user;
 		try {
 
 			//check if the user wants to get the brief
@@ -81,14 +182,11 @@ class GeneralLogic extends ConversationLogic {
 
 			//if the morning brief sent from the interval and not by the user
 			if (!user.conversationData && conversationData.isAutomated) {
-				//set current question
-				let currentQuestion = morningBriefQuestions.areYouReady;
-				//save conversation to the user
-				user.conversationData = conversationData;
-				//save the question
-				user.conversationData.lastQuestion = currentQuestion;
+
+				this.setCurrentQuestion(morningBriefQuestions.areYouReady);
+
 				//save the response
-				let lastQRResponse = facebookResponse.getQRElement(currentQuestion.text,
+				const lastQRResponse = facebookResponse.getQRElement("Hey boss! Are you ready for your morning brief?",
 					[
 						facebookResponse.getQRButton('text', 'Yes!', {id: 1}),
 						facebookResponse.getQRButton('text', 'No', {id: 2})
@@ -97,12 +195,12 @@ class GeneralLogic extends ConversationLogic {
 				user.conversationData.lastQRResponse = lastQRResponse;
 
 				//save the user
-				await self.DBManager.saveUser(user);
+				await this.DBManager.saveUser(user);
 
 				//send the message
 				reply(lastQRResponse, false);
 			}
-
+			//if the user ask for morning brief
 			else {
 				//check if we can proceed to the morning brief
 				if (user.conversationData && user.conversationData.isAutomated) {
@@ -111,19 +209,19 @@ class GeneralLogic extends ConversationLogic {
 						//if the payload is not the "yes" button
 						if (conversationData.payload.id !== 1) {
 							//clear the session
-							self.clearConversation();
+							await this.clearConversation();
 							//send reply
 							reply(facebookResponse.getTextMessage("Ok boss! See you later :)"), false, ZoiConfig.times.wishZoiWillDelay);
 							//stop the convo
-							return;
+							return "userQuitConvoProcess";
 						}
 					} else {
-						async.series([
+						this.sendMessages([
 							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Please let's finish what we started"), true, delayTime),
 							MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime)
 						]);
 						//stop the convo
-						return;
+						return "sendQRAgain";
 					}
 				}
 
@@ -151,16 +249,15 @@ class GeneralLogic extends ConversationLogic {
 					}, clients);
 
 					if (clientsMessages.length > 0) {
-						async.series([
-							//emails
+						await this.sendMessages([
 							MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
 								facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
 							]), true),
-						], MyUtils.getErrorMsg());
+						]);
 					} else {
-						async.series([
+						await this.sendMessages([
 							MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You have read all the emails received from your customers. Good job! 👍"), true),
-						], MyUtils.getErrorMsg());
+						]);
 					}
 				}
 				//get appointments for today
@@ -205,16 +302,15 @@ class GeneralLogic extends ConversationLogic {
 						messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your next appointment is at " + nextAppointment.time + " with " + nextAppointment.firstName + " " + nextAppointment.lastName), true, delayTime));
 					}
 
-					async.series(messages, function () {
-						appointmentLogic.processIntent();
-					});
+					await this.sendMessages(messages);
+
+					await appointmentLogic.processIntent();
 
 				} else {
-					async.series([
-						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have appointments today"), true, delayTime)
-					], function () {
-						appointmentLogic.processIntent();
-					});
+
+					await this.sendMessages([MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have appointments today"), true, delayTime)]);
+
+					await appointmentLogic.processIntent();
 				}
 			}
 		} catch (err) {
@@ -226,40 +322,33 @@ class GeneralLogic extends ConversationLogic {
 	/**
 	 * send morning brief
 	 */
-	async wishZoi(conversationData, setBotTyping, requestObj, reply) {
+	async wishZoi() {
 
-		const self = this;
-		let user = self.user;
+		const {user, conversationData, reply} = this;
 
 		try {
 			//if this is the start of the conversation
 			if (!user.conversationData) {
 				//set current question
-				let currentQuestion = wishZoiQuestions.writeReview;
-				//save conversation to the user
-				user.conversationData = conversationData;
-				//save the question
-				user.conversationData.lastQuestion = currentQuestion;
-				//next answer state
-				user.conversationData.nextAnswerState = "text";
+				this.setCurrentQuestion(wishZoiQuestions.writeReview, "text");
 
 				//save the user
-				await self.DBManager.saveUser(user);
+				await this.DBManager.saveUser(user);
 
 				reply(facebookResponse.getTextMessage("What do you wish I would do for you in the future?"), false, ZoiConfig.times.wishZoiWillDelay);
 
-			} else if (user.conversationData.lastQuestion.id === wishZoiQuestions.writeReview.id) {
+			} else if (this.getLastQuestionId() === wishZoiQuestions.writeReview.id) {
 
 				user.wishList.push(conversationData.input);
 
 				//save the user
-				await self.DBManager.saveUser(user);
+				await this.DBManager.saveUser(user);
 
 				//send response
 				reply(facebookResponse.getTextMessage("Thank you for helping me become an even greater assistant!"), false, ZoiConfig.times.wishZoiWillDelay);
 
 				//clear the session
-				self.clearConversation(reply, false);
+				await this.clearConversation(reply, false);
 			}
 		} catch (err) {
 			MyLog.error(err);

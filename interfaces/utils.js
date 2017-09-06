@@ -8,6 +8,7 @@ const moment = require('moment-timezone');
 const SmallTalk = require('./assets/SmallTalk');
 const _ = require('underscore');
 const request = require('request-promise');
+const parseString = require('xml2js').parseString;
 
 let Utils = {
 
@@ -412,6 +413,25 @@ let Utils = {
 				reject(err)
 			})
 		});
+	},
+
+	convertXmlToJson: function (xml) {
+		return new Promise((resolve, reject) => {
+			parseString(xml, function (err, result) {
+				if (err) {
+					return reject(err);
+				}
+				resolve(result);
+			});
+		});
+	},
+
+
+	clearHtmlSigns: function (str) {
+		let newStr;
+		newStr = this.replaceAll("&rsquo;", "'", str);
+		newStr = this.replaceAll("&nbsp;", " ", newStr);
+		return newStr;
 	}
 };
 

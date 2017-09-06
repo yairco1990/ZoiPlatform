@@ -4,7 +4,6 @@ const DBManager = require('../dal/DBManager');
 const MyLog = require('../interfaces/MyLog');
 const MyUtils = require('../interfaces/utils');
 const request = require('request');
-const fs = require('fs');
 
 class FacebookLogic {
 
@@ -19,17 +18,23 @@ class FacebookLogic {
 		try {
 
 			//get long token
-			const longTermAuth = await FacebookLogic.extendAccessToken(authResponse.accessToken);
+			const longTermUserAuth = await FacebookLogic.extendAccessToken(authResponse.accessToken);
 
 			//get the user
 			const user = await DBManager.getUserById(userId);
 
 			//set the facebook integration to the user
-			user.integrations.Facebook = longTermAuth;
+			user.integrations.Facebook = longTermUserAuth;
 
 			//get pages details
 			const pagesResult = await MyUtils.makeRequest("GET", MyUtils.addParamsToUrl("https://graph.facebook.com/me/accounts", {access_token: authResponse.accessToken}));
 			user.integrations.Facebook.pages = pagesResult.data;
+
+			//extend tokens for all pages
+			for (let page of user.integrations.Facebook.pages) {
+				const tokenObject = await FacebookLogic.extendAccessToken(page.access_token);
+				page.access_token = tokenObject.access_token;
+			}
 
 			//save user
 			await DBManager.saveUser(user);
@@ -41,69 +46,56 @@ class FacebookLogic {
 		}
 	}
 
+
+	/**
+	 * post content on facebook page
+	 * @param pageId
+	 * @param payload
+	 */
+	static async postContentOnFacebookPage(pageId, payload) {
+
+		return new Promise(async (resolve, reject) => {
+			request({
+				method: 'POST',
+				url: `https://graph.facebook.com/v2.9/${pageId}/feed`,
+				formData: payload
+			}, function (err, response, body) {
+				if (err) {
+					return reject(err);
+				}
+				body = JSON.parse(body);
+				if (body.error) {
+					return reject(body.error);
+				}
+				MyLog.log(`Posted feed successfully on page ${pageId}`);
+				resolve(body);
+			});
+		});
+
+	}
+
+
 	/**
 	 * post on facebook page
 	 * @param pageId
-	 * @param accessToken
-	 * @param message
-	 * @param imageUrl
+	 * @param payload
 	 */
-	static async postOnFacebookPage(pageId, accessToken, message, imageUrl) {
+	static async postPhotoOnFacebookPage(pageId, payload) {
 
-		try {
-
-			function uploadImage(message, imageUrl) {
-				return new Promise(async (resolve, reject) => {
-					request({
-						method: 'POST',
-						url: `https://graph.facebook.com/v2.9/${pageId}/photos`,
-						formData: {
-							access_token: accessToken,
-							message: message,
-							url: imageUrl
-						}
-					}, function (err, response, body) {
-						if (err) {
-							return reject(err);
-						}
-						body = JSON.parse(body);
-						resolve(body);
-					});
-				});
-			}
-
-			const imageUploadResult = await uploadImage(message, imageUrl);
-
-			return imageUploadResult;
-
-			// function post(payload) {
-			// 	return new Promise((resolve, reject) => {
-			// 		graph.post(`${pageId}/feed?access_token=${accessToken}`, payload, function (err, res) {
-			// 			if (err) {
-			// 				console.error(err);
-			// 				return reject(err);
-			// 			}
-			// 			// returns the post id
-			// 			MyLog.log(res);
-			// 			resolve(res);
-			// 		});
-			// 	});
-			// }
-
-			// let payload = {
-			// 	message: messageContent
-			// };
-			//
-			// if (imageUrl) {
-			// 	const imageUploadResult = await uploadImage(imageUrl);
-			//
-			// 	payload.object_attachment = imageUploadResult.id;
-			// }
-			//
-			// await post(payload);
-		} catch (err) {
-			MyLog.error("Failed to integrate with Facebook", err);
-		}
+		return new Promise(async (resolve, reject) => {
+			request({
+				method: 'POST',
+				url: `https://graph.facebook.com/v2.9/${pageId}/photos`,
+				formData: payload
+			}, function (err, response, body) {
+				if (err) {
+					return reject(err);
+				}
+				body = JSON.parse(body);
+				MyLog.log(`Posted photo successfully on page ${pageId}`);
+				resolve(body);
+			});
+		});
 
 	}
 
