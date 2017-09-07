@@ -27,25 +27,36 @@ const mockUser = {
 	"timezone": "Asia/Jerusalem"
 };
 
-let DBManager, GeneralLogic, user, APPOINTMENT_TYPES, SLOTS;
+let DBManager, RssLogic, GeneralLogic, user, APPOINTMENT_TYPES, SLOTS;
 
 describe('GeneralLogic Class', function () {
 
 	before(() => {
 		GeneralLogic = require('../logic/Intents/GeneralLogic');
 		DBManager = require('../dal/DBManager');
+		RssLogic = require('../logic/RssLogic');
 	});
 
-	let saveUserStubbed, getUserStubbed;
+	let saveUserStubbed, getUserStubbed, getRandomArticleStubbed;
 	beforeEach(() => {
 		saveUserStubbed = sinon.stub(DBManager, "saveUser");
 		getUserStubbed = sinon.stub(DBManager, "getUser");
+		//stub get random article
+		getRandomArticleStubbed = sinon.stub(RssLogic, "getRandomArticle").callsFake(function () {
+			return {
+				title: "testTitle",
+				image: "testImage",
+				description: "testDescription",
+				link: "testLink"
+			};
+		});
 		user = deepcopy(mockUser);
 	});
 
 	afterEach(() => {
 		saveUserStubbed.restore();
 		getUserStubbed.restore();
+		getRandomArticleStubbed.restore();
 	});
 
 	//test get appointment function
@@ -59,6 +70,7 @@ describe('GeneralLogic Class', function () {
 			const result = await generalLogic.suggestRandomArticle();
 
 			expect(result).to.equals("success");
+			expect(user.session.selectedArticle.link).to.equals("testLink");
 		});
 	});
 });

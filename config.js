@@ -4,7 +4,7 @@ const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
 
 const DEV_BOT_DETAILS = {
-	token: "EAAFGPKITtcEBAM6mDRfTI04X9uZBW0asiAQQTVcaPZCEZBMnVXtMElWZBFGFj4oZCFoT31fyZBZBeT9FuAP3Eb0xatLGElkZCZCSKc1RyCe6cYZB7AkPIxjzaBKaMrl87KHag0tAJmENZAzEWI9Lcshu7APvLaA9gDw31bG0MBzpzp4FQZDZD",
+	token: "EAAFGPKITtcEBAMuIYkHh0eF3w90PydT4pxM8NZBAMcuo2JypFiP7fbeUACZAhi9scZAHdonZBgpSv8aPWKdqMBZCdQBv03BGOiVaiRad2Yx0tZCnJxsuHljEW9ZBI3wqiqLjHp2kIsb2FKHKweMwl9yLj7qEcMyhRlVBETAzqnHEAZDZD",
 	verify: "testtoken",
 	app_secret: "364a4ac6971784586eb91066e04d0c80"
 };
@@ -99,9 +99,9 @@ const Environments = {
 	},
 	DEV: {
 		appId: "358701207893441",
-		serverUrl: "https://bdd1bb96.ngrok.io",
-		clientUrl: "https://bdd1bb96.ngrok.io/p/#",
-		mongoUrl: "mongodb://zoiAdmin:GoTime2015!@ds133192.mlab.com:33192/zoi_db",
+		serverUrl: "https://dev.zoiai.com:3000",
+		clientUrl: "https://dev.zoiai.com:3000/p/#",
+		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
@@ -180,6 +180,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.DEV;
+const selectedEnvironment = Environments.LOCAL;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////
