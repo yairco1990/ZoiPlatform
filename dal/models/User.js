@@ -10,6 +10,8 @@ const userSchema = new Schema({
 	integrations: Object,
 	metadata: Object,
 	wishList: [String],
+	keyWords: [String],
+	categories: [String],
 	profile: Object,
 	startedAt: String,
 	nextMorningBriefDate: Number,

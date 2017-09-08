@@ -25,6 +25,7 @@ const Environments = {
 		clientUrl: "http://localhost:443/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
 		NLP_URL: "http://13.82.50.249:5000",
+		ELASTIC_URL: "http://localhost:9200",
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
@@ -64,6 +65,7 @@ const Environments = {
 		clientUrl: "https://2fc4a7c1.ngrok.io/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
 		NLP_URL: "http://13.82.50.249:5000",
+		ELASTIC_URL: "http://localhost:9200",
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
@@ -103,6 +105,7 @@ const Environments = {
 		clientUrl: "https://dev.zoiai.com:3000/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
+		ELASTIC_URL: "http://localhost:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
@@ -143,6 +146,7 @@ const Environments = {
 		clientUrl: "https://zoiai.com/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
 		NLP_URL: "http://13.82.50.249:5000",
+		ELASTIC_URL: "http://localhost:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: PRODUCTION_BOT_DETAILS,
 		ACUITY_OAUTH: {

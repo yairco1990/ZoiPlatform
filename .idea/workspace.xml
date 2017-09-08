@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/Yair.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/Yair.xml" />
+    <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="change dev config">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config.js" afterPath="$PROJECT_DIR$/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/services/config.js" afterPath="$PROJECT_DIR$/public/src/services/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/GeneralLogicTest.js" afterPath="$PROJECT_DIR$/tests/GeneralLogicTest.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dal/models/User.js" afterPath="$PROJECT_DIR$/dal/models/User.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" afterPath="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/RssLogic.js" afterPath="$PROJECT_DIR$/logic/RssLogic.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -26,11 +26,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="GeneralLogicTest.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/GeneralLogicTest.js">
+      <file leaf-file-name="DBManager.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dal/DBManager.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="560">
-              <caret line="72" column="4" lean-forward="false" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="4" />
+            <state relative-caret-position="1139">
+              <caret line="67" column="33" lean-forward="false" selection-start-line="67" selection-start-column="33" selection-end-line="67" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="User.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dal/models/User.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="13" column="14" lean-forward="false" selection-start-line="13" selection-start-column="4" selection-end-line="13" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ListenLogic.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/logic/Listeners/ListenLogic.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="391">
+              <caret line="23" column="19" lean-forward="true" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -39,68 +59,18 @@
       <file leaf-file-name="GeneralLogic.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/logic/Intents/GeneralLogic.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="254">
-              <caret line="98" column="0" lean-forward="true" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
+            <state relative-caret-position="198">
+              <caret line="101" column="98" lean-forward="false" selection-start-line="101" selection-start-column="85" selection-end-line="101" selection-end-column="98" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AppointmentLogicTest.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/AppointmentLogicTest.js">
+      <file leaf-file-name="DefaultUser.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/interfaces/DefaultModels/DefaultUser.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="431" column="95" lean-forward="true" selection-start-line="431" selection-start-column="95" selection-end-line="434" selection-end-column="15" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FacebookLogic.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/logic/FacebookLogic.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="69" column="38" lean-forward="false" selection-start-line="69" selection-start-column="38" selection-end-line="69" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FacebookTest.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/FacebookTest.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="19" column="29" lean-forward="true" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="100" column="33" lean-forward="true" selection-start-line="100" selection-start-column="33" selection-end-line="100" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/public/src/services/config.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="13" column="52" lean-forward="false" selection-start-line="13" selection-start-column="52" selection-end-line="13" selection-end-column="52" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RssLogicTest.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/RssLogicTest.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+            <state relative-caret-position="225">
+              <caret line="16" column="13" lean-forward="false" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -109,18 +79,18 @@
       <file leaf-file-name="RssLogic.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/logic/RssLogic.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-369">
-              <caret line="11" column="22" lean-forward="false" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+            <state relative-caret-position="120">
+              <caret line="19" column="40" lean-forward="true" selection-start-line="19" selection-start-column="40" selection-end-line="19" selection-end-column="40" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AppointmentLogic.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/logic/Intents/AppointmentLogic.js">
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="232" column="0" lean-forward="true" selection-start-line="232" selection-start-column="0" selection-end-line="232" selection-end-column="0" />
+            <state relative-caret-position="126">
+              <caret line="148" column="45" lean-forward="false" selection-start-line="148" selection-start-column="45" selection-end-line="148" selection-end-column="45" />
               <folding />
             </state>
           </provider>
@@ -139,9 +109,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>GmailLogic</find>
-      <find>async.</find>
-      <find>fakeSendMessagesFunction</find>
       <find>GeneralLogic</find>
       <find>saveUserStubbed</find>
       <find>MyLog</find>
@@ -169,6 +136,9 @@
       <find>fake</find>
       <find>DEV:</find>
       <find>zoiai.com</find>
+      <find>requestify</find>
+      <find>wish</find>
+      <find>\t\t\t</find>
     </findStrings>
     <replaceStrings>
       <replace>DATABASE</replace>
@@ -237,7 +207,6 @@
         <option value="$PROJECT_DIR$/dal/models/PromotionType.js" />
         <option value="$PROJECT_DIR$/dal/models/Input.js" />
         <option value="$PROJECT_DIR$/dal/models/BlackList.js" />
-        <option value="$PROJECT_DIR$/dal/models/User.js" />
         <option value="$PROJECT_DIR$/logic/Listeners/PostbackLogic.js" />
         <option value="$PROJECT_DIR$/logic/Intents/WelcomeLogic.js" />
         <option value="$PROJECT_DIR$/tests/ConversationTest.js" />
@@ -260,15 +229,16 @@
         <option value="$PROJECT_DIR$/logic/ConversationLogic.js" />
         <option value="$PROJECT_DIR$/logic/Intents/ClientLogic.js" />
         <option value="$PROJECT_DIR$/package.json" />
-        <option value="$PROJECT_DIR$/logic/RssLogic.js" />
-        <option value="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" />
         <option value="$PROJECT_DIR$/logic/FacebookLogic.js" />
         <option value="$PROJECT_DIR$/tests/RssLogicTest.js" />
         <option value="$PROJECT_DIR$/logic/Listeners/ListenLogic.js" />
         <option value="$PROJECT_DIR$/tests/FacebookTest.js" />
         <option value="$PROJECT_DIR$/tests/GeneralLogicTest.js" />
-        <option value="$PROJECT_DIR$/config.js" />
         <option value="$PROJECT_DIR$/public/src/services/config.js" />
+        <option value="$PROJECT_DIR$/config.js" />
+        <option value="$PROJECT_DIR$/dal/models/User.js" />
+        <option value="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" />
+        <option value="$PROJECT_DIR$/logic/RssLogic.js" />
       </list>
     </option>
   </component>
@@ -323,6 +293,17 @@
             <path>
               <item name="ZoiServer" type="b2602c69:ProjectViewProjectNode" />
               <item name="ZoiServer" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ZoiServer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ZoiServer" type="462c0819:PsiDirectoryNode" />
+              <item name="dal" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ZoiServer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ZoiServer" type="462c0819:PsiDirectoryNode" />
+              <item name="dal" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ZoiServer" type="b2602c69:ProjectViewProjectNode" />
@@ -582,14 +563,7 @@
       <workItem from="1504474846053" duration="25004000" />
       <workItem from="1504554945864" duration="4328000" />
       <workItem from="1504615295830" duration="20771000" />
-      <workItem from="1504690894442" duration="6655000" />
-    </task>
-    <task id="LOCAL-00021" summary="try fix speech to text">
-      <created>1501414797533</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1501414797533</updated>
+      <workItem from="1504690894442" duration="10465000" />
     </task>
     <task id="LOCAL-00022" summary="add black list">
       <created>1501431968278</created>
@@ -927,7 +901,14 @@
       <option name="project" value="LOCAL" />
       <updated>1504711303459</updated>
     </task>
-    <option name="localTasksCounter" value="70" />
+    <task id="LOCAL-00070" summary="change dev config">
+      <created>1504801289064</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1504801289064</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -963,7 +944,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="786959000" />
+    <option name="totallyTimeSpent" value="790769000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -976,7 +957,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21812434" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1028,7 +1008,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Make the code clear" />
     <MESSAGE value="remove the intent reply" />
     <MESSAGE value="update small talk" />
     <MESSAGE value="fix small talk typos" />
@@ -1053,7 +1032,8 @@
     <MESSAGE value="start working on facebook page integration" />
     <MESSAGE value="rss conversation added" />
     <MESSAGE value="rss conversation added - change cfg" />
-    <option name="LAST_COMMIT_MESSAGE" value="rss conversation added - change cfg" />
+    <MESSAGE value="change dev config" />
+    <option name="LAST_COMMIT_MESSAGE" value="change dev config" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1094,8 +1074,20 @@
           <properties />
           <option name="timeStamp" value="1545" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/logic/RssLogic.js</url>
+          <line>40</line>
+          <properties />
+          <option name="timeStamp" value="1546" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/logic/RssLogic.js</url>
+          <line>23</line>
+          <properties />
+          <option name="timeStamp" value="1547" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="1546" />
+      <option name="time" value="1548" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="NodeJSConfigurationType">
@@ -1110,7 +1102,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/bot/ApiRouting.js" />
     <entry file="file://$PROJECT_DIR$/logic/ApiHandlers/AcuitySchedulingLogic.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
@@ -1129,13 +1120,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="72" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dal/models/User.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="26" column="52" lean-forward="false" selection-start-line="26" selection-start-column="52" selection-end-line="26" selection-end-column="52" />
         </state>
       </provider>
     </entry>
@@ -1209,13 +1193,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dal/DBManager.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="67" column="33" lean-forward="false" selection-start-line="67" selection-start-column="33" selection-end-line="67" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/services/ApiService.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="97">
@@ -1285,6 +1262,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
           <caret line="27" column="13" lean-forward="false" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1399,14 +1377,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logic/Listeners/ListenLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-148">
-          <caret line="32" column="76" lean-forward="true" selection-start-line="32" selection-start-column="76" selection-end-line="32" selection-end-column="76" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logic/FacebookLogic.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
@@ -1431,26 +1401,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logic/Intents/GeneralLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="254">
-          <caret line="98" column="0" lean-forward="true" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/GeneralLogicTest.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="560">
           <caret line="72" column="4" lean-forward="false" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/logic/RssLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-369">
-          <caret line="11" column="22" lean-forward="false" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
           <folding />
         </state>
       </provider>
@@ -1471,18 +1425,66 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.js">
+    <entry file="file://$PROJECT_DIR$/public/src/services/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="100" column="33" lean-forward="true" selection-start-line="100" selection-start-column="33" selection-end-line="100" selection-end-column="33" />
+        <state relative-caret-position="187">
+          <caret line="11" column="18" lean-forward="true" selection-start-line="11" selection-start-column="18" selection-end-line="11" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/src/services/config.js">
+    <entry file="file://$PROJECT_DIR$/dal/DBManager.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1139">
+          <caret line="67" column="33" lean-forward="false" selection-start-line="67" selection-start-column="33" selection-end-line="67" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="148" column="45" lean-forward="false" selection-start-line="148" selection-start-column="45" selection-end-line="148" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/interfaces/DefaultModels/DefaultUser.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="16" column="13" lean-forward="false" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dal/models/User.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
-          <caret line="13" column="52" lean-forward="false" selection-start-line="13" selection-start-column="52" selection-end-line="13" selection-end-column="52" />
+          <caret line="13" column="14" lean-forward="false" selection-start-line="13" selection-start-column="4" selection-end-line="13" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/RssLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="19" column="40" lean-forward="true" selection-start-line="19" selection-start-column="40" selection-end-line="19" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/Intents/GeneralLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="101" column="98" lean-forward="false" selection-start-line="101" selection-start-column="85" selection-end-line="101" selection-end-column="98" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/Listeners/ListenLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="23" column="19" lean-forward="true" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
           <folding />
         </state>
       </provider>

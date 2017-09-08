@@ -99,7 +99,7 @@ class GeneralLogic extends ConversationLogic {
 
 			this.setCurrentQuestion(suggestToPostQuestions.suggestArticle);
 
-			const selectedArticle = await RssLogic.getRandomArticle();
+			const selectedArticle = await RssLogic.getRandomArticle(user.categories, user.keyWords);
 
 			//save last qr
 			user.conversationData.lastQRResponse = facebookResponse.getQRElement("I found this article really interesting! What do say about letting me post it on your page?", [

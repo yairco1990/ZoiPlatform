@@ -2,34 +2,66 @@ const ZoiConfig = require('../config');
 const MyLog = require('../interfaces/MyLog');
 const MyUtils = require('../interfaces/utils');
 const ogs = require('open-graph-scraper');
+const requestify = require('requestify');
 
 let rssCache;
 
 class RssLogic {
 
-	static async getRandomArticle() {
+	static async getRandomArticle(categories, keyWords) {
 
-		const allArticles = await RssLogic.getAllArticles();
+		let keyWordsString = "";
+		keyWords.forEach((k) => {
+			keyWordsString += k + " ";
+		});
 
-		const randomArticle = MyUtils.getRandomValueFromArray(allArticles);
+		// let categoriesString = "";
+		// categories.forEach((c) => {
+		// 	categoriesString += c + " ";
+		// });
 
-		const formattedArticle = {
-			title: MyUtils.replaceAll('&nbsp', ' ', MyUtils.clearHtmlSigns(randomArticle.title[0])),
-			link: randomArticle.link[0],
-			description: MyUtils.clearHtmlSigns(randomArticle.description[0]),
-			image: randomArticle["media:content"] && randomArticle["media:content"][0] && randomArticle["media:content"][0].url ? randomArticle["media:content"][0].url : null
-		};
+		//get rss articles
+		let result = await requestify.get(ZoiConfig.ELASTIC_URL + '/_search', "{" +
+			"\"query\": {" +
+			"	\"bool\": {" +
+			"		\"must\" : {" +
+			"			\"match_phrase\": {" +
+			"				\"tags\":\""+ categories +"\"" +
+			" 			}" +
+			"		}," +
+			"		\"should\":{" +
+			"			\"match\":{" +
+			"				\"message\": \""+ keyWordsString +"\"" +
+			"			}" +
+			"  		}" +
+			"	}" +
+			"}" +
+			"}");
 
-		if (!formattedArticle.image) {
-			const pageMetadata = await RssLogic.getOpenGraphResult(formattedArticle.link);
-			formattedArticle.image = MyUtils.nestedValue(pageMetadata, "data.ogImage.url");
-		}
+		return result;
 
-		if (!formattedArticle.image) {
-			formattedArticle.image = "http://res.cloudinary.com/gotime-systems/image/upload/v1504626524/ArticleDefaultImage_no2tdq.jpg";
-		}
 
-		return formattedArticle;
+		// const allArticles = await RssLogic.getAllArticles();
+		//
+		// const randomArticle = MyUtils.getRandomValueFromArray(allArticles);
+		//
+		// const formattedArticle = {
+		// 	title: MyUtils.replaceAll('&nbsp', ' ', MyUtils.clearHtmlSigns(randomArticle.title[0])),
+		// 	link: randomArticle.link[0],
+		// 	description: MyUtils.clearHtmlSigns(randomArticle.description[0]),
+		// 	image: randomArticle["media:content"] && randomArticle["media:content"][0] && randomArticle["media:content"][0].url ? randomArticle["media:content"][0].url : null
+		// };
+		//
+		// if (!formattedArticle.image) {
+		// 	const pageMetadata = await RssLogic.getOpenGraphResult(formattedArticle.link);
+		// 	formattedArticle.image = MyUtils.nestedValue(pageMetadata, "data.ogImage.url");
+		// }
+		//
+		// if (!formattedArticle.image) {
+		// 	formattedArticle.image = "http://res.cloudinary.com/gotime-systems/image/upload/v1504626524/ArticleDefaultImage_no2tdq.jpg";
+		// }
+		//
+		// return formattedArticle;
 	}
 
 	static async getAllArticles() {
