@@ -42,7 +42,7 @@ describe('GeneralLogic Class', function () {
 		saveUserStubbed = sinon.stub(DBManager, "saveUser");
 		getUserStubbed = sinon.stub(DBManager, "getUser");
 		//stub get random article
-		getRandomArticleStubbed = sinon.stub(RssLogic, "getRandomArticle").callsFake(function () {
+		getRandomArticleStubbed = sinon.stub(RssLogic, "getRandomArticles").callsFake(function () {
 			return {
 				title: "testTitle",
 				image: "testImage",
