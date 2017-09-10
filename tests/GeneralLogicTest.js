@@ -24,7 +24,9 @@ const mockUser = {
 		}
 	},
 	"session": null,
-	"timezone": "Asia/Jerusalem"
+	"timezone": "Asia/Jerusalem",
+	categories: ["nail"],
+	keyWords: ["nails"],
 };
 
 let DBManager, RssLogic, GeneralLogic, user, APPOINTMENT_TYPES, SLOTS;
@@ -43,12 +45,12 @@ describe('GeneralLogic Class', function () {
 		getUserStubbed = sinon.stub(DBManager, "getUser");
 		//stub get random article
 		getRandomArticleStubbed = sinon.stub(RssLogic, "getRandomArticles").callsFake(function () {
-			return {
+			return [{
 				title: "testTitle",
 				image: "testImage",
 				description: "testDescription",
 				link: "testLink"
-			};
+			}];
 		});
 		user = deepcopy(mockUser);
 	});
@@ -70,7 +72,6 @@ describe('GeneralLogic Class', function () {
 			const result = await generalLogic.suggestRandomArticle();
 
 			expect(result).to.equals("success");
-			expect(user.session.selectedArticle.link).to.equals("testLink");
 		});
 	});
 });

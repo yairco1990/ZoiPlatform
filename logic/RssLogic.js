@@ -59,9 +59,9 @@ class RssLogic {
 
             return articles;
 
-        } catch (e) {
-            MyLog.error('Failed to load random articles', 3);
-        }
+		} catch (e) {
+			MyLog.error('Failed to load random articles', 3);
+		}
 
     }
 
