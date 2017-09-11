@@ -2,35 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/src/pages/category/category.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/src/pages/category/category.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/src/pages/category/category.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/src/pages/keywords/keywords.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/src/pages/keywords/keywords.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/src/pages/keywords/keywords.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config.js" afterPath="$PROJECT_DIR$/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dal/models/LinkModel.js" afterPath="$PROJECT_DIR$/dal/models/LinkModel.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dal/models/User.js" afterPath="$PROJECT_DIR$/dal/models/User.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/interfaces/DefaultModels/DefaultUser.js" afterPath="$PROJECT_DIR$/interfaces/DefaultModels/DefaultUser.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/interfaces/utils.js" afterPath="$PROJECT_DIR$/interfaces/utils.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/ApiLogic/UserApiLogic.js" afterPath="$PROJECT_DIR$/logic/ApiLogic/UserApiLogic.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" afterPath="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/LinkShortnerLogic.js" afterPath="$PROJECT_DIR$/logic/LinkShortnerLogic.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/RssLogic.js" afterPath="$PROJECT_DIR$/logic/RssLogic.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package-lock.json" afterPath="$PROJECT_DIR$/package-lock.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/loader.js" afterPath="$PROJECT_DIR$/public/loader.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/app.js" afterPath="$PROJECT_DIR$/public/src/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/assets/css/styles.css" afterPath="$PROJECT_DIR$/public/src/assets/css/styles.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/pages/integrations/integrations.js" afterPath="$PROJECT_DIR$/public/src/pages/integrations/integrations.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/pages/settings/settings.html" afterPath="$PROJECT_DIR$/public/src/pages/settings/settings.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/pages/settings/settings.js" afterPath="$PROJECT_DIR$/public/src/pages/settings/settings.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/services/ZoiApi.js" afterPath="$PROJECT_DIR$/public/src/services/ZoiApi.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/services/config.js" afterPath="$PROJECT_DIR$/public/src/services/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/GeneralLogicTest.js" afterPath="$PROJECT_DIR$/tests/GeneralLogicTest.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/RssLogicTest.js" afterPath="$PROJECT_DIR$/tests/RssLogicTest.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/ZoiShortnerTest.js" afterPath="$PROJECT_DIR$/tests/ZoiShortnerTest.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -50,23 +24,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="category.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/src/pages/category/category.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="344">
-              <caret line="30" column="14" lean-forward="true" selection-start-line="30" selection-start-column="14" selection-end-line="32" selection-end-column="25" />
-              <folding>
-                <element signature="n#style#0;n#button#0;n#div#3;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="keywords.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="keywords.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/src/pages/keywords/keywords.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="63" lean-forward="false" selection-start-line="9" selection-start-column="63" selection-end-line="9" selection-end-column="63" />
+            <state relative-caret-position="102">
+              <caret line="6" column="24" lean-forward="true" selection-start-line="6" selection-start-column="24" selection-end-line="6" selection-end-column="24" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#2;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#button#0;n#div#3;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
@@ -75,11 +37,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="keywords.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/src/pages/keywords/keywords.js">
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="22" column="3" lean-forward="true" selection-start-line="22" selection-start-column="3" selection-end-line="22" selection-end-column="3" />
+            <state relative-caret-position="247">
+              <caret line="116" column="68" lean-forward="true" selection-start-line="116" selection-start-column="68" selection-end-line="116" selection-end-column="68" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/src/services/config.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="357">
+              <caret line="21" column="14" lean-forward="true" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -168,9 +140,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Failed to integrate wit</find>
-      <find>Failed to integrate with</find>
-      <find>Failed to integrate with f</find>
       <find>Failed to integrate with fa</find>
       <find>clientS</find>
       <find>appSe</find>
@@ -198,6 +167,9 @@
       <find>[0]</find>
       <find>margin: 8px 0 8px 8px;</find>
       <find>separ</find>
+      <find>old</find>
+      <find>conversation</find>
+      <find>PROD</find>
     </findStrings>
     <replaceStrings>
       <replace>DATABASE</replace>
@@ -287,8 +259,6 @@
         <option value="$PROJECT_DIR$/interfaces/utils.js" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/public/src/pages/settings/settings.html" />
-        <option value="$PROJECT_DIR$/config.js" />
-        <option value="$PROJECT_DIR$/public/src/services/config.js" />
         <option value="$PROJECT_DIR$/public/src/pages/settings/settings.js" />
         <option value="$PROJECT_DIR$/public/src/pages/category/category.html" />
         <option value="$PROJECT_DIR$/public/src/pages/keywords/keywords.js" />
@@ -300,6 +270,8 @@
         <option value="$PROJECT_DIR$/public/src/pages/category/category.css" />
         <option value="$PROJECT_DIR$/public/src/assets/css/styles.css" />
         <option value="$PROJECT_DIR$/public/src/pages/keywords/keywords.html" />
+        <option value="$PROJECT_DIR$/public/src/services/config.js" />
+        <option value="$PROJECT_DIR$/config.js" />
       </list>
     </option>
   </component>
@@ -1442,13 +1414,6 @@
       <workItem from="1504615295830" duration="20771000" />
       <workItem from="1504690894442" duration="10465000" />
     </task>
-    <task id="LOCAL-00023" summary="change nlp engine">
-      <created>1501460804282</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1501460804282</updated>
-    </task>
     <task id="LOCAL-00024" summary="change nlp engine">
       <created>1501461058856</created>
       <option name="number" value="00024" />
@@ -1785,7 +1750,14 @@
       <option name="project" value="LOCAL" />
       <updated>1505047334305</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="add category and keywords to config">
+      <created>1505148690558</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1505148690558</updated>
+    </task>
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1821,7 +1793,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="820958000" />
+    <option name="totallyTimeSpent" value="821782000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1895,7 +1867,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="remove the intent reply" />
     <MESSAGE value="update small talk" />
     <MESSAGE value="fix small talk typos" />
     <MESSAGE value="Fix Logs" />
@@ -1920,7 +1891,8 @@
     <MESSAGE value="rss conversation added" />
     <MESSAGE value="rss conversation added - change cfg" />
     <MESSAGE value="change dev config" />
-    <option name="LAST_COMMIT_MESSAGE" value="change dev config" />
+    <MESSAGE value="add category and keywords to config" />
+    <option name="LAST_COMMIT_MESSAGE" value="add category and keywords to config" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -2009,6 +1981,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="129">
           <caret line="33" column="34" lean-forward="true" selection-start-line="33" selection-start-column="34" selection-end-line="33" selection-end-column="34" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2214,22 +2187,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="189" column="46" lean-forward="false" selection-start-line="189" selection-start-column="46" selection-end-line="189" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/src/services/config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="56" lean-forward="false" selection-start-line="23" selection-start-column="56" selection-end-line="23" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logic/Listeners/PostbackLogic.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
@@ -2340,12 +2297,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/src/pages/keywords/keywords.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="63" lean-forward="false" selection-start-line="9" selection-start-column="63" selection-end-line="9" selection-end-column="63" />
+        <state relative-caret-position="102">
+          <caret line="6" column="24" lean-forward="true" selection-start-line="6" selection-start-column="24" selection-end-line="6" selection-end-column="24" />
           <folding>
             <element signature="n#style#0;n#div#0;n#div#2;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#button#0;n#div#3;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/src/services/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="14" lean-forward="true" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="116" column="68" lean-forward="true" selection-start-line="116" selection-start-column="68" selection-end-line="116" selection-end-column="68" />
+          <folding />
         </state>
       </provider>
     </entry>

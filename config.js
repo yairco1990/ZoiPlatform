@@ -112,9 +112,9 @@ const Environments = {
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
-			"clientId": "GudNczB4yE1zF6I3",
-			"clientSecret": "pc47AU2Tjz9V7DmGZRMDEGyuLPpqlqUmjR4hKu5b",
-			"redirectUri": "http://52.174.244.154:3000/acuity/oauth2"
+			"clientId": "g11mGjQit36aS056",
+			"clientSecret": "fcawIJQsdCOPOaxhKCoUhoYV2pDTQvp3ywkc1LNo",
+			"redirectUri": "https://dev.zoiai.com:443/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		isProduction: false,
@@ -187,10 +187,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.NGROK;
-if (selectedEnvironment.useTeammate) {
-	selectedEnvironment.serverUrl = "http://10.0.0.1:443";
-	selectedEnvironment.clientUrl = "http://10.0.0.1:443/p/#";
-}
+const selectedEnvironment = Environments.DEV;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////
