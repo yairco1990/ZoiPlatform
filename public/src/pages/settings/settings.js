@@ -67,7 +67,7 @@ SettingsCtrl.prototype.initCtrl = function () {
 	//prompt new customers
 	vm.promptNewCustomers = vm.zoiUser.promptNewCustomers === false ? "Don't notify me of new bookers" : "Notify me of new bookers";
 	//business category
-	vm.businessCategory = vm.zoiUser.categories[0];
+	vm.businessCategory = vm.zoiUser.category;
 	//keywords
 	vm.keywords = "";
 	vm.zoiUser.keyWords.forEach(function (word, ind) {
