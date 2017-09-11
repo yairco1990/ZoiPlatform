@@ -61,6 +61,7 @@ const Environments = {
 	},
 	NGROK: {
 		appId: "358701207893441",
+        appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "https://32a85937.ngrok.io",
 		clientUrl: "https://32a85937.ngrok.io/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
@@ -101,6 +102,7 @@ const Environments = {
 	},
 	DEV: {
 		appId: "358701207893441",
+        appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "https://dev.zoiai.com:3000",
 		clientUrl: "https://dev.zoiai.com:3000/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",

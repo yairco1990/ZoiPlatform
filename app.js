@@ -26,7 +26,7 @@ let server;
 		server = require('http').createServer(app);
 	} else {
 		const options = {
-			ca: fs.readFileSync('../bundle.crt'),
+			ca: fs.readFileSync('../myCa.ca'),
 			pfx: fs.readFileSync('../zoiaicom.pfx'),
 			passphrase: 'ig180688'
 		};
