@@ -44,7 +44,7 @@ function categoryCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zo
 categoryCtrl.prototype.$onInit = function () {
 	var vm = this;
 
-	vm.categories = ["All", "Fitness", "Spa & Massage", "Fashion", "Make Up", "Skin", "Hair Style", "Fragrance", "Nail", "Accessories", "Tech"];
+		vm.categories = ["All", "Beauty", "Fitness", "Spa & Massage", "Fashion", "Make Up", "Skin", "Hair Style", "Fragrance", "Nail", "Accessories", "Tech"];
 
 	vm.zoiUser.category = vm.zoiUser.category || vm.categories[0];
 };

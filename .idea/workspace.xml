@@ -3,8 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/pages/category/category.html" afterPath="$PROJECT_DIR$/public/src/pages/category/category.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/pages/settings/settings.js" afterPath="$PROJECT_DIR$/public/src/pages/settings/settings.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/pages/category/category.js" afterPath="$PROJECT_DIR$/public/src/pages/category/category.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -77,17 +76,17 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="category.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="category.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/src/pages/category/category.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="235">
-              <caret line="48" column="23" lean-forward="false" selection-start-line="48" selection-start-column="4" selection-end-line="48" selection-end-column="23" />
+            <state relative-caret-position="116">
+              <caret line="42" column="3" lean-forward="true" selection-start-line="42" selection-start-column="3" selection-end-line="42" selection-end-column="3" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="category.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="category.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/src/pages/category/category.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="306">
@@ -142,7 +141,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>clientS</find>
       <find>appSe</find>
       <find>getRandom</find>
       <find>words</find>
@@ -172,6 +170,7 @@
       <find>PROD</find>
       <find>categories[0]</find>
       <find>[0]</find>
+      <find>Beau</find>
     </findStrings>
     <replaceStrings>
       <replace>DATABASE</replace>
@@ -266,7 +265,6 @@
         <option value="$PROJECT_DIR$/dal/models/User.js" />
         <option value="$PROJECT_DIR$/tests/GeneralLogicTest.js" />
         <option value="$PROJECT_DIR$/logic/Intents/GeneralLogic.js" />
-        <option value="$PROJECT_DIR$/public/src/pages/category/category.js" />
         <option value="$PROJECT_DIR$/public/src/pages/category/category.css" />
         <option value="$PROJECT_DIR$/public/src/assets/css/styles.css" />
         <option value="$PROJECT_DIR$/public/src/pages/keywords/keywords.html" />
@@ -274,6 +272,7 @@
         <option value="$PROJECT_DIR$/config.js" />
         <option value="$PROJECT_DIR$/public/src/pages/settings/settings.js" />
         <option value="$PROJECT_DIR$/public/src/pages/category/category.html" />
+        <option value="$PROJECT_DIR$/public/src/pages/category/category.js" />
       </list>
     </option>
   </component>
@@ -1416,13 +1415,6 @@
       <workItem from="1504615295830" duration="20771000" />
       <workItem from="1504690894442" duration="10465000" />
     </task>
-    <task id="LOCAL-00026" summary="change nlp engine">
-      <created>1501461357015</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1501461357015</updated>
-    </task>
     <task id="LOCAL-00027" summary="fix small talk">
       <created>1501462566013</created>
       <option name="number" value="00027" />
@@ -1759,7 +1751,14 @@
       <option name="project" value="LOCAL" />
       <updated>1505149934899</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="add category and keywords to config">
+      <created>1505150321059</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1505150321059</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1795,7 +1794,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="822617000" />
+    <option name="totallyTimeSpent" value="824604000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1869,7 +1868,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update small talk" />
     <MESSAGE value="fix small talk typos" />
     <MESSAGE value="Fix Logs" />
     <MESSAGE value="fix zoi with bug" />
@@ -1894,7 +1892,8 @@
     <MESSAGE value="rss conversation added - change cfg" />
     <MESSAGE value="change dev config" />
     <MESSAGE value="add category and keywords to config" />
-    <option name="LAST_COMMIT_MESSAGE" value="add category and keywords to config" />
+    <MESSAGE value="add business categories" />
+    <option name="LAST_COMMIT_MESSAGE" value="add business categories" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -2306,14 +2305,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/src/pages/category/category.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="48" column="23" lean-forward="false" selection-start-line="48" selection-start-column="4" selection-end-line="48" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/src/pages/category/category.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -2321,6 +2312,14 @@
           <folding>
             <element signature="n#style#0;n#button#0;n#div#3;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/src/pages/category/category.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="42" column="3" lean-forward="true" selection-start-line="42" selection-start-column="3" selection-end-line="42" selection-end-column="3" />
+          <folding />
         </state>
       </provider>
     </entry>
