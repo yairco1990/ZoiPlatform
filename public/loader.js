@@ -35,6 +35,8 @@ Promise.all([
 	loadFile('src/pages/settings/old-customers-popup/old-customers-popup.css', 'css'),
 	loadFile('src/pages/settings/customers-send-limit-popup/customers-send-limit-popup.css', 'css'),
 	loadFile('src/pages/settings/prompt-welcome-popup/prompt-welcome-popup.css', 'css'),
+	loadFile('src/pages/keywords/keywords.css', 'css'),
+	loadFile('src/pages/category/category.css', 'css'),
 	loadFile('src/pages/404/404.css', 'css'),
 ]).then(function () {
 
@@ -89,6 +91,8 @@ Promise.all([
 		loadFile('src/pages/appointment-sum/appointment-sum.js', 'js'),
 		loadFile('src/pages/mail/mail.js', 'js'),
 		loadFile('src/pages/404/404.js', 'js'),
+		loadFile('src/pages/keywords/keywords.js', 'js'),
+		loadFile('src/pages/category/category.js', 'js'),
 		loadFile('src/app.js', 'js')
 		//END OF CONTROLLERS
 

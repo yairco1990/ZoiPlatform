@@ -33,6 +33,10 @@ class LinkShortnerLogic {
 
 			const requestedLink = await DBManager.getLinkById(id);
 
+			//increase the number of openings
+			requestedLink.numOfOpenings += 1;
+			DBManager.saveLink(requestedLink);
+
 			return {status: 302, data: {'location': requestedLink.url}};
 
 		} catch (err) {

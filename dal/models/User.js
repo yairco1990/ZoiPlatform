@@ -11,7 +11,7 @@ const userSchema = new Schema({
 	metadata: Object,
 	wishList: [String],
 	keyWords: [String],
-	categories: [String],
+	category: String,
 	profile: Object,
 	startedAt: String,
 	nextMorningBriefDate: Number,
@@ -27,4 +27,3 @@ const userSchema = new Schema({
 }, {minimize: false});
 
 module.exports = mongoose.model('User', userSchema);
-;

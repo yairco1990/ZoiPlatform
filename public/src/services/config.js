@@ -5,20 +5,23 @@ angular.module('Zoi.services.config', [])
 
 			var ENVIRONMENTS = {
 				NGROK: {
-					url: "https://2fc4a7c1.ngrok.io"
+					url: "https://32a85937.ngrok.io"
 				},
 				LOCAL: {
-					url: "http://localhost:3000"
+					url: "http://localhost:443"
+				},
+				TEAMMATE: {
+					url: "http://10.0.0.1:443"
 				},
 				DEV: {
-					url: "https://dev.zoiai.com:3000"
+					url: "https://dev.zoiai.com:443"
 				},
 				PRODUCTION: {
-					url: "https://zoiai.com:3000"
+					url: "https://zoiai.com:443"
 				}
 			};
 
-			var selectedEnvironment = ENVIRONMENTS.DEV;
+			var selectedEnvironment = ENVIRONMENTS.NGROK;
 
 			return {
 				getServerUrl: function () {

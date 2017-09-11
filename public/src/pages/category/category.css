@@ -1,0 +1,12 @@
+#keywords-page .md-chips .md-chip-input-container:not(:first-child) {
+    margin: 9px 8px 0 0 !important;
+}
+
+#keywords-page .md-chips {
+    padding: 0 0 0px 3px;
+}
+
+#keywords-page md-chips.md-default-theme .md-chips .md-chip-input-container input, md-chips .md-chips .md-chip-input-container input {
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 5px;
+}

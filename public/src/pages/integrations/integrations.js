@@ -9,22 +9,8 @@ angular.module('Zoi.controllers.integrations', [])
 			controller: 'integrationsCtrl as vm',
 			templateUrl: 'src/pages/integrations/integrations.html',
 			resolve: {
-				zoiUser: function ($http, $log, $stateParams, zoiConfig, $timeout, $state) {
-					return $http({
-						url: zoiConfig.getServerUrl() + "/api/getUser",
-						method: "GET",
-						params: {
-							userId: $stateParams.userId
-						},
-						timeout: 10000
-					}).then(function (result) {
-						return result.data;
-					}, function (err) {
-						$log.error(err);
-						$timeout(function () {
-							$state.go('404');
-						});
-					});
+				zoiUser: function (zoiApi, $stateParams) {
+					return zoiApi.getUser($stateParams.userId);
 				}
 			}
 		})
@@ -57,15 +43,10 @@ function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser
  */
 integrationsCtrl.prototype.$onInit = function () {
 	var vm = this;
-	if (vm.zoiUser !== "NO_SUCH_USER") {
-		vm.isAcuityAssociated = vm.zoiUser.integrations.Acuity;
-		vm.isMindbodyAssociated = vm.zoiUser.integrations.Mindbody;
-		vm.isGmailAssociated = vm.zoiUser.integrations.Gmail;
-		vm.isFacebookAssociated = vm.zoiUser.integrations.Facebook;
-	} else {
-		vm.zoiUser = null;
-	}
-
+	vm.isAcuityAssociated = vm.zoiUser.integrations.Acuity;
+	vm.isMindbodyAssociated = vm.zoiUser.integrations.Mindbody;
+	vm.isGmailAssociated = vm.zoiUser.integrations.Gmail;
+	vm.isFacebookAssociated = vm.zoiUser.integrations.Facebook;
 };
 
 integrationsCtrl.prototype.onAcuityClicked = function () {

@@ -23,6 +23,7 @@ let DefaultUser = {
 		"text": "1 month",
 		"value": 30
 	},
+	category: "All",
 	lastMessageTime: moment().valueOf(),
 };
 

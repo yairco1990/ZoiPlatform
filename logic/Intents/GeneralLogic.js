@@ -100,7 +100,7 @@ class GeneralLogic extends ConversationLogic {
 
 			this.setCurrentQuestion(suggestToPostQuestions.suggestArticle, "payload");
 
-			const articlesToSuggest = await RssLogic.getRandomArticles(user.categories[0], user.keyWords, 4);
+			const articlesToSuggest = await RssLogic.getRandomArticles(user.category, user.keyWords, 4);
 
 			await this.DBManager.saveUser(user);
 

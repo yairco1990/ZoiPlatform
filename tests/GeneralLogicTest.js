@@ -25,7 +25,7 @@ const mockUser = {
 	},
 	"session": null,
 	"timezone": "Asia/Jerusalem",
-	categories: ["nail"],
+	categories: "nail",
 	keyWords: ["nails"],
 };
 

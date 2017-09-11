@@ -44,6 +44,36 @@
                     </div>
                 </div>
             </div>
+
+            <!--SOCIAL MEDIA-->
+            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
+                <b> Social Media </b>
+            </div>
+            <div class="box-body" style=" border-bottom: solid #f5ebeb 1px">
+
+                <div class="box-item" style="display: block; position: relative"
+                     ng-click="vm.moveToState('category')">
+                    <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
+                    <div class="" style="padding-top:20px">
+                        Business Category
+                    </div>
+                    <div class=" box-sub-header">
+                        {{vm.businessCategory}}
+                    </div>
+                </div>
+                <div class="box-item" style="display: block"
+                     ng-click="vm.moveToState('keywords')">
+                    <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
+                    <div class="" style="padding-top:20px">
+                        Keywords
+                    </div>
+                    <div class=" box-sub-header">
+                        {{vm.keywords}}
+                    </div>
+                </div>
+            </div>
+            <!--END OF SOCIAL MEDIA-->
+
             <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
                 <b> Brief </b>
             </div>
@@ -69,14 +99,6 @@
                         {{vm.zoiUser.defaultCalendar.name}}
                     </div>
                 </div>
-                <!--<div class="box-item" style="display: block">-->
-                <!--<div class="" style="padding-top:20px">-->
-                <!--Email filter-->
-                <!--</div>-->
-                <!--<div class=" box-sub-header">-->
-                <!--Show all customers-->
-                <!--</div>-->
-                <!--</div>-->
             </div>
 
             <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">

@@ -8,121 +8,125 @@ let rssCache;
 
 class RssLogic {
 
-    static async getRandomArticles(category, keyWords, numOfArticles) {
+	static async getRandomArticles(category, keyWords, numOfArticles) {
 
-        try {
-            let keyWordsString = "";
-            keyWords.forEach((k) => {
-                keyWordsString += k + " ";
-            });
-            keyWordsString = keyWordsString.trim();
+		try {
+			let keyWordsString = "";
+			keyWords.forEach((k) => {
+				keyWordsString += k + " ";
+			});
+			keyWordsString = keyWordsString.trim();
 
-            let result = await requestify.post(ZoiConfig.ELASTIC_URL + '/articles/_search', {
-                "query": {
-                    "bool": {
-                        "must": {
-                            "match_phrase": {
-                                "tags": category
-                            }
-                        },
-                        "should": {
-                            "match": {
-                                "message": keyWordsString
-                            }
-                        }
-                    }
-                },
-                "sort": [
-                    {
-                        "published": {
-                            "order": "desc"
-                        }
-                    }
-                ],
-                "size": 40
-            }, {dataType: 'json'});
+			let result = await requestify.post(ZoiConfig.ELASTIC_URL + '/articles/_search', {
+				"query": {
+					"bool": {
+						"must": {
+							"match_phrase": {
+								"tags": category
+							}
+						},
+						"should": {
+							"match": {
+								"message": keyWordsString
+							}
+						}
+					}
+				},
+				"sort": [
+					{
+						"published": {
+							"order": "desc"
+						}
+					}
+				],
+				"size": 40
+			}, {dataType: 'json'});
 
-            const hits = result.getBody().hits.hits;
+			const hits = result.getBody().hits.hits;
 
-            let articles = hits.map((article) => {
-                return article._source;
-            });
+			let articles = hits.map((article) => {
+				return article._source;
+			});
 
-            const numOfLinksToExtract = Math.min(articles.length, numOfArticles);
+			//choose the minimum articles between the request from the function to those come from Elastic
+			const numOfLinksToExtract = Math.min(articles.length, numOfArticles);
 
-            articles = MyUtils.getRandomFromArray(articles, numOfLinksToExtract);
+			//get only part of the articles
+			articles = MyUtils.getRandomFromArray(articles, numOfLinksToExtract);
 
-            for (let article of articles) {
-                const openGraphResult = await RssLogic.getOpenGraphResult(article.link);
-                article.image = openGraphResult.ogImage.url;
-            }
+			//run open graph on each article to obtain the images
+			articles = await Promise.all(articles.map(async article => {
+				const openGraphResult = await RssLogic.getOpenGraphResult(article.link);
+				article.image = openGraphResult.ogImage.url;
+				return article;
+			}));
 
-            return articles;
+			return articles;
 
 		} catch (e) {
 			MyLog.error('Failed to load random articles', 3);
 		}
 
-    }
+	}
 
 
-    static async getAllArticles() {
+	static async getAllArticles() {
 
-        try {
-            //check if request already made
-            if (!rssCache) {
+		try {
+			//check if request already made
+			if (!rssCache) {
 
-                const articles_1 = await RssLogic.getArticles('http://www.beautyworldnews.com/rss/archives/all.xml');
-                const articles_2 = await RssLogic.getArticles('http://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/section/well/rss.xml');
-                const articles_3 = await RssLogic.getArticles('http://rss.nytimes.com/services/xml/rss/nyt/Nutrition.xml');
-                const articles_4 = await RssLogic.getArticles('http://www.health.com/fitness/feed');
-                const articles_5 = await RssLogic.getArticles('http://www.health.com/mind-body/feed');
+				const articles_1 = await RssLogic.getArticles('http://www.beautyworldnews.com/rss/archives/all.xml');
+				const articles_2 = await RssLogic.getArticles('http://www.nytimes.com/svc/collections/v1/publish/www.nytimes.com/section/well/rss.xml');
+				const articles_3 = await RssLogic.getArticles('http://rss.nytimes.com/services/xml/rss/nyt/Nutrition.xml');
+				const articles_4 = await RssLogic.getArticles('http://www.health.com/fitness/feed');
+				const articles_5 = await RssLogic.getArticles('http://www.health.com/mind-body/feed');
 
-                rssCache = [...articles_1, ...articles_2, ...articles_3, ...articles_4, ...articles_5];
+				rssCache = [...articles_1, ...articles_2, ...articles_3, ...articles_4, ...articles_5];
 
-            }
+			}
 
-            return rssCache;
+			return rssCache;
 
-        } catch (err) {
-            MyLog.error("Failed to get rss articles", err);
-        }
-    }
+		} catch (err) {
+			MyLog.error("Failed to get rss articles", err);
+		}
+	}
 
-    /**
-     * get articles from single url
-     * @param url
-     * @returns list of articles on array
-     */
-    static async getArticles(url) {
+	/**
+	 * get articles from single url
+	 * @param url
+	 * @returns list of articles on array
+	 */
+	static async getArticles(url) {
 
-        //get articles on xml
-        const articlesOnXml = await MyUtils.makeRequest('GET', url);
+		//get articles on xml
+		const articlesOnXml = await MyUtils.makeRequest('GET', url);
 
-        //convert xml to js
-        const articlesOnJson = await MyUtils.convertXmlToJson(articlesOnXml);
+		//convert xml to js
+		const articlesOnJson = await MyUtils.convertXmlToJson(articlesOnXml);
 
-        //return list of article items
-        return articlesOnJson.rss.channel[0].item;
+		//return list of article items
+		return articlesOnJson.rss.channel[0].item;
 
-    }
+	}
 
-    /**
-     * get page metadata by open graph
-     * @param url
-     * @returns {Promise}
-     */
-    static async getOpenGraphResult(url) {
-        return new Promise((resolve, reject) => {
-            const options = {'url': url};
-            ogs(options, function (err, result) {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(result.data);
-            });
-        });
-    }
+	/**
+	 * get page metadata by open graph
+	 * @param url
+	 * @returns {Promise}
+	 */
+	static async getOpenGraphResult(url) {
+		return new Promise((resolve, reject) => {
+			const options = {'url': url};
+			ogs(options, function (err, result) {
+				if (err) {
+					return reject(err);
+				}
+				resolve(result.data);
+			});
+		});
+	}
 }
 
 module.exports = RssLogic;

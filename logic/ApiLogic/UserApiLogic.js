@@ -49,7 +49,7 @@ UserApiLogic.prototype.getUser = async function (userId, callback) {
 
 	} catch (err) {
 		MyLog.error(err);
-		MyLog.error("Failed to get user by facebook id");
+		MyLog.error(`Failed to get user by facebook id -> ${userId}`);
 		callback(Response.NOT_FOUND, err);
 	}
 };

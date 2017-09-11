@@ -1,0 +1,40 @@
+<div id="keywords-page" class="boxed-page" ng-cloak>
+    <div class="keywords-area boxed-area" ng-if="vm.zoiUser">
+
+        <div class="box-area-wrapper">
+
+            <div class="box-header">
+                Keywords
+            </div>
+            <div class="box-sub-header">
+                <b>Select your keywords for content posting</b>
+            </div>
+
+            <div class="box-body" style="border-top: solid #ececec 1px;">
+
+                <div class="text-center box-sub-header"
+                     style="font-size: 20px !important;margin-bottom: 50px;">
+
+                    <md-chips
+                            id="foo"
+                            ng-model="vm.zoiUser.keyWords"
+                            readonly="false"
+                            md-removable="true"
+                            placeholder="Enter a keyword"
+                            delete-button-label="Remove keyword"
+                            delete-hint="Press delete to remove keyword"
+                            secondary-placeholder="+Keyword"></md-chips>
+                </div>
+            </div>
+
+            <div style="text-align: center;width: 100%;position: fixed;bottom: 5px;">
+                <button class="btn btn-default" ng-click="vm.saveUser($event)" style="width: 98%;">
+                    Save
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

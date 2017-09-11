@@ -9,22 +9,8 @@ angular.module('Zoi.controllers.settings', [])
 			controller: 'SettingsCtrl as vm',
 			templateUrl: 'src/pages/settings/settings.html',
 			resolve: {
-				zoiUser: function ($http, $log, $stateParams, zoiConfig, $timeout, $state) {
-					return $http({
-						url: zoiConfig.getServerUrl() + "/api/getUser",
-						method: "GET",
-						params: {
-							userId: $stateParams.userId
-						},
-						timeout: 5000
-					}).then(function (result) {
-						return result.data;
-					}, function (err) {
-						$log.error(err);
-						$timeout(function () {
-							$state.go('404');
-						});
-					});
+				zoiUser: function ($http, $log, $stateParams, zoiConfig, $timeout, $state, zoiApi) {
+					return zoiApi.getUser($stateParams.userId);
 				},
 				businessCalendars: function ($http, $log, $stateParams, zoiConfig) {
 					return $http({
@@ -50,7 +36,7 @@ angular.module('Zoi.controllers.settings', [])
  * page constructor
  * @constructor
  */
-function SettingsCtrl($log, $rootScope, $timeout, zoiUser, $mdDialog, zoiApi, businessCalendars) {
+function SettingsCtrl($log, $rootScope, $timeout, zoiUser, $mdDialog, zoiApi, businessCalendars, $state) {
 
 	var vm = this;
 
@@ -61,6 +47,7 @@ function SettingsCtrl($log, $rootScope, $timeout, zoiUser, $mdDialog, zoiApi, bu
 	vm.$mdDialog = $mdDialog;
 	vm.zoiApi = zoiApi;
 	vm.businessCalendars = businessCalendars;
+	vm.$state = $state;
 
 	vm.$log.info("SettingsCtrl loaded");
 	vm.initCtrl();
@@ -79,6 +66,20 @@ SettingsCtrl.prototype.initCtrl = function () {
 	vm.customersSendLimitText = vm.zoiUser.customerSendLimit && vm.zoiUser.customerSendLimit.text ? vm.zoiUser.customerSendLimit.text.toLowerCase() : "1 promo per week";
 	//prompt new customers
 	vm.promptNewCustomers = vm.zoiUser.promptNewCustomers === false ? "Don't notify me of new bookers" : "Notify me of new bookers";
+	//business category
+	vm.businessCategory = vm.zoiUser.categories[0];
+	//keywords
+	vm.keywords = "";
+	vm.zoiUser.keyWords.forEach(function (word, ind) {
+		if (ind < vm.zoiUser.keyWords.length - 1) {
+			vm.keywords += word + ", ";
+		} else {
+			vm.keywords += word + ".";
+		}
+	});
+	if (vm.keywords.length > 40) {
+		vm.keywords = vm.keywords.substring(0, 37) + "...";
+	}
 };
 
 /**
@@ -225,7 +226,13 @@ SettingsCtrl.prototype.openPopup = function (ev, controller, templateUrl, items,
 	}).then(onSuccess, onError);
 };
 
-
+/**
+ * move to state name
+ */
+SettingsCtrl.prototype.moveToState = function (stateName) {
+	var vm = this;
+	vm.$state.go(stateName, {userId: vm.zoiUser._id});
+};
 
 
 

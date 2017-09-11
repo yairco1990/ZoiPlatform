@@ -27,6 +27,8 @@ angular.module('ZoiClient', [
 	'Zoi.controllers.agenda',
 	'Zoi.controllers.profile',
 	'Zoi.controllers.abilities',
+	'Zoi.controllers.keywords',
+	'Zoi.controllers.category',
 	'Zoi.controllers.404'
 
 ]).run(['$rootScope', '$state', function ($rootScope, $state) {

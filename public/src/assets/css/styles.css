@@ -196,3 +196,23 @@ html, body {
 }
 
 /*Box styling end*/
+
+/* angular material popup */
+md-dialog .md-actions, md-dialog md-dialog-actions {
+    display: block !important;
+    text-align: center !important;
+}
+
+md-dialog md-dialog-content:not([layout=row]) > :first-child:not(.md-subheader) {
+    text-align: center !important;
+}
+
+md-dialog .md-actions, md-dialog md-dialog-actions {
+    padding: 0 !important;
+}
+
+md-dialog .md-actions .md-button, md-dialog md-dialog-actions .md-button {
+    margin: 8px 8px 8px 8px !important;
+}
+
+/* end of angular material popup */

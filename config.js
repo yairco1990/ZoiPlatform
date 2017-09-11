@@ -19,6 +19,7 @@ const PRODUCTION_BOT_DETAILS = {
 
 const Environments = {
 	LOCAL: {
+		useTeammate: false,
 		appId: "358701207893441",
 		appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "http://localhost:3000",
@@ -61,7 +62,7 @@ const Environments = {
 	},
 	NGROK: {
 		appId: "358701207893441",
-        appSecret: "364a4ac6971784586eb91066e04d0c80",
+		appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "https://32a85937.ngrok.io",
 		clientUrl: "https://32a85937.ngrok.io/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
@@ -102,7 +103,7 @@ const Environments = {
 	},
 	DEV: {
 		appId: "358701207893441",
-        appSecret: "364a4ac6971784586eb91066e04d0c80",
+		appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "https://dev.zoiai.com:3000",
 		clientUrl: "https://dev.zoiai.com:3000/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
@@ -186,6 +187,10 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.DEV;
+const selectedEnvironment = Environments.NGROK;
+if (selectedEnvironment.useTeammate) {
+	selectedEnvironment.serverUrl = "http://10.0.0.1:443";
+	selectedEnvironment.clientUrl = "http://10.0.0.1:443/p/#";
+}
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

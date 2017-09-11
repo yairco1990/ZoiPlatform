@@ -8,13 +8,6 @@ const RssLogic = require('../logic/RssLogic');
 
 describe("RssLogic Class", () => {
 
-	it("get all articles", async () => {
-
-		const articleResult = await RssLogic.getAllArticles();
-
-		assert(articleResult);
-	});
-
 
 	it("get open graph results", async () => {
 
@@ -30,10 +23,13 @@ describe("RssLogic Class", () => {
 
 		const articleResult = await RssLogic.getRandomArticles("nail", ["nails"], 4);
 
+		assert(articleResult);
+
 		//check image exist
-		assert(articleResult[0].image);
-		assert(articleResult[1].image);
-		assert(articleResult[2].image);
+		articleResult.forEach((article) => {
+			assert(article.image);
+			expect(article.tag === "nail");
+		});
 	});
 
 });

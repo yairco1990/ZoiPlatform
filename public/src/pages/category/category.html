@@ -1,0 +1,39 @@
+<div id="keywords-page" class="boxed-page" ng-cloak>
+    <div class="keywords-area boxed-area" ng-if="vm.zoiUser">
+
+        <div class="box-area-wrapper">
+
+            <div class="box-header">
+                Business Category
+            </div>
+            <div class="box-sub-header">
+                <b>Select your business category.</b>
+                <b>It will be used for searching content for your marketing campaigns.</b>
+            </div>
+
+            <div class="box-body" style="border-top: solid #ececec 1px;">
+                <div class="text-center box-sub-header" style="font-size: 16px !important;margin-top: 15px">
+
+                    <md-input-container style="width: 100%;text-align: left">
+                        <label>Business Category</label>
+                        <md-select ng-model="vm.zoiUser.categories[0]">
+                            <md-option ng-repeat="category in vm.categories" ng-value="category">
+                                {{category}}
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+
+                </div>
+
+            </div>
+
+            <div style="text-align: center;width: 100%;position: fixed;bottom: 5px;">
+                <button class="btn btn-default" ng-click="vm.saveUser($event)" style="width: 98%;">
+                    Save
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
