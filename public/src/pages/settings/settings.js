@@ -80,6 +80,9 @@ SettingsCtrl.prototype.initCtrl = function () {
 	if (vm.keywords.length > 40) {
 		vm.keywords = vm.keywords.substring(0, 37) + "...";
 	}
+	if (!keywords.length) {
+		vm.keywords = "There are no selected keywords";
+	}
 };
 
 /**
