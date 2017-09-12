@@ -1,6 +1,7 @@
 /**
  * Created by Yair on 7/4/2017.
  */
+const MyUtils = require('../../interfaces/utils');
 const MyLog = require('../../interfaces/MyLog');
 const moment = require('moment-timezone');
 
@@ -37,6 +38,14 @@ UserApiLogic.prototype.getUser = async function (userId, callback) {
 			user.integrations.Gmail = true;
 		}
 		if (user.integrations.Facebook) {
+
+			//copy the facebook pages to user
+			if (user.integrations.Facebook.pages) {
+				user._doc.facebookPages = user.integrations.Facebook.pages.map(({name, id, isEnabled}) => {
+					return {name, id, isEnabled};
+				});
+			}
+
 			delete user.integrations.Facebook;
 			user.integrations.Facebook = true;
 		}
@@ -77,6 +86,15 @@ UserApiLogic.prototype.saveUser = async function (user, callback) {
 		}
 		if (oldUser.integrations.Facebook) {
 			user.integrations.Facebook = oldUser.integrations.Facebook;
+
+			//save the enables facebook pages
+			if (MyUtils.nestedValue(user, "facebookPages.length") && MyUtils.nestedValue(oldUser, "integrations.Facebook.pages.length")) {
+				user.facebookPages.forEach((clientPage) => {
+					const serverSelectedPage = oldUser.integrations.Facebook.pages.find(serverPage => clientPage.id === serverPage.id);
+					serverSelectedPage.isEnabled = clientPage.isEnabled;
+				});
+			}
+			delete user.facebookPages;
 		}
 
 		//calculate morning brief if the user set it

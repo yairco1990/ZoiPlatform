@@ -29,6 +29,7 @@ angular.module('ZoiClient', [
 	'Zoi.controllers.abilities',
 	'Zoi.controllers.keywords',
 	'Zoi.controllers.category',
+	'Zoi.controllers.facebook-pages',
 	'Zoi.controllers.404'
 
 ]).run(['$rootScope', '$state', function ($rootScope, $state) {

@@ -1,0 +1,33 @@
+<div id="facebook-pages-page" class="boxed-page" ng-cloak>
+    <div class="facebook-pages-area boxed-area">
+
+        <div class="box-area-wrapper">
+            <div class="box-header">
+                Facebook Pages
+            </div>
+            <div class="box-sub-header">
+                <b>Select the facebook pages that you want Zoi will post on</b>
+            </div>
+
+            <div class="facebook-pages-body" style="border-bottom: solid #f5ebeb 1px;" ng-if="vm.zoiUser.facebookPages && vm.zoiUser.facebookPages.length">
+                <div class="facebook-pages-item" ng-repeat="page in vm.zoiUser.facebookPages">
+                    <md-checkbox aria-label="sendEmail Checkbox 1" ng-model="page.isEnabled"
+                                 class="md-primary no-margin" style="padding-right: 10px;">
+                    </md-checkbox>
+                    <div class="facebook-pages-details-wrapper">
+                        <div>
+                            <div class="facebook-pages-details-header">
+                                {{page.name}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center;margin: 15px 0;bottom: 0;position: absolute;width: 100%;" ng-click="vm.saveUser($event)">
+                <md-button class="md-raised md-primary" style="width: 96%;">Save</md-button>
+            </div>
+        </div>
+
+    </div>
+</div>

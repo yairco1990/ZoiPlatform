@@ -4,7 +4,7 @@
         <div class="box-area-wrapper">
 
             <div class="settings-header box-header">
-                Guidelines
+                Settings
 
                 <div class="nav-button" style="margin-left: auto">
 
@@ -20,7 +20,7 @@
             <div class="box-body" style=" border-bottom: solid #f5ebeb 1px">
 
                 <div class="box-item" style="display: block">
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Name
                     </div>
                     <div class=" box-sub-header">
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="box-item" style="display: block">
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Business Name
                     </div>
                     <div class=" box-sub-header">
@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <div class="box-item" style="display: block">
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Timezone
                     </div>
                     <div class=" box-sub-header">
@@ -52,19 +52,31 @@
             <div class="box-body" style=" border-bottom: solid #f5ebeb 1px">
 
                 <div class="box-item" style="display: block; position: relative"
+                     ng-click="vm.moveToState('facebook-pages')">
+                    <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
+                    <div class="" style="padding-top:10px">
+                        Facebook pages to post on
+                    </div>
+                    <div class=" box-sub-header">
+                        {{vm.facebookPagesPreview}}
+                    </div>
+                </div>
+
+                <div class="box-item" style="display: block; position: relative"
                      ng-click="vm.moveToState('category')">
                     <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Business Category
                     </div>
                     <div class=" box-sub-header">
                         {{vm.businessCategory}}
                     </div>
                 </div>
+
                 <div class="box-item" style="display: block"
                      ng-click="vm.moveToState('keywords')">
                     <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Keywords
                     </div>
                     <div class=" box-sub-header">
@@ -82,7 +94,7 @@
                 <div class="box-item" style="display: block; position: relative"
                      ng-click="vm.openBriefTimePopup($event)">
                     <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Time of brief
                     </div>
                     <div class=" box-sub-header">
@@ -92,7 +104,7 @@
                 <div class="box-item" style="display: block"
                      ng-click="vm.openCalendarsPopup($event)">
                     <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Default calendar
                     </div>
                     <div class=" box-sub-header">
@@ -109,7 +121,7 @@
                 <div class="box-item" style="display: block"
                      ng-click="vm.openCustomersSendLimitPopup($event)">
                     <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Per-customer send limit
                     </div>
                     <div class=" box-sub-header">
@@ -119,7 +131,7 @@
                 <div class="box-item" style="display: block"
                      ng-click="vm.openOldCustomersPopup($event)">
                     <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Non regular customers
                     </div>
                     <div class=" box-sub-header">
@@ -129,7 +141,7 @@
                 <div class="box-item" style="display: block"
                      ng-click="vm.openPromptWelcomePopup($event)">
                     <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
-                    <div class="" style="padding-top:20px">
+                    <div class="" style="padding-top:10px">
                         Email new bookers
                     </div>
                     <div class=" box-sub-header">

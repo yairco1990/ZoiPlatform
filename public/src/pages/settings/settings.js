@@ -69,19 +69,19 @@ SettingsCtrl.prototype.initCtrl = function () {
 	//business category
 	vm.businessCategory = vm.zoiUser.category;
 	//keywords
-	vm.keywords = "";
-	vm.zoiUser.keyWords.forEach(function (word, ind) {
-		if (ind < vm.zoiUser.keyWords.length - 1) {
-			vm.keywords += word + ", ";
-		} else {
-			vm.keywords += word + ".";
-		}
-	});
+	vm.keywords = MyUtils.getPreviewStringWithCommas(vm.zoiUser.keyWords);
 	if (vm.keywords.length > 40) {
 		vm.keywords = vm.keywords.substring(0, 37) + "...";
 	}
 	if (!vm.keywords.length) {
 		vm.keywords = "There are no selected keywords";
+	}
+
+	if (vm.zoiUser.facebookPages) {
+		vm.facebookPages = vm.zoiUser.facebookPages.filter(function (page) {
+			return page.isEnabled;
+		});
+		vm.facebookPagesPreview = MyUtils.getPreviewStringWithCommas(vm.facebookPages, 'name');
 	}
 };
 

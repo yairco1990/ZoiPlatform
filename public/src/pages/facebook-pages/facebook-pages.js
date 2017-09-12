@@ -1,56 +1,44 @@
 /**
  * Created by Yair on 3/28/2017.
  */
-angular.module('Zoi.controllers.category', [])
+angular.module('Zoi.controllers.facebook-pages', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
-		$stateProvider.state('category', {
-			url: '/category?{userId}',
-			controller: 'categoryCtrl as vm',
-			templateUrl: 'src/pages/category/category.html',
+		$stateProvider.state('facebook-pages', {
+			url: '/facebook-pages?{userId}',
+			controller: 'FacebookPagesCtrl as vm',
+			templateUrl: 'src/pages/facebook-pages/facebook-pages.html',
 			resolve: {
 				zoiUser: function (zoiApi, $stateParams) {
 					return zoiApi.getUser($stateParams.userId);
 				}
 			}
 		})
-	}]).controller('categoryCtrl', categoryCtrl);
+	}]).controller('FacebookPagesCtrl', FacebookPagesCtrl);
 
 
 /**
  * page constructor
  * @constructor
  */
-function categoryCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig) {
+function FacebookPagesCtrl($log, $rootScope, $timeout, zoiApi, zoiUser, $mdDialog) {
 
 	var vm = this;
 
 	vm.$log = $log;
 	vm.$rootScope = $rootScope;
 	vm.$timeout = $timeout;
-	vm.$scope = $scope;
-	vm.$mdDialog = $mdDialog;
-	vm.zoiUser = zoiUser;
 	vm.zoiApi = zoiApi;
-	vm.$window = $window;
-	vm.zoiConfig = zoiConfig;
+	vm.zoiUser = zoiUser;
+	vm.$mdDialog = $mdDialog;
 
-	vm.$log.debug("keywordsCtrl loaded");
+	vm.$log.info("FacebookPagesCtrl loaded");
 }
 
 /**
  *  init the page
  */
-categoryCtrl.prototype.$onInit = function () {
-	var vm = this;
-
-	vm.categories = ["All", "Beauty", "Fitness", "Spa & Massage", "Fashion", "Make Up", "Skin", "Hair Style", "Fragrance", "Nail", "Accessories", "Tech"];
-
-	vm.zoiUser.category = vm.zoiUser.category || vm.categories[0];
-};
-
-
-categoryCtrl.prototype.saveUser = function (ev) {
+FacebookPagesCtrl.prototype.saveUser = function (ev) {
 	var vm = this;
 
 	MyUtils.addLoader();
@@ -76,3 +64,21 @@ categoryCtrl.prototype.saveUser = function (ev) {
 		vm.$log.error(err);
 	});
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

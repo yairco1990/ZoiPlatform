@@ -1,58 +1,4 @@
-html, body {
-    margin: 0;
-    height: 100%;
-    background-color: white;
-    font-family: 'Lato', sans-serif;
-    color: black;
-    font-size: 17px;
-}
-
-.page-container {
-}
-
-.vertical-center {
-    display: flex;
-    align-items: center;
-}
-
-.no-padding {
-    padding: 0 !important;
-}
-
-.no-margin {
-    margin: 0 !important;
-}
-
-.white-color {
-    color: white;
-}
-
-.selected-late-time {
-    background-color: #e3e2e2;
-}
-
-.dropdown-menu {
-    padding: 0;
-}
-
-.blue-button {
-    background-color: #106cc8 !important;
-}
-
-.ng-hide-add, .ng-hide-remove {
-    /* ensure visibility during the transition */
-    display: block !important; /* yes, important */
-}
-
-.image-center {
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
-/*Box Styling*/
-
-.boxed-page .boxed-area {
+#facebook-pages-page .old-customers-area {
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -65,27 +11,24 @@ html, body {
     align-items: center;
 }
 
-.boxed-page .box-area-wrapper {
+#facebook-pages-page .old-customers-area-wrapper {
     height: 50%;
     width: 450px;
-    overflow-y: auto;
+
     color: rgba(0, 0, 0, 0.87);
     background-color: rgb(255, 255, 255);
     border-radius: 2px;
     max-width: 100vw;
-    padding-bottom: 80px;
-    position: relative;
 }
 
-.boxed-page .box-item {
-    height: 70px;
+#facebook-pages-page .facebook-pages-item {
+    height: 80px;
     display: flex;
     padding: 0 16px;
     border-top: solid #f5ebeb 1px;
-    position: relative;
 }
 
-.boxed-page .box-hour-wrapper {
+#facebook-pages-page .facebook-pages-hour-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -93,12 +36,12 @@ html, body {
     padding-right: 12px;
 }
 
-.boxed-page .box-details-wrapper {
+#facebook-pages-page .facebook-pages-details-wrapper {
     display: flex;
     align-items: center;
 }
 
-.boxed-page .user-image {
+#facebook-pages-page .user-image {
     -webkit-box-flex: 0;
     -webkit-flex: none;
     flex: none;
@@ -109,11 +52,11 @@ html, body {
 
 }
 
-.boxed-page .box-area-wrapper {
+#facebook-pages-page .facebook-pages-area-wrapper {
     height: auto;
 }
 
-.boxed-page .box-header {
+#facebook-pages-page .facebook-pages-header {
 
     background: blue;
     background-color: rgb(16, 108, 200);
@@ -127,13 +70,13 @@ html, body {
 
 }
 
-.boxed-page .box-sub-header {
+#facebook-pages-page .count-wrap {
     padding: 8px 16px;
     font-size: 0.8rem;
     color: rgba(0, 0, 0, 0.54);
 }
 
-.boxed-page .box-details-header {
+#facebook-pages-page .facebook-pages-details-header {
     font-size: 1rem;
     font-weight: bold;
     white-space: nowrap;
@@ -141,22 +84,33 @@ html, body {
     text-overflow: ellipsis;
 }
 
-.boxed-page .box-details-sub {
+#facebook-pages-page .facebook-pages-details-sub {
     font-size: 0.8rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+#facebook-pages-page .md-button.md-raised:not([disabled]) {
+    width: 90%;
+    padding: 0;
+    margin: 0;
+    background-color: rgb(16, 108, 200);
+}
+
+#facebook-pages-page md-checkbox.md-default-theme:not([disabled]).md-primary.md-checked .md-icon, md-checkbox:not([disabled]).md-primary.md-checked .md-icon {
+    background-color: rgb(16, 108, 200);
+}
+
 /* Extra Small Devices, Phones */
 @media only screen and (min-width: 480px) {
 
-    .boxed-page .boxedf-area:before {
+    #facebook-pages-page .facebook-pages-area:before {
         /*Minimum gap size*/
         min-height: 30px;
     }
 
-    .boxed-page .boxed-area:before, .boxed-area:after {
+    #facebook-pages-page .facebook-pages-area:before, .facebook-pages-area:after {
         /*Make the gap expend when available*/
         -webkit-box-flex: 1;
         box-flex: 1;
@@ -167,17 +121,17 @@ html, body {
         height: 24px;
     }
 
-    .boxed-page .box-area-wrapper {
+    #facebook-pages-page .facebook-pages-area-wrapper {
         /*flex-shrink: 0;*/
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .2), 0 1px 1px 0 rgba(0, 0, 0, .14), 0 2px 1px -1px rgba(0, 0, 0, .12);
     }
 
-    .boxed-page .boxed-area {
+    #facebook-pages-page .facebook-pages-area {
         /*background-image: url("BG.jpg");*/
         background-size: cover;
     }
 
-    .boxed-page .box-area-wrapper {
+    #facebook-pages-page .facebook-pages-area-wrapper {
 
     }
 }
@@ -196,25 +150,3 @@ html, body {
 @media only screen and (min-width: 1200px) {
 
 }
-
-/*Box styling end*/
-
-/* angular material popup */
-md-dialog .md-actions, md-dialog md-dialog-actions {
-    display: block !important;
-    text-align: center !important;
-}
-
-md-dialog md-dialog-content:not([layout=row]) > :first-child:not(.md-subheader) {
-    text-align: center !important;
-}
-
-md-dialog .md-actions, md-dialog md-dialog-actions {
-    padding: 0 !important;
-}
-
-md-dialog .md-actions .md-button, md-dialog md-dialog-actions .md-button {
-    margin: 8px 8px 8px 8px !important;
-}
-
-/* end of angular material popup */

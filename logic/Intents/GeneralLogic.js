@@ -65,7 +65,7 @@ class GeneralLogic extends ConversationLogic {
 				break;
 			case "general suggest to post article":
 				await this.botTyping();
-				await this.startArticleToPostConvo();
+				await this.articleToPostConvo();
 				break;
 			default:
 				this.reply(facebookResponse.getTextMessage(fallbackText));
@@ -76,18 +76,109 @@ class GeneralLogic extends ConversationLogic {
 	/**
 	 * start article to post convo
 	 */
-	async startArticleToPostConvo() {
+	async articleToPostConvo() {
 
 		const {user, conversationData, reply} = this;
 		const lastQuestionId = this.getLastQuestionId();
 
-		if (!user.conversationData) {
-			await this.suggestRandomArticle();
-		} else if (suggestToPostQuestions.suggestArticle.id === lastQuestionId) {
-			await this.postArticleOnFacebook();
-		}
+		//if there is an integration with facebook
+		if (user.integrations.Facebook) {
 
-		return MyUtils.SUCCESS;
+			//if there are pages integrated
+			if (MyUtils.nestedValue(user, "integrations.Facebook.pages.length")) {
+
+				//if there are page selected to post on
+				if (user.integrations.Facebook.pages.filter(page => page.isEnabled).length > 0) {
+					if (!user.conversationData) {
+						await this.suggestRandomArticle();
+						return "suggestRandomArticle";
+					} else if (suggestToPostQuestions.suggestArticle.id === lastQuestionId) {
+						await this.postArticleOnFacebook();
+						return "postArticleOnFacebook";
+					}
+				}
+				//if there are no pages chosen from the settings
+				else {
+					await this.askForSelectPageFromSettings();
+					return "askForSelectPageFromSettings";
+				}
+			}
+			//if there are no pages integrated
+			else {
+				await this.askForPageIntegration();
+				return "askForPageIntegration";
+			}
+		}
+		//if there is no integration with facebook
+		else {
+			await this.askForFacebookIntegration();
+			return "askForFacebookIntegration";
+		}
+	}
+
+	/**
+	 * ask to choose facebook pages from settings
+	 */
+	async askForSelectPageFromSettings() {
+
+		try {
+			const {user, conversationData, reply} = this;
+
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("To post on Facebook page, you must select at least one page from your settings. Let's pick one! 😊", [
+					facebookResponse.getGenericButton("web_url", "My Pages", null, ZoiConfig.clientUrl + "/facebook-pages?userId=" + user._id, "tall")
+				]), false)
+			]);
+
+			return MyUtils.SUCCESS;
+		} catch (err) {
+			await this.clearConversation();
+			MyLog.error("Failed on askForSelectPageFromSettings", err);
+			return MyUtils.ERROR;
+		}
+	}
+
+	/**
+	 * ask to integrate facebook pages
+	 */
+	async askForPageIntegration() {
+
+		try {
+			const {user, conversationData, reply} = this;
+
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("To post on Facebook page, you must give me permissions for your pages. Don't worry, I promise that won't post anything without your permission! 😎"), true, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You can do it on your Facebook settings. Choose 'Settings', then 'Apps', look for Zoi application and approve it to manage your pages."), false),
+			]);
+
+			return MyUtils.SUCCESS;
+		} catch (err) {
+			await this.clearConversation();
+			MyLog.error(err);
+			return MyUtils.ERROR;
+		}
+	}
+
+	/**
+	 * ask to integrate with Facebook
+	 */
+	async askForFacebookIntegration() {
+
+		try {
+			const {user, conversationData, reply} = this;
+
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("To post on Facebook page, you must integrate with Facebook platform. Let's do it! 💪", [
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
+				]), false)
+			]);
+
+			return MyUtils.SUCCESS;
+		} catch (err) {
+			await this.clearConversation();
+			MyLog.error(err);
+			return MyUtils.ERROR;
+		}
 	}
 
 	/**
@@ -110,9 +201,7 @@ class GeneralLogic extends ConversationLogic {
 			]);
 
 			return MyUtils.SUCCESS;
-
 		} catch (err) {
-
 			await this.clearConversation();
 			MyLog.error("Failed to suggest random article", err);
 			return MyUtils.ERROR;
@@ -155,18 +244,20 @@ class GeneralLogic extends ConversationLogic {
 				const linkId = await LinkShorner.saveLink(selectedArticle.link);
 
 				//start posting on user's pages
-				user.integrations.Facebook.pages.forEach(async (page) => {
-					try {
-						await FacebookLogic.postContentOnFacebookPage(page.id, {
-							access_token: page.access_token,
-							message: selectedArticle.title,
-							link: `${ZoiConfig.serverUrl}/s/${linkId}`
-						});
-					} catch (err) {
-						MyLog.error("Error from facebook when posting an article", err);
-						return MyUtils.ERROR;
-					}
-				});
+				user.integrations.Facebook.pages
+					.filter(page => page.isEnabled)
+					.forEach(async (page) => {
+						try {
+							await FacebookLogic.postContentOnFacebookPage(page.id, {
+								access_token: page.access_token,
+								message: selectedArticle.title,
+								link: `${ZoiConfig.serverUrl}/s/${linkId}`
+							});
+						} catch (err) {
+							MyLog.error("Error from facebook when posting an article", err);
+							return MyUtils.ERROR;
+						}
+					});
 
 				//clear convo
 				await this.clearConversation();

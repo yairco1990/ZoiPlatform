@@ -29,7 +29,7 @@ const mockUser = {
 	keyWords: ["nails"],
 };
 
-let DBManager, RssLogic, GeneralLogic, user, APPOINTMENT_TYPES, SLOTS;
+let DBManager, RssLogic, GeneralLogic, user;
 
 describe('GeneralLogic Class', function () {
 
