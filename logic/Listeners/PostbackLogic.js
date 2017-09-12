@@ -67,15 +67,16 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			//check that the user made first integration with acuity
 			let user = await self.DBManager.getUser({_id: userId});
 
-			if (!user.integrations || !user.integrations.Acuity) {
-				//create the redirect url
-				const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
-				const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
-				(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
-					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
-				]), false))();
-				return;
-			}
+			//TODO
+			// if (!user.integrations || !user.integrations.Acuity) {
+			// 	//create the redirect url
+			// 	const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
+			// 	const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
+			// 	(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
+			// 		facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
+			// 	]), false))();
+			// 	return;
+			// }
 
 			//menu buttons options
 			if (input === "MENU_PROFILE") {

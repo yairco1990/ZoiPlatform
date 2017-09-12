@@ -136,19 +136,19 @@ class ListenLogic {
 				conversationData.context = user.conversationData.context;
 				conversationData.intent = user.conversationData.intent;
 			}
-			//block user from proceed without integration with Acuity
-			else if (!user.integrations.Acuity) {
-
-				//create the redirect url
-				const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
-				const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
-
-				(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
-					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
-				]), false))();
-
-				return;
-			}
+			//block user from proceed without integration with Acuity TODO think about remove this obligation
+			// else if (!user.integrations.Acuity) {
+			//
+			// 	//create the redirect url
+			// 	const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
+			// 	const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
+			//
+			// 	(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
+			// 		facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
+			// 	]), false))();
+			//
+			// 	return;
+			// }
 
 			//save the last message time
 			user.lastMessageTime = new Date().valueOf();
