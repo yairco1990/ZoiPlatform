@@ -121,7 +121,7 @@ class RssLogic {
 			const options = {'url': url};
 			ogs(options, function (err, result) {
 				if (err) {
-					return reject(err);
+					return reject(result.err);
 				}
 				resolve(result.data);
 			});

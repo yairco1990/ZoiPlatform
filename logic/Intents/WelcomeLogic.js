@@ -309,7 +309,7 @@ class WelcomeLogic extends ConversationLogic {
 			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("No problem!"), true),
 			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I will really appreciate if you will share my new hiring on facebook :)"), true, delayTime),
 			MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Share me:", [
-				facebookResponse.getGenericButton("web_url", "Share Zoi", null, shareUrl)
+				facebookResponse.getGenericButton("web_url", "Share Zoi", null, shareUrl, "tall", false)
 			]), false, delayTime)
 		]);
 

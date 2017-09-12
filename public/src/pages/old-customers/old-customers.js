@@ -109,19 +109,23 @@ OldCustomersCtrl.prototype.sendButtonClicked = function (ev) {
 		}
 	}).then(function (result) {
 
-		vm.isPromotionSent = true;
+		// vm.isPromotionSent = true;
 
-		MyUtils.removeLoader();
-		vm.$mdDialog.show(
-			vm.$mdDialog.alert()
-				.parent(angular.element(document.querySelector('#popupContainer')))
-				.clickOutsideToClose(true)
-				.title("You Got It!")
-				.textContent("Promotions sent successfully!")
-				.ariaLabel("Promotions sent successfully!")
-				.ok('OK')
-				.targetEvent(ev)
-		);
+		// MyUtils.removeLoader();
+		// vm.$mdDialog.show(
+		// 	vm.$mdDialog.alert()
+		// 		.parent(angular.element(document.querySelector('#popupContainer')))
+		// 		.clickOutsideToClose(true)
+		// 		.title("You Got It!")
+		// 		.textContent("Promotions sent successfully!")
+		// 		.ariaLabel("Promotions sent successfully!")
+		// 		.targetEvent(ev)
+		// );
+
+		vm.$timeout(function () {
+			//close the browser via messenger extension
+			MyUtils.closeWebview();
+		}, 1000);
 
 		vm.$log.debug(result.data);
 	}).catch(function (err) {

@@ -41,6 +41,12 @@ let server;
 // Add headers
 app.use(cors());
 
+// Add headers
+app.use('/p', function (req, res, next) {
+	res.setHeader('X-Frame-Options', 'ALLOW-FROM https://www.messenger.com/');
+	res.setHeader('X-Frame-Options', 'ALLOW-FROM https://www.facebook.com/');
+	next();
+});
 //route to the client project
 app.use('/p', express.static('public'));
 

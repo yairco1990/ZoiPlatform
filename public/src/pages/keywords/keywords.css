@@ -5,3 +5,7 @@
 #keywords-page .md-chips {
     padding: 0 0 0px 3px;
 }
+
+#keywords-page md-dialog .md-actions, md-dialog md-dialog-actions {
+    display: none !important;
+}

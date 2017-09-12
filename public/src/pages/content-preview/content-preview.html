@@ -1,0 +1,37 @@
+<div id="content-preview-page" class="boxed-page" ng-cloak>
+    <div class="content-preview-area boxed-area" ng-if="vm.zoiUser">
+
+        <div class="box-area-wrapper">
+
+            <div class="box-header">
+                Content Preview
+            </div>
+            <div class="box-sub-header">
+                <b>This is what I'm going to post on your facebook page. Change the post title if you want.</b>
+            </div>
+
+            <div class="box-body" style="border-top: solid #ececec 1px;">
+                <div class="text-center box-sub-header" style="font-size: 16px !important;margin-top: 5px">
+                    <div class="preview-wrapper">
+                        <md-input-container class="md-block" style="margin-bottom: 0;">
+                            <label>Post Title</label>
+                            <textarea ng-model="vm.selectedTitle" md-maxlength="250" rows="1" md-select-on-focus
+                                      maxlength="250"></textarea>
+                        </md-input-container>
+                        <img class="image-preview" ng-src="{{vm.contentImage}}"/>
+                        <br>
+                        <h4 class="content-title-text"><b>{{vm.contentTitle}}</b></h4>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center;width: 100%;margin-top: 10px">
+                <md-button class="md-raised md-primary no-margin" ng-click="vm.postIt($event)" style="width: 94%;">
+                    Post it!
+                </md-button>
+            </div>
+
+        </div>
+
+    </div>
+</div>

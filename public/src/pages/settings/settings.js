@@ -82,6 +82,8 @@ SettingsCtrl.prototype.initCtrl = function () {
 			return page.isEnabled;
 		});
 		vm.facebookPagesPreview = MyUtils.getPreviewStringWithCommas(vm.facebookPages, 'name');
+		//show default text if there are no pages
+		vm.facebookPagesPreview = vm.facebookPagesPreview || "There are no integrated pages";
 	}
 };
 

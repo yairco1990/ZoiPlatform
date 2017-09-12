@@ -21,7 +21,7 @@ angular.module('Zoi.controllers.integrations', [])
  * page constructor
  * @constructor
  */
-function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig) {
+function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig, $state) {
 
 	var vm = this;
 
@@ -34,6 +34,7 @@ function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser
 	vm.zoiApi = zoiApi;
 	vm.$window = $window;
 	vm.zoiConfig = zoiConfig;
+	vm.$state = $state;
 
 	vm.$log.debug("integrationsCtrl loaded");
 }
@@ -79,6 +80,10 @@ integrationsCtrl.prototype.onFacebookClicked = function () {
 			vm.zoiApi.sendFacebookAccessToken(vm.zoiUser._id, response.authResponse).then(function () {
 				console.log("integrated with facebook successfully");
 				vm.isFacebookAssociated = true;
+
+				vm.$timeout(function () {
+					vm.$state.go('facebook-pages', {userId: vm.zoiUser._id});
+				}, 500);
 			});
 
 		} else {

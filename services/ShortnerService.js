@@ -1,5 +1,3 @@
-const FacebookLogic = require('../logic/FacebookLogic');
-const ZoiConfig = require('../config');
 const MyLog = require('../interfaces/MyLog');
 const router = require('express').Router();
 const LinkShortnerLogic = require('../logic/LinkShortnerLogic');

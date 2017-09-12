@@ -38,6 +38,7 @@ Promise.all([
 	loadFile('src/pages/keywords/keywords.css', 'css'),
 	loadFile('src/pages/category/category.css', 'css'),
 	loadFile('src/pages/facebook-pages/facebook-pages.css', 'css'),
+	loadFile('src/pages/content-preview/content-preview.css', 'css'),
 	loadFile('src/pages/404/404.css', 'css'),
 ]).then(function () {
 
@@ -95,6 +96,7 @@ Promise.all([
 		loadFile('src/pages/keywords/keywords.js', 'js'),
 		loadFile('src/pages/category/category.js', 'js'),
 		loadFile('src/pages/facebook-pages/facebook-pages.js', 'js'),
+		loadFile('src/pages/content-preview/content-preview.js', 'js'),
 		loadFile('src/app.js', 'js')
 		//END OF CONTROLLERS
 

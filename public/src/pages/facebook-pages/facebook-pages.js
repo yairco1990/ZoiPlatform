@@ -43,25 +43,10 @@ FacebookPagesCtrl.prototype.saveUser = function (ev) {
 
 	MyUtils.addLoader();
 
-	vm.zoiApi.saveUser(vm.zoiUser).then(function () {
-		vm.$log.info("User saved successfully");
-
-		MyUtils.removeLoader();
-
-		vm.$mdDialog.show(
-			vm.$mdDialog.alert()
-				.parent(angular.element(document.querySelector('#popupContainer')))
-				.clickOutsideToClose(true)
-				.title("Saved Successfully")
-				.ariaLabel("Saved Successfully")
-				.ok('OK')
-				.targetEvent(ev)
-		);
-
-	}).catch(function (err) {
-		MyUtils.removeLoader();
-		alert("Failed to save user");
-		vm.$log.error(err);
+	vm.zoiApi.saveUser(vm.zoiUser, ev).then(function () {
+		vm.$timeout(function () {
+			MyUtils.closeWebview();
+		}, 2000);
 	});
 };
 

@@ -13,7 +13,7 @@ const _ = require('underscore');
 const ZoiConfig = require('../../config');
 const RssLogic = require('../RssLogic');
 const FacebookLogic = require('../FacebookLogic');
-const LinkShorner = require('../LinkShortnerLogic');
+const LinkShortner = require('../LinkShortnerLogic');
 
 const delayTime = ZoiConfig.delayTime;
 const fallbackText = "I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu.";
@@ -21,17 +21,20 @@ const fallbackText = "I don't know what that means 😕, Please try to say it ag
 //QUESTIONS
 const wishZoiQuestions = {
 	writeReview: {
-		id: 1
+		id: "writeReview"
 	}
 };
 const morningBriefQuestions = {
 	areYouReady: {
-		id: 1
+		id: "areYouReadyFormMorningBrief"
 	}
 };
 const suggestToPostQuestions = {
 	suggestArticle: {
 		id: "suggestArticle"
+	},
+	watchItOnClient: {
+		id: "watchItOnClient"
 	}
 };
 
@@ -93,6 +96,9 @@ class GeneralLogic extends ConversationLogic {
 						await this.suggestRandomArticle();
 						return "suggestRandomArticle";
 					} else if (suggestToPostQuestions.suggestArticle.id === lastQuestionId) {
+						await this.watchArticleOnClient();
+						return "watchArticleOnClient";
+					} else if (suggestToPostQuestions.watchItOnClient.id === lastQuestionId) {
 						await this.postArticleOnFacebook();
 						return "postArticleOnFacebook";
 					}
@@ -193,6 +199,10 @@ class GeneralLogic extends ConversationLogic {
 
 			const articlesToSuggest = await RssLogic.getRandomArticles(user.category, user.keyWords, 4);
 
+			if (!articlesToSuggest) {
+				throw new Error();
+			}
+
 			await this.DBManager.saveUser(user);
 
 			await this.sendMessages([
@@ -204,6 +214,9 @@ class GeneralLogic extends ConversationLogic {
 		} catch (err) {
 			await this.clearConversation();
 			MyLog.error("Failed to suggest random article", err);
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I can't load articles for now. I will fix it and I will talk to you later. :)"), false)
+			]);
 			return MyUtils.ERROR;
 		}
 	}
@@ -218,13 +231,68 @@ class GeneralLogic extends ConversationLogic {
 				article.image,
 				article.description,
 				[
-					facebookResponse.getGenericButton("web_url", "Open Article", null, article.link),
+					facebookResponse.getGenericButton("web_url", "Open Article", null, article.link, "full", false),
 					facebookResponse.getGenericButton("postback", "I like it!", {
 						link: article.link,
 						title: article.title
 					})
 				]);
 		});
+	}
+
+	/**
+	 * watch the selected article on client and approve it
+	 * @returns {Promise.<*>}
+	 */
+	async watchArticleOnClient() {
+
+		try {
+			const {user, conversationData, reply} = this;
+
+			if (MyUtils.isJson(conversationData.input)) {
+
+				const selectedArticle = JSON.parse(conversationData.input);
+
+				this.setCurrentQuestion(suggestToPostQuestions.watchItOnClient);
+
+				const selectedArticleOpenGraphResult = await RssLogic.getOpenGraphResult(selectedArticle.link);
+
+				//save the article to session
+				user.session = {
+					selectedArticle: {
+						image: selectedArticleOpenGraphResult.ogImage.url,
+						title: selectedArticleOpenGraphResult.ogTitle,
+						link: selectedArticle.link
+					}
+				};
+
+				//save the user
+				await this.DBManager.saveUser(user);
+
+				await this.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Click here to watch what I'm going to post", [
+						facebookResponse.getGenericButton("web_url", "Content Preview", null, ZoiConfig.clientUrl + "/content-preview?userId=" + user._id, "tall")
+					]), false)
+				]);
+
+				return MyUtils.SUCCESS;
+
+			} else {
+				//case he was typing
+				await this.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Please select the article you like. Don't worry, I am not going to post it without your confirmation.",
+						[
+							facebookResponse.getQRButton('text', 'Ok', {id: "KeepConvo"}),
+							facebookResponse.getQRButton('text', "Let's talk later", {id: "LeaveConvo"})
+						], false)),
+				]);
+
+				return "askForArticleAgain";
+			}
+		} catch (err) {
+			MyLog.error("Failed on watchArticleOnClient", err);
+			return MyUtils.ERROR;
+		}
 	}
 
 	/**
@@ -236,12 +304,12 @@ class GeneralLogic extends ConversationLogic {
 			const {user, conversationData, reply} = this;
 
 			//check valid answer
-			if (MyUtils.isJson(conversationData.input)) {
+			if (conversationData.payload) {
 
-				const selectedArticle = JSON.parse(conversationData.input);
+				const selectedArticle = conversationData.payload;
 
 				//save the link to zoi shortner
-				const linkId = await LinkShorner.saveLink(selectedArticle.link);
+				const linkId = await LinkShortner.saveLink(selectedArticle.link);
 
 				//start posting on user's pages
 				user.integrations.Facebook.pages
@@ -263,7 +331,7 @@ class GeneralLogic extends ConversationLogic {
 				await this.clearConversation();
 
 				await this.sendMessages([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I have just posted the article! Moshe will give me some good text here..."), false)
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I have just posted the article! Moshe will give me some good text here..."), false, delayTime * 2)
 				]);
 
 				return MyUtils.SUCCESS;

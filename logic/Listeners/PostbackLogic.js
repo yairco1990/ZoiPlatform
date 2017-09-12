@@ -72,7 +72,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 				const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
 				const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
 				(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
-					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
+					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
 				]), false))();
 				return;
 			}

@@ -28,13 +28,17 @@ class FacebookLogic {
 
 			//get pages details
 			const pagesResult = await MyUtils.makeRequest("GET", MyUtils.addParamsToUrl("https://graph.facebook.com/me/accounts", {access_token: authResponse.accessToken}));
-			user.integrations.Facebook.pages = pagesResult.data;
 
-			//extend tokens for all pages TODO move it to promise.all
-			for (let page of user.integrations.Facebook.pages) {
-				const tokenObject = await FacebookLogic.extendAccessToken(page.access_token);
-				page.access_token = tokenObject.access_token;
-				page.isEnabled = false;
+			if (pagesResult && pagesResult.data) {
+				user.integrations.Facebook.pages = pagesResult.data;
+
+				//extend tokens for all pages TODO move it to promise.all
+				for (let page of user.integrations.Facebook.pages) {
+					const tokenObject = await FacebookLogic.extendAccessToken(page.access_token);
+					page.access_token = tokenObject.access_token;
+					//if there is only one page - make it enabled by default.
+					page.isEnabled = user.integrations.Facebook.pages.length === 1 || false;
+				}
 			}
 
 			//save user

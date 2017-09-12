@@ -1,173 +1,177 @@
 module.exports = {
-    /**
-     * get regular text message
-     * @param text
-     * @returns {{text: *}}
-     */
-    getTextMessage: function (text) {
-        return {"text": text};
-    },
+	/**
+	 * get regular text message
+	 * @param text
+	 * @returns {{text: *}}
+	 */
+	getTextMessage: function (text) {
+		return {"text": text};
+	},
 
-    /**
-     * get image message
-     * @param imageUrl
-     * @returns {{attachment: {type: string, payload: {url: *}}}}
-     */
-    getImageMessage: function (imageUrl) {
-        return {
-            "attachment": {
-                "type": "image",
-                "payload": {
-                    "url": imageUrl
-                }
-            }
-        };
-    },
+	/**
+	 * get image message
+	 * @param imageUrl
+	 * @returns {{attachment: {type: string, payload: {url: *}}}}
+	 */
+	getImageMessage: function (imageUrl) {
+		return {
+			"attachment": {
+				"type": "image",
+				"payload": {
+					"url": imageUrl
+				}
+			}
+		};
+	},
 
-    /**
-     *
-     * @param text
-     * @param buttons
-     */
-    getButtonMessage: function (text, buttons) {
+	/**
+	 *
+	 * @param text
+	 * @param buttons
+	 */
+	getButtonMessage: function (text, buttons) {
 
-        if (!buttons) {
-            throw new Error("No buttons");
-        }
+		if (!buttons) {
+			throw new Error("No buttons");
+		}
 
-        return {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "button",
-                    "text": text,
-                    "buttons": buttons
-                }
-            }
-        };
-    },
+		return {
+			"attachment": {
+				"type": "template",
+				"payload": {
+					"template_type": "button",
+					"text": text,
+					"buttons": buttons
+				}
+			}
+		};
+	},
 
-    getGenericButton: function (type, title, payload, url, webviewHeightRatio = "full") {
+	getGenericButton: function (type, title, payload, url, webviewHeightRatio = "full", messengerExtension = true) {
 
-        let response = {
-            "type": type,
-            "title": title
-        };
+		let response = {
+			"type": type,
+			"title": title
+		};
 
-        if (payload) {
-            response["payload"] = JSON.stringify(payload);
-        }
+		if (payload) {
+			response["payload"] = JSON.stringify(payload);
+		}
 
-        if (url) {
-            response["url"] = url;
-        }
+		if (url) {
+			response["url"] = url;
+		}
 
-        if (webviewHeightRatio) {
-            response["webview_height_ratio"] = webviewHeightRatio;
-        }
+		if (webviewHeightRatio) {
+			response["webview_height_ratio"] = webviewHeightRatio;
+		}
 
-        if (!payload && !url) {
-            response.payload = title;
-        }
+		if (!payload && !url) {
+			response.payload = title;
+		}
 
-        return response;
-    },
+		if (messengerExtension && type === "web_url") {
+			response["messenger_extensions"] = true;
+		}
 
-    getGenericElement: function (title, imageUrl, subtitle, buttons) {
-        let response = {
-            "title": title,
-            "subtitle": subtitle,
-            "buttons": buttons
-        };
+		return response;
+	},
 
-        if (imageUrl) {
-            response["image_url"] = imageUrl;
-        }
+	getGenericElement: function (title, imageUrl, subtitle, buttons) {
+		let response = {
+			"title": title,
+			"subtitle": subtitle,
+			"buttons": buttons
+		};
 
-        return response;
-    },
+		if (imageUrl) {
+			response["image_url"] = imageUrl;
+		}
 
-    getGenericTemplate: function (elements) {
+		return response;
+	},
 
-        if (!elements) {
-            throw new Error("No elements");
-        }
+	getGenericTemplate: function (elements) {
 
-        let response = {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "elements": elements
-                }
-            }
-        };
+		if (!elements) {
+			throw new Error("No elements");
+		}
 
-        return response;
-    },
+		let response = {
+			"attachment": {
+				"type": "template",
+				"payload": {
+					"template_type": "generic",
+					"elements": elements
+				}
+			}
+		};
 
-    getQRElement: function (text, qrButtons) {
-        return {
-            "text": text,
-            "quick_replies": qrButtons
-        }
-    },
+		return response;
+	},
 
-    getQRButton: function (content_type, title, payload) {
+	getQRElement: function (text, qrButtons) {
+		return {
+			"text": text,
+			"quick_replies": qrButtons
+		}
+	},
 
-        let response = {
-            "content_type": content_type,
-            "title": title,
-            "payload": JSON.stringify(payload)
-        };
+	getQRButton: function (content_type, title, payload) {
 
-        if (!response.payload) {
-            response.payload = JSON.stringify({title: title});
-        }
+		let response = {
+			"content_type": content_type,
+			"title": title,
+			"payload": JSON.stringify(payload)
+		};
 
-        return response;
-    },
+		if (!response.payload) {
+			response.payload = JSON.stringify({title: title});
+		}
 
-    getShareMessage: function (title, subtitle, imageUrl, buttons) {
-        return {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "elements": [
-                        {
-                            "title": title,
-                            "subtitle": subtitle,
-                            "image_url": imageUrl,
-                            "buttons": buttons
-                        }
-                    ]
-                }
-            }
-        };
-    },
+		return response;
+	},
 
-    getShareButton: function (title, description, imageUrl) {
-        return {
-            "attachment": {
-                "type": "template",
-                "payload": {
-                    "template_type": "generic",
-                    "elements": [
-                        {
-                            "title": title,
-                            "subtitle": description,
-                            "image_url": imageUrl,
-                            "buttons": [
-                                {
-                                    "type": "element_share"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            }
+	getShareMessage: function (title, subtitle, imageUrl, buttons) {
+		return {
+			"attachment": {
+				"type": "template",
+				"payload": {
+					"template_type": "generic",
+					"elements": [
+						{
+							"title": title,
+							"subtitle": subtitle,
+							"image_url": imageUrl,
+							"buttons": buttons
+						}
+					]
+				}
+			}
+		};
+	},
 
-        }
-    }
+	getShareButton: function (title, description, imageUrl) {
+		return {
+			"attachment": {
+				"type": "template",
+				"payload": {
+					"template_type": "generic",
+					"elements": [
+						{
+							"title": title,
+							"subtitle": description,
+							"image_url": imageUrl,
+							"buttons": [
+								{
+									"type": "element_share"
+								}
+							]
+						}
+					]
+				}
+			}
+
+		}
+	}
 };

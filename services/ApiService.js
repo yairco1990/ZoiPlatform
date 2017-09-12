@@ -8,22 +8,20 @@ const router = require('express').Router();
 const PREFIX_LOG = "Api Request -> ";
 
 //get user
-router.get('/getUser', function (req, res) {
+router.get('/getUser', async function (req, res) {
 	MyLog.log(PREFIX_LOG + "getUser. userId = " + req.query.userId);
 	let userApiLogic = new UserApiLogic();
-	userApiLogic.getUser(req.query.userId, function (status, data) {
-		res.status(status).send(data);
-	});
+	const {status, data} = await userApiLogic.getUser(req.query.userId);
+	res.status(status).send(data);
 });
 
 //save user
-router.post('/saveUser', function (req, res) {
+router.post('/saveUser', async function (req, res) {
 	let userApiLogic = new UserApiLogic();
 	let user = JSON.parse(req.query.user);
 	MyLog.log(PREFIX_LOG + "saveUser. userId = " + user._id);
-	userApiLogic.saveUser(user, function (status, data) {
-		res.status(status).send(data);
-	});
+	const {status, data} = await userApiLogic.saveUser(user);
+	res.status(status).send(data);
 });
 
 //unsubscribe from zoi
@@ -44,7 +42,7 @@ router.post('/integrateReminder', function (req, res) {
 	});
 });
 
-router.get('/test', function(req,res){
+router.get('/test', function (req, res) {
 	res.status(200).send("Test Success");
 });
 

@@ -46,7 +46,7 @@ const Environments = {
 			morningBriefIntervalTime: ONE_MINUTE * 2,
 			oldConversationIntervalTime: ONE_MINUTE * 2,
 			oneDay: ONE_DAY,
-			clearOldConversationRange: ONE_MINUTE * 30,
+			clearOldConversationRange: ONE_HOUR,
 			oldCustomersForwardDays: 30,
 			oldCustomersPreviousDays: 30,
 			wishZoiWillDelay: 1,
@@ -85,7 +85,7 @@ const Environments = {
 		times: {
 			oldCustomersIntervalTime: ONE_MINUTE * 2,
 			morningBriefIntervalTime: ONE_MINUTE * 2,
-			oldConversationIntervalTime: ONE_MINUTE * 2,
+			oldConversationIntervalTime: ONE_HOUR,
 			oneDay: ONE_DAY,
 			clearOldConversationRange: ONE_MINUTE,
 			oldCustomersForwardDays: 30,
@@ -187,6 +187,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.LOCAL;
+const selectedEnvironment = Environments.DEV;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

@@ -43,5 +43,12 @@ var MyUtils = {
 			}
 		});
 		return previewText.trim();
+	},
+	closeWebview: function () {
+		if (MessengerExtensions) {
+			MessengerExtensions.requestCloseBrowser(function success() {
+			}, function error(err) {
+			});
+		}
 	}
 };

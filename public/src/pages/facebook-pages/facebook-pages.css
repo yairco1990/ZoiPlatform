@@ -11,6 +11,10 @@
     align-items: center;
 }
 
+#facebook-pages-page md-dialog .md-actions, md-dialog md-dialog-actions {
+    display: none !important;
+}
+
 #facebook-pages-page .old-customers-area-wrapper {
     height: 50%;
     width: 450px;

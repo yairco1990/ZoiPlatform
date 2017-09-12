@@ -43,7 +43,7 @@ class ListenLogic {
 		try {
 
 			//get the user
-			let user = await self.DBManager.getUser({_id: payload.sender.id}, false);
+			let user = await self.DBManager.getUserById(payload.sender.id, false);
 
 			let isNewUser = false;
 
@@ -55,7 +55,7 @@ class ListenLogic {
 			}
 
 			//check if this is quick reply - or that he send qr, or that he must entered qr on the last question.
-			const isQuickReply = payload.message && payload.message.quick_reply && payload.message.quick_reply.payload || (user.conversationData && user.conversationData.nextAnswerState === "qr");
+			const isQuickReply = MyUtils.nestedValue(payload, "message.quick_reply.payload") || (MyUtils.nestedValue(user, "conversationData.nextAnswerState") === "qr");
 
 			//check if the input is payload
 			const isPayloadRequest = MyUtils.isJson(input);
@@ -63,11 +63,17 @@ class ListenLogic {
 			//check if wait for text message
 			const isWaitForText = user.conversationData && user.conversationData.nextAnswerState === "text";
 
+			//check if its forced conversation
+			const isForced = input.toLowerCase().startsWith("f:");
+
+			//check if its forced but only if there is no conversation
+			const isForcedIfThereIsNoConvo = input.toLowerCase().startsWith("zf:");
+
 			//declare variables
 			let intent, entities, intentScore;
 
 			//if it's not in the middle of conversation
-			if (!isQuickReply && !isPayloadRequest && !isWaitForText && !isNewUser) {
+			if (!isQuickReply && !isPayloadRequest && !isWaitForText && !isNewUser && !isForced && !isForcedIfThereIsNoConvo) {
 				//check intent with NLP
 				let nlpResponse = await requestify.get(ZoiConfig.NLP_URL + '/parse?q=' + input);
 
@@ -109,6 +115,12 @@ class ListenLogic {
 				conversationData.payload = JSON.parse(payload.message.quick_reply.payload);
 				conversationData.intent = input;
 				conversationData.entities = {};
+				if (conversationData.payload.id === "LeaveConvo") {
+					conversationData.context = "GENERIC";
+					conversationData.intent = "generic say goodbye";
+				} else if (conversationData.payload.id === "KeepConvo") {
+					return;
+				}
 			}
 
 			//if the user have no email or full name - go the complete the "welcome conversation"
@@ -132,7 +144,7 @@ class ListenLogic {
 				const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
 
 				(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
-					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
+					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
 				]), false))();
 
 				return;
@@ -141,8 +153,10 @@ class ListenLogic {
 			//save the last message time
 			user.lastMessageTime = new Date().valueOf();
 
-			//check if force conversation(only in non-production mode)
-			if (!ZoiConfig.isProduction && input.toLowerCase().startsWith("f:")) {
+			//check if force conversation
+			if (isForced || (isForcedIfThereIsNoConvo && !user.conversationData)) {
+				//replace the zf with f
+				input = input.replace("zf:", "f:");
 				user.conversationData = null;
 				conversationData = ListenLogic.getForceConversationData(input);
 			}
