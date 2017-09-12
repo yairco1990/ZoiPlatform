@@ -168,7 +168,7 @@ class WelcomeLogic extends ConversationLogic {
 
 			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Awesome! Let's connect to your Acuity account so I'll be able to know your agenda and clients.", [
-					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
+					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
 				]), false, delayTime)
 			]);
 
