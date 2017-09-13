@@ -175,7 +175,7 @@ class GeneralLogic extends ConversationLogic {
 
 			await this.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("To post on Facebook page, you must integrate with Facebook platform. Let's do it! 💪", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, null)
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, null, false)
 				]), false)
 			]);
 

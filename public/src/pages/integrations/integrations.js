@@ -5,15 +5,10 @@ angular.module('Zoi.controllers.integrations', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
 		$stateProvider.state('integrations', {
-			url: '/integrations?{userId}{closeWindow}',
+			url: '/integrations?{userId}',
 			controller: 'integrationsCtrl as vm',
 			templateUrl: 'src/pages/integrations/integrations.html',
 			resolve: {
-				checkWindow: function ($window, $stateParams) {
-					if ($stateParams.closeWindow) {
-						$window.close();
-					}
-				},
 				zoiUser: function (zoiApi, $stateParams) {
 					return zoiApi.getUser($stateParams.userId);
 				}
@@ -26,7 +21,7 @@ angular.module('Zoi.controllers.integrations', [])
  * page constructor
  * @constructor
  */
-function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig, $state, $stateParams) {
+function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig, $state) {
 
 	var vm = this;
 
@@ -40,7 +35,6 @@ function integrationsCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser
 	vm.$window = $window;
 	vm.zoiConfig = zoiConfig;
 	vm.$state = $state;
-	vm.$stateParams = $stateParams;
 
 	vm.$log.debug("integrationsCtrl loaded");
 }
@@ -59,17 +53,19 @@ integrationsCtrl.prototype.$onInit = function () {
 integrationsCtrl.prototype.onAcuityClicked = function () {
 	var vm = this;
 
-	vm.$window.open(vm.zoiConfig.getServerUrl() + '/acuity/authorize?userId=' + vm.zoiUser._id, '_blank');
-
-	MyUtils.closeWebview();
+	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/acuity/authorize?userId=' + vm.zoiUser._id;
 };
 
 integrationsCtrl.prototype.onGmailClicked = function () {
 	var vm = this;
 
-	vm.$window.open(vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id, '_blank');
+	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id;
+};
 
-	MyUtils.closeWebview();
+integrationsCtrl.prototype.onGmailClicked = function () {
+	var vm = this;
+
+	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id;
 };
 
 integrationsCtrl.prototype.onFacebookClicked = function () {

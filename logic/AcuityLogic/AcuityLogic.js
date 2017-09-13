@@ -488,7 +488,7 @@ class AcuityLogic {
 			await self.DBManager.saveUser(user);
 
 			//redirect the user to his integrations page
-			callback(302, {'location': `${ZoiConfig.clientUrl}/integrations?userId=${userId}&closeWindow=true`});
+			callback(302, {'location': ZoiConfig.clientUrl + '/integrations?userId=' + userId});
 
 			const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 

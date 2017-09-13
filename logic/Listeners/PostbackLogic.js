@@ -57,7 +57,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 					self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, reply);
 				} else {
 					reply(facebookResponse.getButtonMessage("To see your unread emails, I need you to integrate with Gmail first... :)", [
-						facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, null)
+						facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, null, false)
 					]));
 				}
 			}
@@ -74,7 +74,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 				]));
 			} else if (input === "MENU_INTEGRATIONS") {
 				reply(facebookResponse.getButtonMessage("Take a look at your integrations:", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, null)
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, null, false)
 				]));
 			} else if (input === "MENU_SETTINGS") {
 				reply(facebookResponse.getButtonMessage("Take a look at your settings:", [
