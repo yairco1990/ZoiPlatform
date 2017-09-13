@@ -60,12 +60,16 @@ integrationsCtrl.prototype.onAcuityClicked = function () {
 	var vm = this;
 
 	vm.$window.open(vm.zoiConfig.getServerUrl() + '/acuity/authorize?userId=' + vm.zoiUser._id, '_blank');
+
+	MyUtils.closeWebview();
 };
 
 integrationsCtrl.prototype.onGmailClicked = function () {
 	var vm = this;
 
 	vm.$window.open(vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id, '_blank');
+
+	MyUtils.closeWebview();
 };
 
 integrationsCtrl.prototype.onFacebookClicked = function () {
