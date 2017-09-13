@@ -488,7 +488,7 @@ class AcuityLogic {
 			await self.DBManager.saveUser(user);
 
 			//redirect the user to his integrations page
-			callback(302, {'location': ZoiConfig.clientUrl + '/integrations?userId=' + userId});
+			callback(302, {'location': `${ZoiConfig.clientUrl}/integrations?userId=${userId}&closeWindow=true`});
 
 			const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
@@ -615,7 +615,7 @@ class AcuityLogic {
 
 						//send the reminder
 						sendMessage((facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
-							facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full")
+							facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, null)
 						])));
 					}
 				});

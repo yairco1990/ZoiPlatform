@@ -47,7 +47,9 @@ module.exports = {
 		};
 	},
 
-	getGenericButton: function (type, title, payload, url, webviewHeightRatio = "full", messengerExtension = true) {
+	getGenericButton: function (type, title, payload, url, webviewHeightRatio, messengerExtension = true) {
+
+		webviewHeightRatio = webviewHeightRatio || "tall";
 
 		let response = {
 			"type": type,

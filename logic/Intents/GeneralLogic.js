@@ -175,7 +175,7 @@ class GeneralLogic extends ConversationLogic {
 
 			await this.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("To post on Facebook page, you must integrate with Facebook platform. Let's do it! 💪", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, "full")
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, null)
 				]), false)
 			]);
 
@@ -231,7 +231,7 @@ class GeneralLogic extends ConversationLogic {
 				article.image,
 				article.description,
 				[
-					facebookResponse.getGenericButton("web_url", "Open Article", null, article.link, "full", false),
+					facebookResponse.getGenericButton("web_url", "Open Article", null, article.link, null, false),
 					facebookResponse.getGenericButton("postback", "I like it!", {
 						link: article.link,
 						title: article.title
@@ -434,7 +434,7 @@ class GeneralLogic extends ConversationLogic {
 					if (clientsMessages.length > 0) {
 						await this.sendMessages([
 							MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + clientsMessages.length + " unread emails from your customers within the last 7 days", [
-								facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, "full")
+								facebookResponse.getGenericButton("web_url", "Customers Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + user._id, null)
 							]), true),
 						]);
 					} else {
@@ -477,7 +477,7 @@ class GeneralLogic extends ConversationLogic {
 					});
 
 					let messages = [MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("You have " + appointments.length + " appointments today", [
-						facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, "full")
+						facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, null)
 					]), true, delayTime)];
 
 					//if there is next appointment - add another message about it.

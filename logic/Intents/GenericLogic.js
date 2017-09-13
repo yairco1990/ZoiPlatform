@@ -35,17 +35,17 @@ class GenericLogic extends ConversationLogic {
 		switch (conversationData.intent) {
 			case "generic stats":
 				reply(facebookResponse.getButtonMessage(responseText, [
-					facebookResponse.getGenericButton("web_url", "My Profile", null, ZoiConfig.clientUrl + "/profile?userId=" + self.user._id, "full")
+					facebookResponse.getGenericButton("web_url", "My Profile", null, ZoiConfig.clientUrl + "/profile?userId=" + self.user._id, null)
 				]));
 				break;
 			case "generic show abilities":
 				reply(facebookResponse.getButtonMessage(responseText, [
-					facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", "full")
+					facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", null)
 				]));
 				break;
 			case "generic unread emails":
 				reply(facebookResponse.getButtonMessage("View your unread emails from your customers:", [
-					facebookResponse.getGenericButton("web_url", "Unread Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + self.user._id, "full")
+					facebookResponse.getGenericButton("web_url", "Unread Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + self.user._id, null)
 				]));
 				break;
 			case "generic say goodbye":

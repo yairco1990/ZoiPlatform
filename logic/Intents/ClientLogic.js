@@ -316,13 +316,13 @@ class ClientLogic extends ConversationLogic {
 					user.metadata.oldCustomers = user.session.oldCustomers;
 
 					//save the user
-					await self.DBManager.saveUser(user)
+					await self.DBManager.saveUser(user);
 
 					//send messages
 					async.series([
 						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Good!"), true),
 						MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Let's pick some non-regulars and encourage them to come back", [
-							facebookResponse.getGenericButton("web_url", "Non-regulars", null, ZoiConfig.clientUrl + "/old-customers?userId=" + user._id, "full")
+							facebookResponse.getGenericButton("web_url", "Non-regulars", null, ZoiConfig.clientUrl + "/old-customers?userId=" + user._id, "tall")
 						]), false, delayTime),
 					], MyUtils.getErrorMsg());
 

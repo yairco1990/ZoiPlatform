@@ -23,6 +23,9 @@ const welcomeQuestions = {
 	},
 	noProblem: {
 		id: 5
+	},
+	integrateWithAcuity: {
+		id: "integrateWithAcuity"
 	}
 };
 
@@ -81,19 +84,19 @@ class WelcomeLogic extends ConversationLogic {
 	 */
 	async proceedWelcomeConversation() {
 
-		const self = this;
-		const user = self.user;
+		const {user, conversationData} = this;
 
-		const lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+		const lastQuestionId = this.getLastQuestionId();
+
 		try {
 			if (!user.conversationData) {
-				return await self.askForProceedAfterIntegration();
+				return await this.askForProceedAfterIntegration();
 			} else if (lastQuestionId === welcomeQuestions.canWeProceed.id) {
-				return await self.askForFirstPromotion();
+				return await this.askForFirstPromotion();
 			} else if (lastQuestionId === welcomeQuestions.firstPromotion.id) {
-				return await self.onUserAnsweredOnFirstPromotion();
+				return await this.onUserAnsweredOnFirstPromotion();
 			} else {//user said no problem or wrote something
-				return await self.askForShareZoi();
+				return await this.askForShareZoi();
 			}
 		} catch (err) {
 			MyLog.error(err);
@@ -128,7 +131,7 @@ class WelcomeLogic extends ConversationLogic {
 		self.setUser(newUser);
 		self.setConversationData(conversationData);
 
-		//get the reply function
+		//KEEP IT HERE!
 		const {reply} = self;
 
 		//save the user
@@ -139,8 +142,8 @@ class WelcomeLogic extends ConversationLogic {
 			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("My name is Zoi, your own AI personal assistant."), true, delayTime),
 			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("From now on, I'll be your marketer. I'll send promotions and fill your calendar."), true, delayTime),
 			MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Setting everything up will only take a minute, are you ready?", [
-				facebookResponse.getQRButton("text", "Yes, lets go!", {id: 1}),
-				facebookResponse.getQRButton("text", "Not now", {id: 2}),
+				facebookResponse.getQRButton("text", "Yes, lets go!", {id: "yesLetsGo"}),
+				facebookResponse.getQRButton("text", "Not now", {id: "notNow"}),
 			]), false, delayTime)
 		]);
 
@@ -157,7 +160,7 @@ class WelcomeLogic extends ConversationLogic {
 		const {user, reply, conversationData} = self;
 
 		//on "lets go" option
-		if (!conversationData.payload || conversationData.payload.id === 1) {
+		if (!conversationData.payload || conversationData.payload.id === "yesLetsGo") {
 
 			//create the redirect url
 			const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
@@ -168,7 +171,7 @@ class WelcomeLogic extends ConversationLogic {
 
 			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Awesome! Let's connect to your Acuity account so I'll be able to know your agenda and clients.", [
-					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
+					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, null, false)
 				]), false, delayTime)
 			]);
 

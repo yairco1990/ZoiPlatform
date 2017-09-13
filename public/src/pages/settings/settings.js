@@ -12,20 +12,22 @@ angular.module('Zoi.controllers.settings', [])
 				zoiUser: function ($http, $log, $stateParams, zoiConfig, $timeout, $state, zoiApi) {
 					return zoiApi.getUser($stateParams.userId);
 				},
-				businessCalendars: function ($http, $log, $stateParams, zoiConfig) {
-					return $http({
-						url: zoiConfig.getServerUrl() + "/acuity/getCalendars",
-						method: "GET",
-						params: {
-							userId: $stateParams.userId
-						},
-						timeout: 5000
-					}).then(function (result) {
-						return result.data;
-					}, function (err) {
-						$log.error(err);
-						return err;
-					});
+				businessCalendars: function ($http, $log, $stateParams, zoiConfig, zoiUser) {
+					if (zoiUser.integrations.Acuity) {
+						return $http({
+							url: zoiConfig.getServerUrl() + "/acuity/getCalendars",
+							method: "GET",
+							params: {
+								userId: $stateParams.userId
+							},
+							timeout: 5000
+						}).then(function (result) {
+							return result.data;
+						}, function (err) {
+							$log.error(err);
+							return err;
+						});
+					}
 				}
 			}
 		})
@@ -55,6 +57,8 @@ function SettingsCtrl($log, $rootScope, $timeout, zoiUser, $mdDialog, zoiApi, bu
 
 SettingsCtrl.prototype.initCtrl = function () {
 	var vm = this;
+
+	vm.isIntegratedWithAcuity = vm.zoiUser.integrations.Acuity;
 
 	//deep copy for the morning brief time text
 	vm.morningBriefTime = angular.copy(vm.zoiUser.morningBriefTime);

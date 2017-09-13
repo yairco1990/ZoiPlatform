@@ -24,7 +24,6 @@ function PostbackLogic() {
 
 //for now, if the user sent ACTION - listen logic class will handle it and decide if it's a valid request.
 //for MENU buttons - we do the logic here and check if it's a valid request.
-//TODO: change it!
 /**
  * process action and return response
  */
@@ -58,42 +57,28 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 					self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, reply);
 				} else {
 					reply(facebookResponse.getButtonMessage("To see your unread emails, I need you to integrate with Gmail first... :)", [
-						facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, "full")
+						facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, null)
 					]));
 				}
 			}
 		} else if (input.includes("MENU")) {
 
-			//check that the user made first integration with acuity
-			let user = await self.DBManager.getUser({_id: userId});
-
-			//TODO
-			// if (!user.integrations || !user.integrations.Acuity) {
-			// 	//create the redirect url
-			// 	const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
-			// 	const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
-			// 	(MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Hey boss! I noticed you forgot to integrate with your Acuity account. Click on this button for start working together! :)", [
-			// 		facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, "full", false)
-			// 	]), false))();
-			// 	return;
-			// }
-
 			//menu buttons options
 			if (input === "MENU_PROFILE") {
 				reply(facebookResponse.getButtonMessage("Take a look at your achivements", [
-					facebookResponse.getGenericButton("web_url", "My Achievements", null, ZoiConfig.clientUrl + "/profile?userId=" + userId, "full")
+					facebookResponse.getGenericButton("web_url", "My Achievements", null, ZoiConfig.clientUrl + "/profile?userId=" + userId, null)
 				]));
 			} else if (input === "MENU_ACCOUNT") {
 				reply(facebookResponse.getButtonMessage("Take a look at your account:", [
-					facebookResponse.getGenericButton("web_url", "My Account", null, ZoiConfig.clientUrl + "/account?userId=" + userId, "full")
+					facebookResponse.getGenericButton("web_url", "My Account", null, ZoiConfig.clientUrl + "/account?userId=" + userId, null)
 				]));
 			} else if (input === "MENU_INTEGRATIONS") {
 				reply(facebookResponse.getButtonMessage("Take a look at your integrations:", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, "full")
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, null)
 				]));
 			} else if (input === "MENU_SETTINGS") {
 				reply(facebookResponse.getButtonMessage("Take a look at your settings:", [
-					facebookResponse.getGenericButton("web_url", "My Settings", null, ZoiConfig.clientUrl + "/settings?userId=" + userId, "full")
+					facebookResponse.getGenericButton("web_url", "My Settings", null, ZoiConfig.clientUrl + "/settings?userId=" + userId, null)
 				]));
 			}
 		}
