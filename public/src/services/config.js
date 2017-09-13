@@ -14,7 +14,7 @@ angular.module('Zoi.services.config', [])
 					url: "http://10.0.0.1:443"
 				},
 				DEV: {
-					url: "https://dev.zoiai.com:443"
+					url: "https://dev.zoiai.com"
 				},
 				PRODUCTION: {
 					url: "https://zoiai.com:443"

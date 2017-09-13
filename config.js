@@ -104,8 +104,8 @@ const Environments = {
 	DEV: {
 		appId: "358701207893441",
 		appSecret: "364a4ac6971784586eb91066e04d0c80",
-		serverUrl: "https://dev.zoiai.com:3000",
-		clientUrl: "https://dev.zoiai.com:3000/p/#",
+		serverUrl: "https://dev.zoiai.com",
+		clientUrl: "https://dev.zoiai.com/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://localhost:9200",
