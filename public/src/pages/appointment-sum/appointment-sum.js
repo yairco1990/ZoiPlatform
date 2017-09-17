@@ -5,7 +5,7 @@ angular.module('Zoi.controllers.appointment-sum', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
 		$stateProvider.state('appointment-sum', {
-			url: '/appointment-sum?{firstName}{lastName}{email}{userId}{date}{price}{serviceId}{serviceName}{promotionTitle}{promotionImage}{notes}{timezone}',
+			url: '/appointment-sum?{firstName}{lastName}{email}{userId}{date}{price}{serviceId}{serviceName}{promotionTitle}{promotionImage}{notes}{timezone}{promotionType}',
 			controller: 'AppointmentSumCtrl as vm',
 			templateUrl: 'src/pages/appointment-sum/appointment-sum.html',
 			resolve: {
@@ -87,10 +87,18 @@ AppointmentSumCtrl.prototype.$onInit = function () {
 		price: vm.$stateParams.price,
 		promotionImage: vm.$stateParams.promotionImage
 	};
+
+	vm.promotionType = vm.$stateParams.promotionType;
 };
 
 AppointmentSumCtrl.prototype.scheduleAppointment = function (ev) {
 	var vm = this;
+
+	if (vm.customerForm && !vm.customerForm.$valid) {
+		vm.customerForm.$submitted = true;
+		vm.$log.info("error on customer form");
+		return;
+	}
 
 	MyUtils.addLoader();
 

@@ -94,18 +94,14 @@ class BackgroundLogic {
 				await DBManager.saveUser(user);
 
 				//start the conversation in the GeneralLogic class
-				let generalLogic = new GeneralLogic(user);
-				let conversationData = {
+				let generalLogic = new GeneralLogic(user, {
 					intent: "general morning brief",
 					context: "GENERAL",
 					isAutomated: true
-				};
-
-				const replyFunction = bot.getBotReplyFunction(user);
-				const botWritingFunction = bot.getBotWritingFunction(user);
+				});
 
 				//start convo
-				generalLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
+				generalLogic.processIntent();
 			}
 		});
 
@@ -238,18 +234,14 @@ class BackgroundLogic {
 				await DBManager.saveUser(user);
 
 				//start the conversation in the GeneralLogic class
-				let clientLogic = new ClientLogic(user);
-				let conversationData = {
+				let clientLogic = new ClientLogic(user, {
 					intent: "client old customers",
 					context: "CLIENT",
 					automated: true
-				};
-
-				const replyFunction = bot.getBotReplyFunction(user);
-				const botWritingFunction = bot.getBotWritingFunction(user);
+				});
 
 				//start convo
-				clientLogic.processIntent(conversationData, botWritingFunction, null, replyFunction);
+				clientLogic.processIntent();
 
 			}
 		});

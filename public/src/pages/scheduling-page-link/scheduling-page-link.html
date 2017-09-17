@@ -1,0 +1,45 @@
+<div id="scheduling-link-page" class="boxed-page" ng-cloak>
+    <div class="scheduling-link-area boxed-area" ng-if="vm.zoiUser">
+
+        <div class="box-area-wrapper">
+
+            <div class="box-header">
+                Scheduling Page Link
+            </div>
+            <div class="box-sub-header">
+                <b>Add scheduling page link for social media promotions</b>
+            </div>
+
+            <div class="box-body" style="border-top: solid #ececec 1px; ">
+                <div class="text-center box-sub-header" style="font-size: 16px !important;margin-top: 15px">
+
+                    <form name="vm.schedulingPageLinkForm">
+                        <md-input-container class="md-block"
+                                            style="margin-bottom: 0;margin-top: 40px;text-align: left !important;">
+                            <label>Scheduling Page Link</label>
+                            <textarea ng-model="vm.zoiUser.schedulingPageLink" rows="1" md-select-on-focus
+                                      name="schedulingPageLink"
+                                      ng-pattern="/^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/">
+                            </textarea>
+                            <div ng-messages="vm.schedulingPageLinkForm.schedulingPageLink.$error" role="alert">
+                                <div ng-message-exp="['pattern']">
+                                    You must enter a valid link
+                                </div>
+                            </div>
+                        </md-input-container>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="post-button" style="text-align: center;margin-top: 47px;">
+                <md-button class="md-raised md-primary no-margin" ng-click="vm.saveUser($event)" style="width: 86%;">
+                    Save
+                </md-button>
+            </div>
+
+        </div>
+
+    </div>
+</div>

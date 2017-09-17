@@ -31,6 +31,8 @@ angular.module('ZoiClient', [
 	'Zoi.controllers.category',
 	'Zoi.controllers.facebook-pages',
 	'Zoi.controllers.content-preview',
+	'Zoi.controllers.promotion-preview',
+	'Zoi.controllers.scheduling-page-link',
 	'Zoi.controllers.404'
 
 ]).run(['$rootScope', '$state', function ($rootScope, $state) {

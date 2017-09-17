@@ -63,8 +63,8 @@ const Environments = {
 	NGROK: {
 		appId: "358701207893441",
 		appSecret: "364a4ac6971784586eb91066e04d0c80",
-		serverUrl: "https://7c143800.ngrok.io",
-		clientUrl: "https://7c143800.ngrok.io/p/#",
+		serverUrl: "https://d064382c.ngrok.io",
+		clientUrl: "https://d064382c.ngrok.io/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://52.174.244.154:9200",
@@ -187,6 +187,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.DEV;
+const selectedEnvironment = Environments.NGROK;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

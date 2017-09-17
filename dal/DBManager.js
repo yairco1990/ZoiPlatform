@@ -6,11 +6,11 @@ const MyLog = require('../interfaces/MyLog');
 const ZoiConfig = require('../config');
 
 //models
-const User = require('./models/User');
+const User = require('./models/UserModel');
 const Link = require('./models/LinkModel');
-const BlackList = require('./models/BlackList');
-const Input = require('./models/Input');
-const PromotionTypes = require('./models/PromotionType');
+const BlackList = require('./models/BlackListModel');
+const Input = require('./models/InputModel');
+const PromotionTypes = require('./models/PromotionTypeModel');
 
 class DBManager {
 

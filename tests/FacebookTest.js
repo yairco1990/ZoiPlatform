@@ -7,21 +7,20 @@ describe("test facebook graph api", () => {
 
 	//get valid params from DB
 	const facebookPageId = "343185779443065";
-	const facebookPageAccessToken = "EAAFGPKITtcEBAHgGOiPKqZC5MhalJOhKx1ztJcgUFBPGUi31FlA8JM2dUc1WzIckwGjD1tVyZBPd4ZCen9d0OGaHZAhFuJngtqtFipYDuyaccStGulefZCLoaqDYcD2SoePwQNE6hQj0ZCRSUsZAqfr8ZChJeikBM2mkC6k3HhUf9QZDZD";
+	const facebookPageAccessToken = "EAAFGPKITtcEBAG9uZBjc50zQj1gsggAHZBcy4Ge8zgFK8Nk65s4FboiHMosH8199qRZCgZC9h3LTlIXzj7EK8cDCaEG7VgJpZBHf2PIPdlqe9sZA0WBH5uJVXjUB22tebR3DVUftCCZAZBSf9dMNE7TPZBS9TARJKAdVNT8KeYmbZAywZDZD";
 
-	it.skip("upload a photo with text to facebook page", async () => {
+	it.only("upload a photo with text to facebook page", async () => {
 
-		//get page id and access token from DB
-		const imageUrl = "https://scontent-frx5-1.xx.fbcdn.net/v/t35.0-12/21439220_10156212561169528_1395213539_o.jpg?_nc_ad=z-m&oh=d7218820fd3eb45e3491d0d9f9e497e4&oe=59B088D8";
+		const imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTi3X9F-vgjgBXtiWKmf_c7vJQH49-vkEvwSK_fH1OcvGaDORWs";
 		const message = MyUtils.generateRandomString(100, true);
 
 		let response = await FacebookLogic.postPhotoOnFacebookPage(facebookPageId, {
 			access_token: facebookPageAccessToken,
-			message: message,
+			message: message + "\n https://walla.co.il",
 			url: imageUrl
 		});
 
-		expect(response.postId).to.includes(facebookPageId);
+		expect(response.post_id).to.includes(facebookPageId);
 
 	});
 

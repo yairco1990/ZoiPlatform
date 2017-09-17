@@ -15,6 +15,7 @@ const async = require('async');
 const _ = require('underscore');
 const ConversationLogic = require('../ConversationLogic');
 const FacebookLogic = require('../FacebookLogic');
+const LinkShortner = require('../LinkShortnerLogic');
 
 const delayTime = ZoiConfig.delayTime;
 
@@ -44,12 +45,13 @@ const sendPromotionsQuestions = {
 	},
 	whichTemplate: {
 		id: 2,
-		text: "I made five types of discount for you to choose from.  Which of them you want me to send to your customers?",
 		field: "template"
 	},
-	areYouSure: {
-		id: 3,
-		text: "Just to be clear, I am about to send {promotionName} promotion for {serviceName} to your customers?"
+	askForConfirmation: {
+		id: 3
+	},
+	watchItOnClient: {
+		id: "watchItOnClient"
 	}
 };
 
@@ -74,7 +76,7 @@ class AppointmentLogic extends ConversationLogic {
 				await self.getAppointments();
 				break;
 			case "appointment send promotions":
-				await self.startPromotionsConvo();
+				await self.promotionConvoManager();
 				break;
 		}
 	};
@@ -106,18 +108,22 @@ class AppointmentLogic extends ConversationLogic {
 	/**
 	 * send promotions
 	 */
-	async startPromotionsConvo() {
+	async promotionConvoManager() {
 		const {user} = this;
 
 		try {
-			const lastQuestionId = user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+			const lastQuestionId = this.getLastQuestionId();
 
 			//if this is the start of the conversation
 			if (!user.conversationData) {
 				await this.askForPromotion();
 			}
 			else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
-				await this.askForServiceOrText();
+				if (user.isIntegratedWithAcuity) {
+					await this.askForServiceOrText();
+				} else {
+					await this.askForTemplate();
+				}
 			}
 			else if (lastQuestionId === sendPromotionsQuestions.askForPostText.id) {
 				await this.askForPostImage();
@@ -134,8 +140,14 @@ class AppointmentLogic extends ConversationLogic {
 			else if (lastQuestionId === sendPromotionsQuestions.whichTemplate.id) {
 				await this.askForPromotionConfirmation();
 			}
-			else if (lastQuestionId === sendPromotionsQuestions.areYouSure.id) {
-				await this.sendPromotionToUsers();
+			else if (lastQuestionId === sendPromotionsQuestions.askForConfirmation.id) {
+				if (user.session.promotionType === "facebook") {
+					await this.postPromotionOnFacebook();
+				} else {
+					await this.sendPromotionViaEmail();
+				}
+			} else if (lastQuestionId === sendPromotionsQuestions.watchItOnClient.id) {
+				await this.postPromotionOnFacebook();
 			}
 			return MyUtils.SUCCESS;
 		} catch (err) {
@@ -154,71 +166,92 @@ class AppointmentLogic extends ConversationLogic {
 		const {user, reply, conversationData} = self;
 
 		//set current question
-		self.setCurrentQuestion(sendPromotionsQuestions.toPromote);
+		self.setCurrentQuestion(sendPromotionsQuestions.toPromote, "qr");
 
-		//get services
-		const appointmentTypes = await self.acuityLogic.getAppointmentTypes();
+		if (user.integrateWithAcuity) {
+			//get services
+			const appointmentTypes = await self.acuityLogic.getAppointmentTypes();
 
-		const options = {
-			appointmentTypeID: appointmentTypes[0].id,
-			date: moment().tz(user.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
-		};
+			const options = {
+				appointmentTypeID: appointmentTypes[0].id,
+				date: moment().tz(user.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
+			};
 
-		//get slots
-		const slots = await self.acuityLogic.getAvailability(options);
+			//get slots
+			const slots = await self.acuityLogic.getAvailability(options);
 
-		//if there are open slots
-		if (slots.length) {
+			//if there are open slots
+			if (slots.length) {
+				//save the response
+				const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("Do you want me to promote your openings?",
+					[
+						facebookResponse.getQRButton('text', 'Email Promotion', {promotionType: "email"}),
+						facebookResponse.getQRButton('text', 'Post on facebook', {promotionType: "facebook"}),
+						facebookResponse.getQRButton('text', 'Maybe later', {promotionType: "dontPromote"})
+					]
+				));
+
+				//save the user
+				await this.saveUser();
+
+				let firstText = ` noticed that you have ${slots.length} openings on your calendars tomorrow`;
+				let secondText = "I can help you fill the openings by promoting to your customers";
+				if (slots.length > 10) {
+					firstText = " noticed that you have more than 10 openings on your calendars tomorrow";
+				}
+				if (conversationData.skipHey) {
+					firstText = "I also" + firstText;
+				} else if (conversationData.firstPromotion) {
+					//replace the order
+					secondText = "I" + firstText;
+					firstText = "Hey boss, we are going to launch our first promotion together! *Excited* ☺";
+				} else {
+					firstText = "Hey boss, I" + firstText + ".";
+				}
+
+				await self.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(secondText), true, delayTime),
+					MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
+				]);
+
+				return "ThereAreOpenSlots";
+			}
+			//if there aren't open slots
+			else {
+				await self.clearConversation();
+
+				await self.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's great!"), false, delayTime),
+				]);
+
+				if (!user.isOnBoarded) {
+					await self.checkAndFinishOnBoarding(true);
+
+					return "ThereAreNoOpenSlots - userNotOnBoarded";
+				}
+
+				return "ThereAreNoOpenSlots - userOnBoarded";
+			}
+		}
+		//users that didn't integrate with Acuity
+		else {
+
 			//save the response
-			const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("Do you want me to promote your openings?",
+			const lastQRResponse = this.setLastQRResponse(facebookResponse.getQRElement("Do you want me to promote your openings?",
 				[
-					facebookResponse.getQRButton('text', 'Email Promotion', {id: "emailPromotion"}),
-					facebookResponse.getQRButton('text', 'Post on facebook', {id: "postOnFacebook"}),
-					facebookResponse.getQRButton('text', 'Maybe later', {id: "dontPromote"})
+					facebookResponse.getQRButton('text', 'Promote on facebook', {promotionType: "facebook"}),
+					facebookResponse.getQRButton('text', 'Maybe later', {promotionType: "dontPromote"})
 				]
 			));
 
-			//save the user
-			await self.DBManager.saveUser(user);
-
-			let firstText = ` noticed that you have ${slots.length} openings on your calendars tomorrow`;
-			let secondText = "I can help you fill the openings by promoting to your customers";
-			if (slots.length > 10) {
-				firstText = " noticed that you have more than 10 openings on your calendars tomorrow";
-			}
-			if (conversationData.skipHey) {
-				firstText = "I also" + firstText;
-			} else if (conversationData.firstPromotion) {
-				//replace the order
-				secondText = "I" + firstText;
-				firstText = "Hey boss, we are going to launch our first promotion together! *Excited* ☺";
-			} else {
-				firstText = "Hey boss, I" + firstText + ".";
-			}
+			await this.saveUser();
 
 			await self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(firstText), true),
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(secondText), true, delayTime),
 				MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 			]);
 
-			return "ThereAreOpenSlots";
-		}
-		//if there aren't open slots
-		else {
-			await self.clearConversation();
-
-			await self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's great!"), false, delayTime),
-			]);
-
-			if (!user.isOnBoarded) {
-				await self.checkAndFinishOnBoarding(true);
-
-				return "ThereAreNoOpenSlots - userNotOnBoarded";
-			}
-
-			return "ThereAreNoOpenSlots - userOnBoarded";
+			return "suggestPromotionToNonIntegrated";
 		}
 	}
 
@@ -234,7 +267,12 @@ class AppointmentLogic extends ConversationLogic {
 		if (conversationData.payload) {
 
 			//if the user said he wants to send promotion
-			if (conversationData.payload.id === "emailPromotion") {
+			if (conversationData.payload.promotionType === "email" || conversationData.payload.promotionType === "facebook") {
+
+				//set promotionType
+				user.session = {
+					promotionType: conversationData.payload.promotionType
+				};
 
 				//ask which service
 				const question = self.setCurrentQuestion(sendPromotionsQuestions.serviceName, "text");
@@ -254,7 +292,7 @@ class AppointmentLogic extends ConversationLogic {
 				const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement(question.text, servicesInQrButtons));
 
 				//save the user
-				await self.DBManager.saveUser(user);
+				await this.saveUser();
 
 				//send messages
 				await self.sendMessages([
@@ -264,23 +302,6 @@ class AppointmentLogic extends ConversationLogic {
 
 				return "userGotServicesList";
 			}
-			//if he wants to post on facebook
-			else if (conversationData.payload.id === "postOnFacebook") {
-
-				//ask for post text
-				self.setCurrentQuestion(sendPromotionsQuestions.askForPostText, "text");
-
-				//save the user
-				await self.DBManager.saveUser(user);
-
-				//send messages
-				await self.sendMessages([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Excellent! 😊"), true),
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("What the text you want me to write on your facebook page?"), false, delayTime),
-				]);
-
-				return "userAskedForPostText";
-			}
 			//if the user wants to quit
 			else {
 
@@ -289,11 +310,8 @@ class AppointmentLogic extends ConversationLogic {
 
 					return "userQuitPromotionProcess - finishOnBoarding";
 				} else {
-					user.conversationData = null;
-					user.session = null;
 
-					//save the user
-					await self.DBManager.saveUser(user);
+					await this.clearConversation();
 
 					//send messages
 					await self.sendMessages([
@@ -397,8 +415,7 @@ class AppointmentLogic extends ConversationLogic {
 				const postImage = user.session['postImage'];
 
 				//start posting on user's pages
-				user.integrations.Facebook.pages.forEach((page) => FacebookLogic.postPhotoOnFacebookPage(page.id, {
-					access_token: page.access_token,
+				user.integrations.Facebook.pages.forEach((page) => FacebookLogic.postPhotoOnUserPages(user, {
 					message: postText,
 					url: postImage
 				}));
@@ -462,21 +479,22 @@ class AppointmentLogic extends ConversationLogic {
 
 		if (conversationData.payload) {
 
-			//init the session
-			user.session = {};
-
-			//get the service by the user input
-			user.session[user.conversationData.lastQuestion.field] = conversationData.payload;
+			if (user.isIntegratedWithAcuity) {
+				//get the service by the user input
+				user.session["service"] = conversationData.payload;
+			} else {
+				user.session = {promotionType: conversationData.payload.promotionType};
+			}
 
 			//set current question
-			const question = self.setCurrentQuestion(sendPromotionsQuestions.whichTemplate, "payload");
+			self.setCurrentQuestion(sendPromotionsQuestions.whichTemplate, "payload");
 
 			//save the user
-			await self.DBManager.saveUser(user);
+			await this.saveUser();
 
 			//send messages
 			await self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage(question.text), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I made five types of discount for you to choose from.  Which of them you want me to send to your customers?"), true),
 				//get coupons
 				MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
 			]);
@@ -505,35 +523,57 @@ class AppointmentLogic extends ConversationLogic {
 
 			//get the template
 			const template = JSON.parse(conversationData.input);
-			user.session[user.conversationData.lastQuestion.field] = template;
+			user.session["template"] = template;
 
-			//ask if he is sure
-			const currentQuestion = sendPromotionsQuestions.areYouSure;
-			let responseText = currentQuestion.text;
+			if (user.isIntegratedWithAcuity) {
 
-			//parse the question text
-			responseText = responseText.replace('{serviceName}', user.session['service'].name);
-			responseText = responseText.replace('{promotionName}', template.title);
+				//set next question
+				this.setCurrentQuestion(sendPromotionsQuestions.askForConfirmation, "qr");
 
-			//save last qr
-			user.conversationData.lastQRResponse = facebookResponse.getQRElement(responseText, [
-				facebookResponse.getQRButton("text", "Yes, send it.", {answer: "yes"}),
-				facebookResponse.getQRButton("text", "No, don't send it.", {answer: "no"})
-			]);
+				let questionText, noButtonText, yesButtonText;
+				if (user.session.promotionType === "email") {
+					questionText = `Just to be clear, I am about to send ${template.title} promotion for ${user.session['service'].name} to your customers?`;
+					yesButtonText = "Yes, send it!";
+					noButtonText = "No, don't send it.";
+				} else {
+					if (user.isIntegratedWithAcuity) {
+						questionText = `Just to be clear, I am about to post ${template.title} promotion for ${user.session['service'].name} on your facebook page?`;
+					} else {
+						questionText = `Just to be clear, I am about to post ${template.title} promotion on your facebook page?`;
+					}
+					yesButtonText = "Yes, post it!";
+					noButtonText = "No, don't post it.";
+				}
 
-			//set current question
-			user.conversationData.lastQuestion = currentQuestion;
+				//save last qr
+				user.conversationData.lastQRResponse = facebookResponse.getQRElement(questionText, [
+					facebookResponse.getQRButton("text", yesButtonText, {answer: "yes"}),
+					facebookResponse.getQRButton("text", noButtonText, {answer: "no"})
+				]);
 
-			//save the user
-			await self.DBManager.saveUser(user);
+				//save the user
+				await this.saveUser();
 
-			//send messages
-			await self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
-				MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-			]);
+				//send messages
+				await self.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+				]);
 
-			return "userGotConfirmationMessage";
+				return "userGotConfirmationMessage";
+			}
+			//show on client
+			else {
+				this.setCurrentQuestion(sendPromotionsQuestions.watchItOnClient);
+
+				await this.saveUser();
+
+				await this.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Click here to watch what I'm going to post", [
+						facebookResponse.getGenericButton("web_url", "Promotion Preview", null, ZoiConfig.clientUrl + "/promotion-preview?userId=" + user._id, "tall")
+					]), false)
+				]);
+			}
 		} else {
 			//case he was typing
 			await self.sendMessages([
@@ -545,9 +585,104 @@ class AppointmentLogic extends ConversationLogic {
 	}
 
 	/**
+	 * post the selected promotion on facebook
+	 */
+	async postPromotionOnFacebook() {
+		const self = this;
+		const {user, reply, conversationData} = self;
+
+		//check that user said yes
+		if (MyUtils.nestedValue(conversationData, "payload.answer") === "yes") {
+
+			if (user.isIntegratedWithAcuity) {
+				const template = deepcopy(user.session['template']);
+				const appointmentType = deepcopy(user.session['service']);
+
+				const appointmentParams = {
+					firstName: "",
+					lastName: "",
+					email: "",
+					userId: user._id,
+					serviceId: appointmentType.id,
+					serviceName: appointmentType.name,
+					price: appointmentType.price,
+					timezone: user.integrations.Acuity.userDetails.timezone,
+					date: (new Date().valueOf()).toString(16),
+					notes: template.zoiCoupon,
+					promotionTitle: template.title,
+					promotionImage: template.image,
+					promotionType: "facebook"
+				};
+				const appointmentSumUrl = MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams).replace("%", "%25");
+
+				//create short link of zoi
+				const shortnerId = await LinkShortner.saveLink(appointmentSumUrl);
+
+				//save promotion times
+				ConversationLogic.setPromotionsTimesToUser(user);
+
+				//post on facebook page
+				FacebookLogic.postContentOnUserPages(user, {
+					message: template.title,
+					link: `${ZoiConfig.serverUrl}/s/${shortnerId}`
+				});
+
+				//clear the session and the conversation data
+				await self.clearConversation();
+
+				//send messages
+				await self.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll post it right away. 👏"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I posted the promotion on your facebook page."), true, delayTime),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
+				]);
+
+				if (!user.isOnBoarded) {
+					await self.checkAndFinishOnBoarding(true);
+
+					return "promotionSent - proceed with onboarding";
+				}
+
+				return "promotionSent";
+			} else {
+
+				const selectedPromotion = conversationData.payload;
+
+				//post on facebook page
+				FacebookLogic.postPhotoOnUserPages(user, {
+					message: selectedPromotion.title + "\n" + selectedPromotion.link,
+					url: selectedPromotion.imageUrl
+				});
+
+				await this.clearConversation();
+
+				//send messages
+				await self.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'm super excited!!! I'll post it right away. 👏"), true),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I posted the promotion on your facebook page."), true, delayTime),
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
+				]);
+			}
+
+
+		} else {
+			if (!user.isOnBoarded) {
+				await self.checkAndFinishOnBoarding(false);
+
+				return "finishOnBoarding";
+			} else {
+				await self.clearConversation();
+				reply(facebookResponse.getTextMessage("Ok boss"), false);
+
+				return "promotionRejected";
+			}
+		}
+	}
+
+	/**
 	 * send the selected promotion to the users
 	 */
-	async sendPromotionToUsers() {
+	async sendPromotionViaEmail() {
 		const self = this;
 		const {user, reply, conversationData} = self;
 
@@ -609,14 +744,7 @@ class AppointmentLogic extends ConversationLogic {
 			});
 
 			//save promotion times
-			const actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
-			if (user.profile[actionTime]) {
-				user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
-			} else {
-				user.profile[actionTime] = {
-					numOfPromotions: 1
-				}
-			}
+			ConversationLogic.setPromotionsTimesToUser(user);
 
 			//clear the session and the conversation data
 			await self.clearConversation();

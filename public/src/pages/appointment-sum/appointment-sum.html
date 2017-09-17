@@ -21,11 +21,12 @@
                 {{vm.appointment.promotionTitle}}
             </div>
             <div class="box-sub-header">
-                {{vm.appointment.customer.firstname}} {{vm.appointment.customer.lastname}}, Book now to get
-                the special promotion.
+                <p style="display: inline" ng-show="vm.promotionType === 'email'">
+                    {{vm.appointment.customer.firstname}} {{vm.appointment.customer.lastname}}, </p>Book now to get the
+                special promotion.
             </div>
             <div class="box-body"
-                 style="  border-top: solid #f5ebeb 1px;  border-bottom: solid #f5ebeb 1px; padding-top:30px; padding-bottom: 30px">
+                 style="  border-top: solid #f5ebeb 1px;  border-bottom: solid #f5ebeb 1px; padding-top:30px; padding-bottom: 15px">
                 <!--<div class="text-center">-->
                 <!--Your plan:-->
                 <!--</div>-->
@@ -48,13 +49,34 @@
                             </md-option>
                         </md-select>
                     </md-input-container>
-                    <!--<div style="color:blue; cursor: pointer">-->
-                    <!--Change-->
-                    <!--</div>-->
-                </div>
-                <!--<div class="box-item">-->
 
-                <!--</div>-->
+                </div>
+                <div class="box-sub-header customer-form" ng-show="vm.promotionType === 'facebook'">
+                    <form name="vm.customerForm">
+                        <div layout="row">
+                            <md-input-container class="md-block" flex="50">
+                                <label>First Name</label>
+                                <input ng-model="vm.appointment.customer.firstname" required>
+                            </md-input-container>
+
+                            <md-input-container class="md-block" flex="50">
+                                <label>Last Name</label>
+                                <input ng-model="vm.appointment.customer.lastname" required>
+                            </md-input-container>
+                        </div>
+
+                        <md-input-container class="md-block no-margin">
+                            <label>Email</label>
+                            <input ng-model="vm.appointment.customer.email" type="email"
+                                   name="customerEmail" ng-pattern="/^.+@.+\..+$/">
+                            <div ng-messages="vm.customerForm.customerEmail.$error" role="alert">
+                                <div ng-message-exp="['pattern']">
+                                    Your email must be look like an e-mail address
+                                </div>
+                            </div>
+                        </md-input-container>
+                    </form>
+                </div>
             </div>
 
             <div class="box-sub-header">

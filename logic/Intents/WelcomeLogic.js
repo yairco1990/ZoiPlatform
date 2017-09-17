@@ -195,7 +195,7 @@ class WelcomeLogic extends ConversationLogic {
 		const self = this;
 		const {user, reply, conversationData} = self;
 
-		self.setCurrentQuestion(welcomeQuestions.canWeProceed);
+		self.setCurrentQuestion(welcomeQuestions.canWeProceed, "qr");
 
 		//save the user
 		await self.DBManager.saveUser(user);

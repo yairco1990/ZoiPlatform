@@ -83,6 +83,14 @@ class ConversationLogic {
 		return qr;
 	}
 
+	/**
+	 * save the user
+	 * @returns {Promise.<void>}
+	 */
+	async saveUser() {
+		await this.DBManager.saveUser(this.user);
+	}
+
 
 	/**
 	 * send messages in order
@@ -173,6 +181,17 @@ class ConversationLogic {
 	getLastQuestionId() {
 		const {user} = this;
 		return user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+	}
+
+	static setPromotionsTimesToUser(user) {
+		const actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
+		if (user.profile[actionTime]) {
+			user.profile[actionTime].numOfPromotions = (user.profile[actionTime].numOfPromotions || 0) + 1;
+		} else {
+			user.profile[actionTime] = {
+				numOfPromotions: 1
+			}
+		}
 	}
 }
 

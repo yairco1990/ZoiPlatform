@@ -1,0 +1,41 @@
+#promotion-preview-page .image-preview {
+    width: 100%;
+    height: 100%;
+    box-shadow: 3px 3px 10px #d6d3d3;
+    margin-top: 3px;
+}
+
+#promotion-preview-page .preview-wrapper {
+    width: 94%;
+    margin: auto;
+}
+
+#promotion-preview-page .content-title-text {
+    text-align: left;
+    line-height: 1.3;
+    color: black;
+    font-size: 13px;
+    border: solid #d2d2d2 1px;
+    border-radius: 2px;
+    padding: 13px;
+}
+
+#promotion-preview-page md-input-container.md-input-focused label:not(.md-no-float), md-input-container.md-input-has-placeholder label:not(.md-no-float), md-input-container.md-input-has-value label:not(.md-no-float) {
+    text-align: left;
+}
+
+#promotion-preview-page md-input-container textarea.md-input {
+    font-family: Lato;
+    line-height: 1.35;
+}
+
+#promotion-preview-page .md-button.md-default-theme.md-primary.md-raised, .md-button.md-primary.md-raised, .md-button.md-default-theme.md-primary.md-fab, .md-button.md-primary.md-fab {
+    color: rgba(255, 255, 255, 0.87);
+    background-color: rgb(16, 108, 200);
+}
+
+#promotion-preview-page .post-button {
+    text-align: center;
+    width: 100%;
+    margin-top: 10px
+}

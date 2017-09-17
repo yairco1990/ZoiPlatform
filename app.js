@@ -63,6 +63,10 @@ app.use(function (req, res, next) {
 //manage the routing
 app.use(require('./services/RoutingManager'));
 
+process.on('unhandledRejection', (reason, p) => {
+	MyLog.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+});
+
 //set facebook bot services
 BotServices.setBotRouting(app);
 

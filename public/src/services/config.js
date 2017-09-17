@@ -1,11 +1,11 @@
 angular.module('Zoi.services.config', [])
 
 	.service('zoiConfig', ['$log', '$location',
-		function ($log, $window) {
+		function () {
 
 			var ENVIRONMENTS = {
 				NGROK: {
-					url: "https://7c143800.ngrok.io"
+					url: "https://d064382c.ngrok.io"
 				},
 				LOCAL: {
 					url: "http://localhost:443"
@@ -21,7 +21,7 @@ angular.module('Zoi.services.config', [])
 				}
 			};
 
-			var selectedEnvironment = ENVIRONMENTS.DEV;
+			var selectedEnvironment = ENVIRONMENTS.NGROK;
 
 			return {
 				getServerUrl: function () {

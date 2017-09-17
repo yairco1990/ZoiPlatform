@@ -35,7 +35,7 @@ function categoryCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zo
 	vm.$window = $window;
 	vm.zoiConfig = zoiConfig;
 
-	vm.$log.debug("keywordsCtrl loaded");
+	vm.$log.debug("categoryCtrl loaded");
 }
 
 /**

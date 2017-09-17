@@ -1,0 +1,42 @@
+<div id="promotion-preview-page" class="boxed-page" ng-cloak>
+    <div class="promotion-preview-area boxed-area" ng-if="vm.zoiUser">
+
+        <div class="box-area-wrapper">
+
+            <div class="box-header">
+                Promotion Preview
+            </div>
+            <div class="box-sub-header">
+                <b>This is what I'm going to post on your facebook page. Change the post title or the scheduling page
+                    link if you want to.</b>
+            </div>
+
+            <div class="box-body" style="border-top: solid #ececec 1px;">
+                <div class="text-center box-sub-header" style="font-size: 16px !important;margin-top: 5px">
+                    <div class="preview-wrapper">
+                        <md-input-container class="md-block" style="margin-bottom: 0;">
+                            <label>Post Title</label>
+                            <textarea ng-model="vm.selectedTitle" md-maxlength="250" rows="1" md-select-on-focus
+                                      maxlength="250"></textarea>
+                        </md-input-container>
+                        <img class="image-preview" ng-src="{{vm.contentImage}}"/>
+                        <br>
+                        <md-input-container class="md-block" style="margin-bottom: 0;margin-top: 40px;">
+                            <label>Scheduling Page Link</label>
+                            <textarea ng-model="vm.schedulingPageLink" rows="1" md-select-on-focus>
+                            </textarea>
+                        </md-input-container>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-button">
+                <md-button class="md-raised md-primary no-margin" ng-click="vm.postIt($event)" style="width: 86%;">
+                    Post Promotion!
+                </md-button>
+            </div>
+
+        </div>
+
+    </div>
+</div>

@@ -58,7 +58,7 @@ contentPreviewCtrl.prototype.postIt = function (ev) {
 
 	MyUtils.addLoader();
 
-	vm.zoiApi.postOnFacebook({
+	vm.zoiApi.postContentOnFacebook({
 		userId: vm.zoiUser._id,
 		link: vm.link,
 		title: vm.selectedTitle

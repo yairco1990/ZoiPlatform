@@ -74,7 +74,7 @@ describe('AppointmentLogic Class', function () {
 	});
 
 	//test start promotion conversation
-	describe('startPromotionsConvo function', function () {
+	describe('promotionConvoManager function', function () {
 
 		it('on conversation starts - ask for send promotion', async function () {
 
@@ -84,7 +84,7 @@ describe('AppointmentLogic Class', function () {
 
 			appointmentLogic.sendMessages = fakeSendMessagesFunction(appointmentLogic);
 
-			await appointmentLogic.startPromotionsConvo();
+			await appointmentLogic.promotionConvoManager();
 
 			assert(appointmentLogic.askForPromotion.called);
 		});
@@ -99,7 +99,7 @@ describe('AppointmentLogic Class', function () {
 
 			appointmentLogic.sendMessages = fakeSendMessagesFunction(appointmentLogic);
 
-			await appointmentLogic.startPromotionsConvo();
+			await appointmentLogic.promotionConvoManager();
 
 			assert(appointmentLogic.askForServiceOrText.called);
 		});
@@ -114,7 +114,7 @@ describe('AppointmentLogic Class', function () {
 
 			appointmentLogic.sendMessages = fakeSendMessagesFunction(appointmentLogic);
 
-			await appointmentLogic.startPromotionsConvo();
+			await appointmentLogic.promotionConvoManager();
 
 			assert(appointmentLogic.askForTemplate.called);
 		});
@@ -129,7 +129,7 @@ describe('AppointmentLogic Class', function () {
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			await appointmentLogic.startPromotionsConvo();
+			await appointmentLogic.promotionConvoManager();
 
 			assert(appointmentLogic.askForPromotionConfirmation.called);
 		});

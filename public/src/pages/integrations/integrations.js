@@ -75,9 +75,14 @@ integrationsCtrl.prototype.onFacebookClicked = function () {
 
 		if (response.authResponse && response.authResponse.accessToken) {
 
+			MyUtils.addLoader();
+
 			console.log('Welcome!  Fetching your information.... ');
 
 			vm.zoiApi.sendFacebookAccessToken(vm.zoiUser._id, response.authResponse).then(function () {
+
+				MyUtils.removeLoader();
+
 				console.log("integrated with facebook successfully");
 				vm.isFacebookAssociated = true;
 
@@ -94,15 +99,4 @@ integrationsCtrl.prototype.onFacebookClicked = function () {
 	}, {
 		scope: 'manage_pages,publish_pages'
 	});
-
-	// checkLoginState(function (response) {
-	//     if (response.status === "connected") {
-	//         vm.zoiApi.sendFacebookAccessToken(vm.zoiUser._id, response).then(function () {
-	//             console.log("integrated with facebook successfully");
-	//         });
-	//     } else {
-	//         //TODO what to do here?
-	//         console.log("check the TODO");
-	//     }
-	// });
 };

@@ -30,15 +30,15 @@ UserApiLogic.prototype.getUser = async function (userId) {
 		const user = await self.DBManager.getUser({_id: userId});
 
 		//delete sensitive information
-		if (user.integrations.Acuity) {
+		if (user.isAcuityIntegrated) {
 			delete user.integrations.Acuity.accessToken;
 			delete user.integrations.Acuity.userDetails.accessToken;
 		}
-		if (user.integrations.Gmail) {
+		if (user.isGmailIntegrated) {
 			delete user.integrations.Gmail;
 			user.integrations.Gmail = true;
 		}
-		if (user.integrations.Facebook) {
+		if (user.isFacebookIntegrated) {
 
 			//copy the facebook pages to user
 			if (user.integrations.Facebook.pages) {

@@ -4,9 +4,22 @@ angular.module('Zoi.services.zoi-api', [])
 
 		return {
 
-			postOnFacebook: function (payload) {
+			postContentOnFacebook: function (payload) {
 				return $http({
 					url: zoiConfig.getServerUrl() + "/chat/postFacebookContent",
+					method: "POST",
+					params: payload,
+					timeout: 10000
+				}).then(function (result) {
+					return result.data;
+				}, function (err) {
+					$log.error(err);
+				});
+			},
+
+			postPromotionOnFacebook: function (payload) {
+				return $http({
+					url: zoiConfig.getServerUrl() + "/chat/postFacebookPromotion",
 					method: "POST",
 					params: payload,
 					timeout: 10000
@@ -90,7 +103,7 @@ angular.module('Zoi.services.zoi-api', [])
 						userId: userId,
 						authResponse: authResponse
 					},
-					timeout: 5000
+					timeout: 10000
 				}).then(function (result) {
 					return result.data;
 				});

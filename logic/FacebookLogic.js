@@ -81,6 +81,29 @@ class FacebookLogic {
 
 
 	/**
+	 * post content on user's facebook pages
+	 * @param user
+	 * @param payload
+	 */
+	static postContentOnUserPages(user, payload) {
+
+		//post on facebook page
+		user.integrations.Facebook.pages
+			.filter(page => page.isEnabled)
+			.forEach(page => {
+				try {
+					payload.access_token = page.access_token;
+					FacebookLogic.postContentOnFacebookPage(page.id, payload)
+				} catch (err) {
+					MyLog.error(err);
+				}
+			});
+
+		return "contentPosted";
+	}
+
+
+	/**
 	 * post on facebook page
 	 * @param pageId
 	 * @param payload
@@ -101,7 +124,28 @@ class FacebookLogic {
 				resolve(body);
 			});
 		});
+	}
 
+	/**
+	 * post content on user's facebook pages
+	 * @param user
+	 * @param payload
+	 */
+	static postPhotoOnUserPages(user, payload) {
+
+		//post on facebook page
+		user.integrations.Facebook.pages
+			.filter(page => page.isEnabled)
+			.forEach(page => {
+				try {
+					payload.access_token = page.access_token;
+					FacebookLogic.postPhotoOnFacebookPage(page.id, payload)
+				} catch (err) {
+					MyLog.error(err);
+				}
+			});
+
+		return "photoPosted";
 	}
 
 	/**

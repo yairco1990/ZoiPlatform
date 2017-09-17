@@ -11,7 +11,7 @@ describe("LinkShortner Class", () => {
 	const TEST_LINK = "http://www.walla.co.il";
 	const DBManager = require('../dal/DBManager');
 
-	it.only("save and get link", async () => {
+	it("save and get link", async () => {
 
 		const savedLinkId = await LinkShortnerLogic.saveLink(TEST_LINK);
 

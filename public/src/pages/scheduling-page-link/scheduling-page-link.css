@@ -1,0 +1,3 @@
+#scheduling-link-page md-dialog .md-actions, md-dialog md-dialog-actions {
+    display: none !important;
+}

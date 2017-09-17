@@ -23,7 +23,18 @@ const userSchema = new Schema({
 	oldCustomersRange: Object,
 	lastMessageTime: Number,
 	timezone: String,
+	schedulingPageLink: String,
 	isOnBoarded: Boolean
 }, {minimize: false});
+
+userSchema.virtual('isAcuityIntegrated').get(function () {
+	return this.integrations.Acuity;
+});
+userSchema.virtual('isGmailIntegrated').get(function () {
+	return this.integrations.Gmail;
+});
+userSchema.virtual('isFacebookIntegrated').get(function () {
+	return this.integrations.Facebook;
+});
 
 module.exports = mongoose.model('User', userSchema);

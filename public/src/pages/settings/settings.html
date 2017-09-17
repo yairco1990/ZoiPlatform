@@ -86,7 +86,7 @@
             </div>
             <!--END OF SOCIAL MEDIA-->
 
-            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px"  ng-if="vm.isIntegratedWithAcuity">
+            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px" ng-if="vm.isIntegratedWithAcuity">
                 <b> Brief </b>
             </div>
             <div class="box-body" style=" border-bottom: solid #f5ebeb 1px">
@@ -113,10 +113,21 @@
                 </div>
             </div>
 
-            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px"  ng-if="vm.isIntegratedWithAcuity">
+            <div class="box-sub-header" style="border-top:solid #d7d7d7 1px">
                 <b> Promotions </b>
             </div>
             <div class="box-body" style=" border-bottom: solid #f5ebeb 1px;">
+
+                <div class="box-item" style="display: block" ng-if="!vm.isIntegratedWithAcuity"
+                     ng-click="vm.moveToState('scheduling-page-link')">
+                    <i class="fa fa-pencil" aria-hidden="true" style="position: absolute; right: 20px; top: 15px"></i>
+                    <div class="" style="padding-top:10px">
+                        Scheduling page link
+                    </div>
+                    <div class=" box-sub-header">
+                        {{vm.zoiUser.schedulingPageLink}}
+                    </div>
+                </div>
 
                 <div class="box-item" style="display: block" ng-if="vm.isIntegratedWithAcuity"
                      ng-click="vm.openCustomersSendLimitPopup($event)">
