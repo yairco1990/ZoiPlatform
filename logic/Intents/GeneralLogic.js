@@ -34,7 +34,7 @@ const suggestToPostQuestions = {
 		id: "suggestArticle"
 	},
 	watchItOnClient: {
-		id: "watchItOnClient"
+		id: "watchPromotionOnClient"
 	}
 };
 
@@ -98,7 +98,7 @@ class GeneralLogic extends ConversationLogic {
 					} else if (suggestToPostQuestions.suggestArticle.id === lastQuestionId) {
 						await this.watchArticleOnClient();
 						return "watchArticleOnClient";
-					} else if (suggestToPostQuestions.watchItOnClient.id === lastQuestionId) {
+					} else if (suggestToPostQuestions.watchPromotionOnClient.id === lastQuestionId) {
 						await this.postArticleOnFacebook();
 						return "postArticleOnFacebook";
 					}
@@ -253,7 +253,7 @@ class GeneralLogic extends ConversationLogic {
 
 				const selectedArticle = JSON.parse(conversationData.input);
 
-				this.setCurrentQuestion(suggestToPostQuestions.watchItOnClient);
+				this.setCurrentQuestion(suggestToPostQuestions.watchPromotionOnClient);
 
 				const selectedArticleOpenGraphResult = await RssLogic.getOpenGraphResult(selectedArticle.link);
 

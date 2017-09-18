@@ -21,7 +21,7 @@ const delayTime = ZoiConfig.delayTime;
 
 //QUESTIONS
 const sendPromotionsQuestions = {
-	toPromote: {
+	shouldZoiPromote: {
 		id: 0
 	},
 	serviceName: {
@@ -50,8 +50,8 @@ const sendPromotionsQuestions = {
 	askForConfirmation: {
 		id: 3
 	},
-	watchItOnClient: {
-		id: "watchItOnClient"
+	watchPromotionOnClient: {
+		id: "watchPromotionOnClient"
 	}
 };
 
@@ -118,8 +118,8 @@ class AppointmentLogic extends ConversationLogic {
 			if (!user.conversationData) {
 				await this.askForPromotion();
 			}
-			else if (lastQuestionId === sendPromotionsQuestions.toPromote.id) {
-				if (user.isIntegratedWithAcuity) {
+			else if (lastQuestionId === sendPromotionsQuestions.shouldZoiPromote.id) {
+				if (user.isAcuityIntegrated) {
 					await this.askForServiceOrText();
 				} else {
 					await this.askForTemplate();
@@ -146,7 +146,7 @@ class AppointmentLogic extends ConversationLogic {
 				} else {
 					await this.sendPromotionViaEmail();
 				}
-			} else if (lastQuestionId === sendPromotionsQuestions.watchItOnClient.id) {
+			} else if (lastQuestionId === sendPromotionsQuestions.watchPromotionOnClient.id) {
 				await this.postPromotionOnFacebook();
 			}
 			return MyUtils.SUCCESS;
@@ -166,9 +166,9 @@ class AppointmentLogic extends ConversationLogic {
 		const {user, reply, conversationData} = self;
 
 		//set current question
-		self.setCurrentQuestion(sendPromotionsQuestions.toPromote, "qr");
+		self.setCurrentQuestion(sendPromotionsQuestions.shouldZoiPromote, "qr");
 
-		if (user.integrateWithAcuity) {
+		if (user.isAcuityIntegrated) {
 			//get services
 			const appointmentTypes = await self.acuityLogic.getAppointmentTypes();
 
@@ -479,7 +479,7 @@ class AppointmentLogic extends ConversationLogic {
 
 		if (conversationData.payload) {
 
-			if (user.isIntegratedWithAcuity) {
+			if (user.isAcuityIntegrated) {
 				//get the service by the user input
 				user.session["service"] = conversationData.payload;
 			} else {
@@ -523,48 +523,56 @@ class AppointmentLogic extends ConversationLogic {
 
 			//get the template
 			const template = JSON.parse(conversationData.input);
-			user.session["template"] = template;
+			user.session.template = template;
 
-			if (user.isIntegratedWithAcuity) {
+			if (user.isAcuityIntegrated) {
 
-				//set next question
-				this.setCurrentQuestion(sendPromotionsQuestions.askForConfirmation, "qr");
-
-				let questionText, noButtonText, yesButtonText;
 				if (user.session.promotionType === "email") {
-					questionText = `Just to be clear, I am about to send ${template.title} promotion for ${user.session['service'].name} to your customers?`;
-					yesButtonText = "Yes, send it!";
-					noButtonText = "No, don't send it.";
+
+					//set next question
+					this.setCurrentQuestion(sendPromotionsQuestions.askForConfirmation, "qr");
+
+					const questionText = `Just to be clear, I am about to send ${template.title} promotion for ${user.session.service.name} to your customers?`;
+					const yesButtonText = "Yes, send it!";
+					const noButtonText = "No, don't send it.";
+
+					//save last qr
+					user.conversationData.lastQRResponse = facebookResponse.getQRElement(questionText, [
+						facebookResponse.getQRButton("text", yesButtonText, {answer: "yes"}),
+						facebookResponse.getQRButton("text", noButtonText, {answer: "no"})
+					]);
+
+					//save the user
+					await this.saveUser();
+
+					//send messages
+					await self.sendMessages([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+						MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
+					]);
+
+					return "userGotConfirmationMessage";
 				} else {
-					if (user.isIntegratedWithAcuity) {
-						questionText = `Just to be clear, I am about to post ${template.title} promotion for ${user.session['service'].name} on your facebook page?`;
-					} else {
-						questionText = `Just to be clear, I am about to post ${template.title} promotion on your facebook page?`;
-					}
-					yesButtonText = "Yes, post it!";
-					noButtonText = "No, don't post it.";
+
+					user.session.template.promotionTitle = `Schedule today for ${user.session.service.name} and enjoy of ${template.title}`;
+
+					this.setCurrentQuestion(sendPromotionsQuestions.watchPromotionOnClient);
+
+					await this.saveUser();
+
+					await this.sendMessages([
+						MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Click here to watch what I'm going to post", [
+							facebookResponse.getGenericButton("web_url", "Promotion Preview", null, `${ZoiConfig.clientUrl}/promotion-preview?userId=${user._id}`, "tall")
+						]), false)
+					]);
 				}
-
-				//save last qr
-				user.conversationData.lastQRResponse = facebookResponse.getQRElement(questionText, [
-					facebookResponse.getQRButton("text", yesButtonText, {answer: "yes"}),
-					facebookResponse.getQRButton("text", noButtonText, {answer: "no"})
-				]);
-
-				//save the user
-				await this.saveUser();
-
-				//send messages
-				await self.sendMessages([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
-					MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
-				]);
-
-				return "userGotConfirmationMessage";
 			}
-			//show on client
+			//show on client for non-integrated with Acuity
 			else {
-				this.setCurrentQuestion(sendPromotionsQuestions.watchItOnClient);
+
+				user.session.template.promotionTitle = `Schedule today and enjoy of ${template.title}`;
+
+				this.setCurrentQuestion(sendPromotionsQuestions.watchPromotionOnClient);
 
 				await this.saveUser();
 
@@ -594,9 +602,10 @@ class AppointmentLogic extends ConversationLogic {
 		//check that user said yes
 		if (MyUtils.nestedValue(conversationData, "payload.answer") === "yes") {
 
-			if (user.isIntegratedWithAcuity) {
+			if (user.isAcuityIntegrated) {
 				const template = deepcopy(user.session['template']);
 				const appointmentType = deepcopy(user.session['service']);
+				const selectedPromotion = conversationData.payload;
 
 				const appointmentParams = {
 					firstName: "",
@@ -623,7 +632,7 @@ class AppointmentLogic extends ConversationLogic {
 
 				//post on facebook page
 				FacebookLogic.postContentOnUserPages(user, {
-					message: template.title,
+					message: selectedPromotion.title,
 					link: `${ZoiConfig.serverUrl}/s/${shortnerId}`
 				});
 
@@ -648,9 +657,16 @@ class AppointmentLogic extends ConversationLogic {
 
 				const selectedPromotion = conversationData.payload;
 
+				let message = selectedPromotion.title;
+
+				//if link exist - add it to the message
+				if (selectedPromotion.link) {
+					message += "\n" + selectedPromotion.link;
+				}
+
 				//post on facebook page
 				FacebookLogic.postPhotoOnUserPages(user, {
-					message: selectedPromotion.title + "\n" + selectedPromotion.link,
+					message: message,
 					url: selectedPromotion.imageUrl
 				});
 
@@ -814,7 +830,7 @@ class AppointmentLogic extends ConversationLogic {
 					id: 1,
 					title: "10% Off",
 					zoiCoupon: "Zoi.10PercentOff",
-					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
+					image: "https://res.cloudinary.com/gotime-systems/image/upload/v1500935136/10_precent_discount-_no_shadow-02_c8ezyu.png",
 					color: "#F99C17",
 					hoverColor: "#F4771D"
 				})]),
@@ -824,9 +840,9 @@ class AppointmentLogic extends ConversationLogic {
 				"Offer 2 + 1 deal to selected customers",
 				[facebookResponse.getGenericButton("postback", "I like it", {
 					id: 2,
-					title: "2 + 1",
+					title: "2 + 1 deal",
 					zoiCoupon: "Zoi.2Plus1",
-					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1502450812/2_1_deal-01_g2rrrc.png",
+					image: "https://res.cloudinary.com/gotime-systems/image/upload/v1502450812/2_1_deal-01_g2rrrc.png",
 					color: "#4AC3C4",
 					hoverColor: "#009086"
 				})]),
@@ -838,7 +854,7 @@ class AppointmentLogic extends ConversationLogic {
 					id: 3,
 					title: "25% Off",
 					zoiCoupon: "Zoi.25PercentOff",
-					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
+					image: "https://res.cloudinary.com/gotime-systems/image/upload/v1500931267/25p_vahxwh.png",
 					color: "#00b0ea",
 					hoverColor: "#00a6db"
 				})]),
@@ -848,9 +864,9 @@ class AppointmentLogic extends ConversationLogic {
 				"Offer 1 + 1 deal to selected customers",
 				[facebookResponse.getGenericButton("postback", "I like it", {
 					id: 4,
-					title: "1 + 1",
+					title: "1 + 1 deal",
 					zoiCoupon: "Zoi.1Plus1",
-					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
+					image: "https://res.cloudinary.com/gotime-systems/image/upload/v1500935100/1_1_offer-no-shadow-02_d3klck.png",
 					color: "#d1dd25",
 					hoverColor: "#c3c62f"
 				})]),
@@ -862,7 +878,7 @@ class AppointmentLogic extends ConversationLogic {
 					id: 5,
 					title: "5% Off",
 					zoiCoupon: "Zoi.5PercentOff",
-					image: "http://res.cloudinary.com/gotime-systems/image/upload/v1502450747/5_precent_dis-01_lvbaid.png",
+					image: "https://res.cloudinary.com/gotime-systems/image/upload/v1502450747/5_precent_dis-01_lvbaid.png",
 					color: "#4AC3C4",
 					hoverColor: "#009086"
 				})])

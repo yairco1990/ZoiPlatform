@@ -417,15 +417,11 @@ class AcuityLogic {
 							await self.DBManager.saveUser(user);
 
 							//start the conversation in the clientLogic class
-							const clientLogic = new ClientLogic(user);
-							const conversationData = {
+							const clientLogic = new ClientLogic(user, {
 								intent: "client new customer join",
 								context: "CLIENT"
-							};
-							const replyFunction = zoiBot.getBotReplyFunction(user);
-							const botTypingFunction = zoiBot.getBotWritingFunction(user);
-
-							clientLogic.processIntent(conversationData, botTypingFunction, null, replyFunction);
+							});
+							clientLogic.processIntent();
 						}
 
 						callback(Response.SUCCESS, {message: "It's a new customer"});
@@ -488,7 +484,7 @@ class AcuityLogic {
 			await self.DBManager.saveUser(user);
 
 			//redirect the user to his integrations page
-			callback(302, {'location': ZoiConfig.clientUrl + '/integrations?userId=' + userId});
+			callback(302, {'location': `${ZoiConfig.clientUrl}/integrations?userId=${userId}&closeWindow=true&skipExtension=true`});
 
 			const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 

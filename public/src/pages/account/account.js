@@ -9,12 +9,15 @@ angular.module('Zoi.controllers.account', [])
 			controller: 'AccountCtrl as vm',
 			templateUrl: 'src/pages/account/account.html',
 			resolve: {
-				zoiUser: function ($http, $log, $stateParams, zoiConfig, $timeout, $state) {
+				zoiUserId: function () {
+					return getZoiUserId();
+				},
+				zoiUser: function ($http, $log, zoiUserId, zoiConfig, $timeout, $state) {
 					return $http({
 						url: zoiConfig.getServerUrl() + "/api/getUser",
 						method: "GET",
 						params: {
-							userId: $stateParams.userId
+							userId: zoiUserId
 						},
 						timeout: 10000
 					}).then(function (result) {

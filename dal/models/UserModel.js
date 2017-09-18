@@ -28,13 +28,13 @@ const userSchema = new Schema({
 }, {minimize: false});
 
 userSchema.virtual('isAcuityIntegrated').get(function () {
-	return this.integrations.Acuity;
+	return !!this.integrations.Acuity;
 });
 userSchema.virtual('isGmailIntegrated').get(function () {
-	return this.integrations.Gmail;
+	return !!this.integrations.Gmail;
 });
 userSchema.virtual('isFacebookIntegrated').get(function () {
-	return this.integrations.Facebook;
+	return !!this.integrations.Facebook;
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -21,7 +21,7 @@ angular.module('Zoi.controllers.promotion-preview', [])
  * page constructor
  * @constructor
  */
-function promotionPreviewCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig) {
+function promotionPreviewCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig, $stateParams) {
 
 	var vm = this;
 
@@ -34,6 +34,7 @@ function promotionPreviewCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoi
 	vm.zoiApi = zoiApi;
 	vm.$window = $window;
 	vm.zoiConfig = zoiConfig;
+	vm.$stateParams = $stateParams;
 }
 
 /**
@@ -44,7 +45,8 @@ promotionPreviewCtrl.prototype.$onInit = function () {
 
 	var selectedTemplate = vm.zoiUser.session.template;
 
-	vm.contentTitle = selectedTemplate.title;
+	vm.isIntegratedWithAcuity = !!vm.zoiUser.integrations.Acuity;
+	vm.contentTitle = selectedTemplate.promotionTitle;
 	vm.selectedTitle = vm.contentTitle;
 	vm.contentImage = selectedTemplate.image;
 	vm.schedulingPageLink = vm.zoiUser.schedulingPageLink || "";

@@ -198,7 +198,7 @@ class ClientLogic extends ConversationLogic {
 			//if this is the start of the conversation
 			if (!user.conversationData) {
 				//current question
-				const currentQuestion = promoteOldCustomersQuestions.toPromote;
+				const currentQuestion = promoteOldCustomersQuestions.shouldZoiPromote;
 				//save conversation to the user
 				user.conversationData = conversationData;
 				//save the question
@@ -299,7 +299,7 @@ class ClientLogic extends ConversationLogic {
 					self.clearConversation();
 				}
 			}
-			else if (lastQuestionId === promoteOldCustomersQuestions.toPromote.id) {
+			else if (lastQuestionId === promoteOldCustomersQuestions.shouldZoiPromote.id) {
 
 				if (!conversationData.payload) {
 					//send qr again

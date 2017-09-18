@@ -7,6 +7,8 @@
     <title>Zoi</title>
 
     <link rel="stylesheet" type="text/css" href="src/assets/css/loader.css"/>
+    <!--LOADER-->
+    <script type="application/javascript" id="loader-file" src="loader.js" version="v1.0.0"></script>
 
     <!--ANALYTICS-->
     <script>
@@ -38,7 +40,12 @@
 		ga('create', 'UA-77404857-8', 'auto');
 		ga('send', 'pageview');
     </script>
+    <!--END OF ANALYTICS-->
+
+    <!--FACEBOOK LOGIN-->
     <script>
+
+		var zoiAppId = '358701207893441';
 
 		function statusChangedCallback(response) {
 			if (response.status === "connected") {
@@ -58,7 +65,7 @@
 
 		window.fbAsyncInit = function () {
 			FB.init({
-				appId: '358701207893441',//TODO change the app id
+				appId: zoiAppId,//TODO change the app id
 				cookie: true,
 				xfbml: true,
 				version: 'v2.8'
@@ -76,10 +83,12 @@
 			fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));
     </script>
+    <!--END OF FACEBOOK LOGIN-->
 
 </head>
 <body ng-controller="AppCtrl" dir="ltr">
 
+<!--MESSENGER EXTENSION-->
 <script>
 	(function (d, s, id) {
 		var js, fjs = d.getElementsByTagName(s)[0];
@@ -92,10 +101,31 @@
 		fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'Messenger'));
 
-	window.extAsyncInit = function () {
-		console.log("Facebook Extension Loaded");
-	};
+	function getZoiUserId() {
+		return new Promise(function (resolve, reject) {
+			MessengerExtensions.getContext(zoiAppId, function success(uids) {
+				// User ID was successfully obtained.
+				resolve(uids.psid)
+			}, function error(err, errorMessage) {
+				console.error(errorMessage);
+				reject(errorMessage);
+				// Error handling code
+			});
+		});
+	}
+
+	if (window.location.hash.includes('skipExtension')) {
+		console.log("Facebook Didn't Load");
+		startZoi();
+	} else {
+		window.extAsyncInit = function () {
+			console.log("Facebook Extension Loaded");
+			startZoi();
+		};
+	}
+
 </script>
+<!--END OF MESSENGER EXTENSION-->
 
 <div id="loader-wrapper" class="boxed-page animated">
     <span style="margin:auto">
@@ -110,8 +140,5 @@
 </div>
 <div id="page-container" class="page-container" ui-view ng-cloak>
 </div>
-
-<!--LOADER-->
-<script type="application/javascript" id="loader-file" src="loader.js" version="v1.0.0"></script>
 </body>
 </html>

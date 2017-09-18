@@ -65,7 +65,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 
 			//menu buttons options
 			if (input === "MENU_PROFILE") {
-				reply(facebookResponse.getButtonMessage("Take a look at your achivements", [
+				reply(facebookResponse.getButtonMessage("Take a look at your achievements", [
 					facebookResponse.getGenericButton("web_url", "My Achievements", null, ZoiConfig.clientUrl + "/profile?userId=" + userId, null)
 				]));
 			} else if (input === "MENU_ACCOUNT") {

@@ -231,7 +231,7 @@ class WelcomeLogic extends ConversationLogic {
 		await self.DBManager.saveUser(user);
 
 		await self.sendMessages([
-			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("So far, you are the best human I'v ever worked with! 😉"), true, delayTime),
+			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("So far, you are the best human I've ever worked with! 😉"), true, delayTime),
 			MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
 		]);
 

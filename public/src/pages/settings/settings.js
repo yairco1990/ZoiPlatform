@@ -5,20 +5,23 @@ angular.module('Zoi.controllers.settings', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
 		$stateProvider.state('settings', {
-			url: '/settings?{userId}',
+			url: '/settings',
 			controller: 'SettingsCtrl as vm',
 			templateUrl: 'src/pages/settings/settings.html',
 			resolve: {
-				zoiUser: function ($http, $log, $stateParams, zoiConfig, $timeout, $state, zoiApi) {
-					return zoiApi.getUser($stateParams.userId);
+				zoiUserId: function () {
+					return getZoiUserId();
 				},
-				businessCalendars: function ($http, $log, $stateParams, zoiConfig, zoiUser) {
+				zoiUser: function ($http, $log, zoiUserId, zoiConfig, $timeout, $state, zoiApi) {
+					return zoiApi.getUser(Number(zoiUserId));
+				},
+				businessCalendars: function ($http, $log, zoiUserId, zoiConfig, zoiUser) {
 					if (zoiUser.integrations.Acuity) {
 						return $http({
 							url: zoiConfig.getServerUrl() + "/acuity/getCalendars",
 							method: "GET",
 							params: {
-								userId: $stateParams.userId
+								userId: zoiUser._id
 							},
 							timeout: 5000
 						}).then(function (result) {

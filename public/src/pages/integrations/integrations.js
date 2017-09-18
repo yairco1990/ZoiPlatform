@@ -5,12 +5,18 @@ angular.module('Zoi.controllers.integrations', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
 		$stateProvider.state('integrations', {
-			url: '/integrations?{userId}',
+			url: '/integrations?{userId}{closeWindow}',
 			controller: 'integrationsCtrl as vm',
 			templateUrl: 'src/pages/integrations/integrations.html',
 			resolve: {
-				zoiUser: function (zoiApi, $stateParams) {
-					return zoiApi.getUser($stateParams.userId);
+				zoiUserId: function ($stateParams) {
+					if ($stateParams.closeWindow && !MyUtils.isMobile()) {
+						window.close();
+					}
+					return getZoiUserId();
+				},
+				zoiUser: function (zoiApi, zoiUserId) {
+					return zoiApi.getUser(zoiUserId);
 				}
 			}
 		})
@@ -53,20 +59,25 @@ integrationsCtrl.prototype.$onInit = function () {
 integrationsCtrl.prototype.onAcuityClicked = function () {
 	var vm = this;
 
-	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/acuity/authorize?userId=' + vm.zoiUser._id;
+	vm.redirectTo(vm.zoiConfig.getServerUrl() + '/acuity/authorize?userId=' + vm.zoiUser._id);
+
 };
 
 integrationsCtrl.prototype.onGmailClicked = function () {
 	var vm = this;
 
-	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id;
+	vm.redirectTo(vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id);
 };
 
-integrationsCtrl.prototype.onGmailClicked = function () {
+integrationsCtrl.prototype.redirectTo = function (url) {
 	var vm = this;
-
-	vm.$window.location.href = vm.zoiConfig.getServerUrl() + '/gmail/auth?userId=' + vm.zoiUser._id;
-};
+	if (MyUtils.isMobile()) {
+		vm.$window.location.href = url;
+	} else {
+		MyUtils.closeWebview();
+		vm.$window.open(url, '_blank');
+	}
+}
 
 integrationsCtrl.prototype.onFacebookClicked = function () {
 	var vm = this;

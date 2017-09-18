@@ -9,7 +9,7 @@ describe("test facebook graph api", () => {
 	const facebookPageId = "343185779443065";
 	const facebookPageAccessToken = "EAAFGPKITtcEBAG9uZBjc50zQj1gsggAHZBcy4Ge8zgFK8Nk65s4FboiHMosH8199qRZCgZC9h3LTlIXzj7EK8cDCaEG7VgJpZBHf2PIPdlqe9sZA0WBH5uJVXjUB22tebR3DVUftCCZAZBSf9dMNE7TPZBS9TARJKAdVNT8KeYmbZAywZDZD";
 
-	it.only("upload a photo with text to facebook page", async () => {
+	it.skip("upload a photo with text to facebook page", async () => {
 
 		const imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTi3X9F-vgjgBXtiWKmf_c7vJQH49-vkEvwSK_fH1OcvGaDORWs";
 		const message = MyUtils.generateRandomString(100, true);
