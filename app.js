@@ -12,6 +12,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const EmailLib = require('./interfaces/EmailLib');
 const BotServices = require('./bot/BotServices');
+const ZoiConfig = require('./config');
 
 //load emails and database
 EmailLib.loadEmails();
@@ -25,11 +26,20 @@ let server;
 	if (process.argv[2] === "local") {
 		server = require('http').createServer(app);
 	} else {
-		const options = {
-			ca: fs.readFileSync('../myCa.ca'),
-			pfx: fs.readFileSync('../zoiaicom.pfx'),
-			passphrase: 'ig180688'
-		};
+		let options;
+		if (!ZoiConfig.isProduction) {
+			options = {
+				ca: fs.readFileSync('../myCa.ca'),
+				pfx: fs.readFileSync('../zoiaicom.pfx'),
+				passphrase: 'ig180688'
+			};
+		} else {
+			options = {
+				ca: fs.readFileSync('../bundle.crt'),
+				pfx: fs.readFileSync('../zoiaicom.pfx'),
+				passphrase: 'ig180688'
+			};
+		}
 		server = require('https').createServer(options, app);
 	}
 	server.listen(port);
