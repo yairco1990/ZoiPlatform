@@ -28,6 +28,7 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://52.174.244.154:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
+		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/v1505852434/Zoi-intro.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
 			"clientId": "zcKdLO4OnUUIpIUV",
@@ -69,6 +70,7 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://52.174.244.154:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
+		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/v1505852434/Zoi-intro.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
 			"clientId": "zcKdLO4OnUUIpIUV",
@@ -110,6 +112,7 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://localhost:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
+		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/v1505852434/Zoi-intro.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
 			"clientId": "zcKdLO4OnUUIpIUV",
@@ -151,6 +154,7 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://localhost:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
+		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/v1505852434/Zoi-intro.mp4",
 		BOT_DETAILS: PRODUCTION_BOT_DETAILS,
 		ACUITY_OAUTH: {
 			"clientId": "zyD9dntj6EnOQ0tH",
@@ -159,7 +163,7 @@ const Environments = {
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		isProduction: true,
-		delayTime: ONE_SECOND * 2.5,
+		delayTime: ONE_SECOND * 2,
 		generalPromotionDeviation: 3,
 		writeDebug: true,
 		writeErrors: true,
@@ -187,6 +191,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.NGROK;
+const selectedEnvironment = Environments.PRODUCTION;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

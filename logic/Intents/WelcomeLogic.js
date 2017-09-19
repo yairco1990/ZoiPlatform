@@ -169,7 +169,7 @@ class WelcomeLogic extends ConversationLogic {
 
 			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("First, to learn how I'm about to boost the marketing of your business, watch a quick video:"), true),
-				MyUtils.resolveMessage(reply, facebookResponse.getVideoMessage("http://techslides.com/demos/sample-videos/small.mp4"), false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getVideoMessage(ZoiConfig.ON_BOARDING_VIDEO_URL), false, delayTime),
 				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Awesome :) Now I need you to integrate me with the other tools you use in order to run your business:", [
 					facebookResponse.getGenericButton("web_url", "My Integration", null, `${ZoiConfig.clientUrl}/integrations?userId=${user._id}&skipExtension=true`, null, false)
 				]), false, delayTime * 2)
