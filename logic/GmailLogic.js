@@ -63,7 +63,7 @@ class GmailLogic {
 
 				//save the user with the integrations
 				DBManager.saveUser(user).then(() => {
-					callback(302, {'location': `${ZoiConfig.clientUrl}/integrations?userId=${userId}&closeWindow=true&skipExtension=true`});
+					callback(302, {'location': `${ZoiConfig.clientUrl}/integrations?userId=${userId}&skipExtension=true`});
 				});
 				// oauth2Client.setCredentials(tokens);
 				// res.send(tokens);

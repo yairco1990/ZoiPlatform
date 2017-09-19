@@ -307,8 +307,6 @@ class AcuityLogic {
 			//save number of appointments schedule by zoi
 			const actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
 
-			user.profile = user.profile || {};
-
 			if (user.profile[actionTime]) {
 				user.profile[actionTime].numOfAppointments = (user.profile[actionTime].numOfAppointments || 0) + 1;
 				user.profile[actionTime].profitFromAppointments = ((user.profile[actionTime].profitFromAppointments || 0) + parseFloat(data.price)) || 0;
@@ -484,7 +482,7 @@ class AcuityLogic {
 			await self.DBManager.saveUser(user);
 
 			//redirect the user to his integrations page
-			callback(302, {'location': `${ZoiConfig.clientUrl}/integrations?userId=${userId}&closeWindow=true&skipExtension=true`});
+			callback(302, {'location': `${ZoiConfig.clientUrl}/integrations?userId=${userId}&skipExtension=true`});
 
 			const acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
@@ -516,10 +514,7 @@ class AcuityLogic {
 					setDelay: true
 				});
 
-				//wait a little bit before continue with the conversation
-				setTimeout(function () {
-					welcomeLogic.processIntent();
-				}, ZoiConfig.times.firstIntegratedDelay);
+				welcomeLogic.processIntent();
 
 			} else {
 				MyLog.log("Already integrated with Acuity");

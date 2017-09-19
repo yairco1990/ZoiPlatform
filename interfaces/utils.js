@@ -158,6 +158,18 @@ let Utils = {
 		return (longerLength - self.editDistance(longer, shorter)) / parseFloat(longerLength);
 	},
 
+	printArrWithCommas: function (array) {
+		let result = "";
+		array.forEach((item, index) => {
+			if (index < array.length - 1) {
+				result += item + ", ";
+			} else {
+				result += item + ".";
+			}
+		});
+		return result.trim();
+	},
+
 	editDistance: function (s1, s2) {
 		s1 = s1.toLowerCase();
 		s2 = s2.toLowerCase();

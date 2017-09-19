@@ -182,13 +182,18 @@ class AppointmentLogic extends ConversationLogic {
 
 			//if there are open slots
 			if (slots.length) {
+
+				const promotionTypes = [
+					facebookResponse.getQRButton('text', 'Email Promotion', {promotionType: "email"})
+				];
+				if (user.isFacebookIntegrated) {
+					promotionTypes.push(facebookResponse.getQRButton('text', 'Post on facebook', {promotionType: "facebook"}));
+				}
+				promotionTypes.push(facebookResponse.getQRButton('text', 'Maybe later', {promotionType: "dontPromote"}));
+
 				//save the response
 				const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("Do you want me to promote your openings?",
-					[
-						facebookResponse.getQRButton('text', 'Email Promotion', {promotionType: "email"}),
-						facebookResponse.getQRButton('text', 'Post on facebook', {promotionType: "facebook"}),
-						facebookResponse.getQRButton('text', 'Maybe later', {promotionType: "dontPromote"})
-					]
+					promotionTypes
 				));
 
 				//save the user
@@ -561,7 +566,7 @@ class AppointmentLogic extends ConversationLogic {
 					await this.saveUser();
 
 					await this.sendMessages([
-						MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Click here to watch what I'm going to post", [
+						MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("I need you to take a look before I post the promotion:", [
 							facebookResponse.getGenericButton("web_url", "Promotion Preview", null, `${ZoiConfig.clientUrl}/promotion-preview?userId=${user._id}`, "tall")
 						]), false)
 					]);
@@ -577,7 +582,7 @@ class AppointmentLogic extends ConversationLogic {
 				await this.saveUser();
 
 				await this.sendMessages([
-					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Click here to watch what I'm going to post", [
+					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("I need you to take a look before I post the promotion:", [
 						facebookResponse.getGenericButton("web_url", "Promotion Preview", null, ZoiConfig.clientUrl + "/promotion-preview?userId=" + user._id, "tall")
 					]), false)
 				]);

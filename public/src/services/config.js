@@ -5,7 +5,7 @@ angular.module('Zoi.services.config', [])
 
 			var ENVIRONMENTS = {
 				NGROK: {
-					url: "https://d064382c.ngrok.io"
+					url: "https://zoi.eu.ngrok.io"
 				},
 				LOCAL: {
 					url: "http://localhost:443"

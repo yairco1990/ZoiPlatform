@@ -13,6 +13,7 @@ const GeneralLogic = require('../Intents/GeneralLogic');
 const GenericLogic = require('../Intents/GenericLogic');
 const ZoiConfig = require('../../config');
 const Acuity = require('acuityscheduling');
+const IntegrationHelper = require('../Helpers/IntegrationHelper');
 
 //fall back message
 const fallbackText = "I don't know what that means 😕, Please try to say it again in a different way. You can also try to use my preset actions in the menu.";
@@ -47,7 +48,7 @@ class ListenLogic {
 
 			let isNewUser = false;
 
-			//if this is new user
+			//if this is a new user
 			if (!user || input.toLowerCase() === "resetzoi") {
 				user = {};
 				input = "resetzoi";
@@ -66,14 +67,11 @@ class ListenLogic {
 			//check if its forced conversation
 			const isForced = input.toLowerCase().startsWith("f:");
 
-			//check if its forced but only if there is no conversation
-			const isForcedIfThereIsNoConvo = input.toLowerCase().startsWith("zf:");
-
 			//declare variables
 			let intent, entities, intentScore;
 
 			//if it's not in the middle of conversation
-			if (!isQuickReply && !isPayloadRequest && !isWaitForText && !isNewUser && !isForced && !isForcedIfThereIsNoConvo) {
+			if (!isQuickReply && !isPayloadRequest && !isWaitForText && !isNewUser && !isForced) {
 				//check intent with NLP
 				let nlpResponse = await requestify.get(ZoiConfig.NLP_URL + '/parse?q=' + input);
 
@@ -141,38 +139,49 @@ class ListenLogic {
 			user.lastMessageTime = new Date().valueOf();
 
 			//check if force conversation
-			if (isForced || (isForcedIfThereIsNoConvo && !user.conversationData)) {
-				//replace the zf with f
-				input = input.replace("zf:", "f:");
+			if (isForced) {
 				user.conversationData = null;
 				conversationData = ListenLogic.getForceConversationData(input);
 			}
 
-			//check the intent
-			switch (conversationData.context) {
-				case "WELCOME":
-					const welcomeLogic = new WelcomeLogic(user, conversationData);
-					return await welcomeLogic.processIntent(payload);
-					break;
-				case "APPOINTMENT":
-					const appointmentLogic = new AppointmentLogic(user, conversationData);
-					return await appointmentLogic.processIntent();
-					break;
-				case "CLIENT":
-					const clientLogic = new ClientLogic(user, conversationData);
-					return await clientLogic.processIntent();
-					break;
-				case "GENERAL":
-					const generalLogic = new GeneralLogic(user, conversationData);
-					return await generalLogic.processIntent();
-					break;
-				case "GENERIC":
-					const genericLogic = new GenericLogic(user, conversationData);
-					return await genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
-					break;
-				default:
-					reply(facebookResponse.getTextMessage(fallbackText));
-					break;
+			//check that the user have no missing integrations
+			if (!IntegrationHelper.areThereMissingIntegrations(user, conversationData.intent)) {
+				//check the intent
+				switch (conversationData.context) {
+					case "WELCOME":
+						const welcomeLogic = new WelcomeLogic(user, conversationData);
+						return await welcomeLogic.processIntent(payload);
+						break;
+					case "APPOINTMENT":
+						const appointmentLogic = new AppointmentLogic(user, conversationData);
+						return await appointmentLogic.processIntent();
+						break;
+					case "CLIENT":
+						const clientLogic = new ClientLogic(user, conversationData);
+						return await clientLogic.processIntent();
+						break;
+					case "GENERAL":
+						const generalLogic = new GeneralLogic(user, conversationData);
+						return await generalLogic.processIntent();
+						break;
+					case "GENERIC":
+						const genericLogic = new GenericLogic(user, conversationData);
+						return await genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
+						break;
+					default:
+						reply(facebookResponse.getTextMessage(fallbackText));
+						break;
+				}
+			} else {
+
+				const missingIntegrationsText = IntegrationHelper.getMissingIntegrationsText(user, conversationData.intent);
+
+				MyLog.info("There are no minimum requirements for this intention -> " + conversationData.intent);
+
+				//reply with the missing integrations
+				reply(facebookResponse.getButtonMessage(`In order to make that happen, I need you to give me access to ${missingIntegrationsText}`, [
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, `${ZoiConfig.clientUrl}/integrations?userId=${user._id}&skipExtension=true`, null, false)
+				]));
 			}
 
 		} catch (err) {

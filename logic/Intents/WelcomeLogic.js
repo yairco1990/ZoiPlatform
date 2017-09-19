@@ -47,10 +47,12 @@ class WelcomeLogic extends ConversationLogic {
 
 		switch (conversationData.intent) {
 			case "welcome acuity integrated":
-				return await self.proceedWelcomeConversation();
+				this.botTyping();
+				return await self.proceedWelcomeConvo();
 				break;
 			default:
-				return await self.sendWelcomeDialog(senderId);
+				this.botTyping();
+				return await self.welcomeConvo(senderId);
 				break;
 		}
 	};
@@ -59,7 +61,7 @@ class WelcomeLogic extends ConversationLogic {
 	/**
 	 * welcome dialog - first dialog
 	 */
-	async sendWelcomeDialog(senderId) {
+	async welcomeConvo(senderId) {
 
 		const self = this;
 		const {user, reply, conversationData} = self;
@@ -82,7 +84,7 @@ class WelcomeLogic extends ConversationLogic {
 	/**
 	 * proceed with welcome conversation - usually, after the user integrated with Acuity
 	 */
-	async proceedWelcomeConversation() {
+	async proceedWelcomeConvo() {
 
 		const {user, conversationData} = this;
 
@@ -139,9 +141,9 @@ class WelcomeLogic extends ConversationLogic {
 
 		await self.sendMessages([
 			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Hi there my new boss! 😁"), true),
-			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("My name is Zoi, your own AI personal assistant."), true, delayTime),
-			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("From now on, I'll be your marketer. I'll send promotions and fill your calendar."), true, delayTime),
-			MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Setting everything up will only take a minute, are you ready?", [
+			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("My name is Zoi, your own AI marketer for your business."), true, delayTime),
+			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("From now on, I'll be your marketer. I will send promotions to fill your openings and boost your activity in social media."), true, delayTime),
+			MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Set me up will only take a minute, are you ready?", [
 				facebookResponse.getQRButton("text", "Yes, lets go!", {id: "yesLetsGo"}),
 				facebookResponse.getQRButton("text", "Not now", {id: "notNow"}),
 			]), false, delayTime)
@@ -162,23 +164,24 @@ class WelcomeLogic extends ConversationLogic {
 		//on "lets go" option
 		if (!conversationData.payload || conversationData.payload.id === "yesLetsGo") {
 
-			//create the redirect url
-			const acuity = Acuity.oauth(ZoiConfig.ACUITY_OAUTH);
-			const redirectUrl = acuity.getAuthorizeUrl({scope: 'api-v1', state: user._id});
-
 			//clear conversation data for this user
 			await self.clearConversation();
 
 			await self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Awesome! Let's connect to your Acuity account so I'll be able to know your agenda and clients.", [
-					facebookResponse.getGenericButton("web_url", "Acuity Integration", null, redirectUrl, null, false)
-				]), false, delayTime)
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("First, to learn how I'm about to boost the marketing of your business, watch a quick video:"), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getVideoMessage("http://techslides.com/demos/sample-videos/small.mp4"), false, delayTime),
+				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Awesome :) Now I need you to integrate me with the other tools you use in order to run your business:", [
+					facebookResponse.getGenericButton("web_url", "My Integration", null, `${ZoiConfig.clientUrl}/integrations?userId=${user._id}&skipExtension=true`, null, false)
+				]), false, delayTime * 2)
 			]);
 
 			return "gotIntegrationButton";
 		}
 		//on "Not now" option
 		else {
+
+			//remove the user and next time start the conversation again
+			await this.DBManager.deleteUser({_id: user._id});
 
 			await self.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("OK! see you later... :)"), false)
@@ -200,10 +203,11 @@ class WelcomeLogic extends ConversationLogic {
 		//save the user
 		await self.DBManager.saveUser(user);
 
+		//wait a little bit before continue with the conversation
 		await self.sendMessages([
-			MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Awesome! You made your first integration! 👏 Can we proceed?", [
+			MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Awesome! Now I have access to your calendar 👏 Can we proceed to fill your openings?", [
 				facebookResponse.getQRButton('text', "Yes we can!", {id: 1})
-			]), false, delayTime)
+			]), false, ZoiConfig.times.firstIntegratedDelay)
 		]);
 
 		return "userMadeAcuityIntegration";

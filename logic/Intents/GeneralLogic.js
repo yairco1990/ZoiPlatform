@@ -30,11 +30,14 @@ const morningBriefQuestions = {
 	}
 };
 const suggestToPostQuestions = {
+	suggestToPostArticle: {
+		id: "suggestToPostArticle"
+	},
 	suggestArticle: {
 		id: "suggestArticle"
 	},
 	watchItOnClient: {
-		id: "watchPromotionOnClient"
+		id: "watchItOnClient"
 	}
 };
 
@@ -93,12 +96,15 @@ class GeneralLogic extends ConversationLogic {
 				//if there are page selected to post on
 				if (user.integrations.Facebook.pages.filter(page => page.isEnabled).length > 0) {
 					if (!user.conversationData) {
+						await this.suggestToPostArticle();
+						return "suggestToPostArticle";
+					} else if (suggestToPostQuestions.suggestToPostArticle.id === lastQuestionId) {
 						await this.suggestRandomArticle();
 						return "suggestRandomArticle";
 					} else if (suggestToPostQuestions.suggestArticle.id === lastQuestionId) {
 						await this.watchArticleOnClient();
 						return "watchArticleOnClient";
-					} else if (suggestToPostQuestions.watchPromotionOnClient.id === lastQuestionId) {
+					} else if (suggestToPostQuestions.watchItOnClient.id === lastQuestionId) {
 						await this.postArticleOnFacebook();
 						return "postArticleOnFacebook";
 					}
@@ -131,7 +137,7 @@ class GeneralLogic extends ConversationLogic {
 			const {user, conversationData, reply} = this;
 
 			await this.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("To post on Facebook page, you must select at least one page from your settings. Let's pick one! 😊", [
+				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Which Facebook page do you want me to WOW? 😊", [
 					facebookResponse.getGenericButton("web_url", "My Pages", null, ZoiConfig.clientUrl + "/facebook-pages?userId=" + user._id, "tall")
 				]), false)
 			]);
@@ -175,7 +181,7 @@ class GeneralLogic extends ConversationLogic {
 
 			await this.sendMessages([
 				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("To post on Facebook page, you must integrate with Facebook platform. Let's do it! 💪", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + user._id, null, false)
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, `${ZoiConfig.clientUrl}/integrations?userId=${user._id}&skipExtension=true`, null, false)
 				]), false)
 			]);
 
@@ -183,6 +189,36 @@ class GeneralLogic extends ConversationLogic {
 		} catch (err) {
 			await this.clearConversation();
 			MyLog.error(err);
+			return MyUtils.ERROR;
+		}
+	}
+
+	/**
+	 * start rss convo
+	 */
+	async suggestToPostArticle() {
+
+		try {
+			const {user, conversationData, reply} = this;
+
+			this.setCurrentQuestion(suggestToPostQuestions.suggestToPostArticle, "qr");
+
+			await this.DBManager.saveUser(user);
+
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getQRElement("I think we should post a really good article, what do you say champ?", [
+					facebookResponse.getQRButton('text', "Let's choose!", {id: "suggestMe"}),
+					facebookResponse.getQRButton('text', "Maybe later", {id: "LeaveConvo"})
+				]), false),
+			]);
+
+			return MyUtils.SUCCESS;
+		} catch (err) {
+			await this.clearConversation();
+			MyLog.error("Failed to suggest random article", err);
+			await this.sendMessages([
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I can't load articles for now. I will fix it and I will talk to you later. :)"), false)
+			]);
 			return MyUtils.ERROR;
 		}
 	}
@@ -206,7 +242,7 @@ class GeneralLogic extends ConversationLogic {
 			await this.DBManager.saveUser(user);
 
 			await this.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let's post some professional article on you facebook page"), true),
+				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Pick one of these articles, keep your customers in mind:"), true),
 				MyUtils.resolveMessage(reply, facebookResponse.getGenericTemplate(GeneralLogic.getArticlesButtons(articlesToSuggest)), false, delayTime),
 			]);
 
@@ -253,7 +289,7 @@ class GeneralLogic extends ConversationLogic {
 
 				const selectedArticle = JSON.parse(conversationData.input);
 
-				this.setCurrentQuestion(suggestToPostQuestions.watchPromotionOnClient);
+				this.setCurrentQuestion(suggestToPostQuestions.watchItOnClient);
 
 				const selectedArticleOpenGraphResult = await RssLogic.getOpenGraphResult(selectedArticle.link);
 
@@ -270,7 +306,7 @@ class GeneralLogic extends ConversationLogic {
 				await this.DBManager.saveUser(user);
 
 				await this.sendMessages([
-					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Click here to watch what I'm going to post", [
+					MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("I need you to take a look before I post:", [
 						facebookResponse.getGenericButton("web_url", "Content Preview", null, ZoiConfig.clientUrl + "/content-preview?userId=" + user._id, "tall")
 					]), false)
 				]);
@@ -331,7 +367,7 @@ class GeneralLogic extends ConversationLogic {
 				await this.clearConversation();
 
 				await this.sendMessages([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I have just posted the article! Moshe will give me some good text here..."), false, delayTime * 2)
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Wheehee!!! I posted on your Facebook page :) we should do that at least twice a week."), false, delayTime * 2)
 				]);
 
 				return MyUtils.SUCCESS;

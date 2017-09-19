@@ -134,6 +134,17 @@ module.exports = {
 		return response;
 	},
 
+	getVideoMessage: function (videoUrl) {
+		return {
+			"attachment": {
+				"type": "video",
+				"payload": {
+					"url": videoUrl
+				}
+			}
+		};
+	},
+
 	getShareMessage: function (title, subtitle, imageUrl, buttons) {
 		return {
 			"attachment": {

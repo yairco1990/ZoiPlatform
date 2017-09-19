@@ -22,17 +22,17 @@ const Environments = {
 		useTeammate: false,
 		appId: "358701207893441",
 		appSecret: "364a4ac6971784586eb91066e04d0c80",
-		serverUrl: "http://localhost:3000",
+		serverUrl: "http://localhost:443",
 		clientUrl: "http://localhost:443/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://52.174.244.154:9200",
-		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
+		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
-			"clientId": "GudNczB4yE1zF6I3",
-			"clientSecret": "pc47AU2Tjz9V7DmGZRMDEGyuLPpqlqUmjR4hKu5b",
-			"redirectUri": "http://localhost:3000/acuity/oauth2"
+			"clientId": "zcKdLO4OnUUIpIUV",
+			"clientSecret": "j9uGAXtn7n7kJ3lboR4NPPZHwNDptAotmdzOq5US",
+			"redirectUri": "http://localhost:443/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		isProduction: false,
@@ -63,17 +63,17 @@ const Environments = {
 	NGROK: {
 		appId: "358701207893441",
 		appSecret: "364a4ac6971784586eb91066e04d0c80",
-		serverUrl: "https://d064382c.ngrok.io",
-		clientUrl: "https://d064382c.ngrok.io/p/#",
+		serverUrl: "https://zoi.eu.ngrok.io",
+		clientUrl: "https://zoi.eu.ngrok.io/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://52.174.244.154:9200",
-		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
+		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
-			"clientId": "GudNczB4yE1zF6I3",
-			"clientSecret": "pc47AU2Tjz9V7DmGZRMDEGyuLPpqlqUmjR4hKu5b",
-			"redirectUri": "http://localhost:3000/acuity/oauth2"
+			"clientId": "zcKdLO4OnUUIpIUV",
+			"clientSecret": "j9uGAXtn7n7kJ3lboR4NPPZHwNDptAotmdzOq5US",
+			"redirectUri": "https://zoi.eu.ngrok.io/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		isProduction: false,
@@ -112,9 +112,9 @@ const Environments = {
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
-			"clientId": "g11mGjQit36aS056",
-			"clientSecret": "fcawIJQsdCOPOaxhKCoUhoYV2pDTQvp3ywkc1LNo",
-			"redirectUri": "https://dev.zoiai.com:443/acuity/oauth2"
+			"clientId": "zcKdLO4OnUUIpIUV",
+			"clientSecret": "j9uGAXtn7n7kJ3lboR4NPPZHwNDptAotmdzOq5US",
+			"redirectUri": "https://dev.zoiai.com/acuity/oauth2"
 		},
 		adminToken: "zoiIsTheBestInTheWorld",
 		isProduction: false,

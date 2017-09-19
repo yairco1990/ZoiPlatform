@@ -5,18 +5,12 @@ angular.module('Zoi.controllers.integrations', [])
 
 	.config(['$stateProvider', function ($stateProvider) {
 		$stateProvider.state('integrations', {
-			url: '/integrations?{userId}{closeWindow}',
+			url: '/integrations?{userId}',
 			controller: 'integrationsCtrl as vm',
 			templateUrl: 'src/pages/integrations/integrations.html',
 			resolve: {
-				zoiUserId: function ($stateParams) {
-					if ($stateParams.closeWindow && !MyUtils.isMobile()) {
-						window.close();
-					}
-					return getZoiUserId();
-				},
-				zoiUser: function (zoiApi, zoiUserId) {
-					return zoiApi.getUser(zoiUserId);
+				zoiUser: function (zoiApi, $stateParams) {
+					return zoiApi.getUser($stateParams.userId);
 				}
 			}
 		})
@@ -71,13 +65,9 @@ integrationsCtrl.prototype.onGmailClicked = function () {
 
 integrationsCtrl.prototype.redirectTo = function (url) {
 	var vm = this;
-	if (MyUtils.isMobile()) {
-		vm.$window.location.href = url;
-	} else {
-		MyUtils.closeWebview();
-		vm.$window.open(url, '_blank');
-	}
-}
+
+	vm.$window.location.href = url;
+};
 
 integrationsCtrl.prototype.onFacebookClicked = function () {
 	var vm = this;

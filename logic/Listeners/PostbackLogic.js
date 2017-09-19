@@ -37,48 +37,36 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 		if (input.includes("ACTION")) {
 
 			if (input === "ACTION_BRIEF") {
-				self.listenLogic.processInput("morning brief", payload, setBotTyping, reply);
+				self.listenLogic.processInput("f:morning-brief", payload, setBotTyping, reply);
 			} else if (input === "ACTION_PROMOTIONS") {
-				self.listenLogic.processInput("send promotions", payload, setBotTyping, reply);
+				self.listenLogic.processInput("f:promotions", payload, setBotTyping, reply);
 			} else if (input === "ACTION_OLD_CUSTOMERS") {
-				self.listenLogic.processInput("old customers", payload, setBotTyping, reply);
+				self.listenLogic.processInput("f:old-customers", payload, setBotTyping, reply);
 			} else if (input === "ACTION_LEARN") {
 				self.listenLogic.processInput("I want to leave review", payload, setBotTyping, reply);
+			} else if (input === "ACTION_POST_CONTENT") {
+				self.listenLogic.processInput("f:rss", payload, setBotTyping, reply);
 			} else if (input === "ACTION_GET_STARTED") {
 				self.listenLogic.processInput("resetzoi", payload, setBotTyping, reply);
 			} else if (input === "ACTION_AGENDA") {
-				self.listenLogic.processInput("what is my schedule for today?", payload, setBotTyping, reply);
-			} else if (input === "ACTION_LEARN") {
-				self.listenLogic.processInput("I want to leave review", payload, setBotTyping, reply);
+				self.listenLogic.processInput("f:schedule", payload, setBotTyping, reply);
 			} else if (input === "ACTION_MAILS") {
 				//check that the user made first integration with gmail
 				let user = await self.DBManager.getUser({_id: userId});
 				if (user.integrations.Gmail) {
 					self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, reply);
 				} else {
-					reply(facebookResponse.getButtonMessage("To see your unread emails, I need you to integrate with Gmail first... :)", [
-						facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, null, false)
+					reply(facebookResponse.getButtonMessage("First things first :), let's integrate with Gmail:", [
+						facebookResponse.getGenericButton("web_url", "My Integrations", null, `${ZoiConfig.clientUrl}/integrations?userId=${userId}&skipExtension=true`, null, false)
 					]));
 				}
 			}
 		} else if (input.includes("MENU")) {
 
 			//menu buttons options
-			if (input === "MENU_PROFILE") {
-				reply(facebookResponse.getButtonMessage("Take a look at your achievements", [
-					facebookResponse.getGenericButton("web_url", "My Achievements", null, ZoiConfig.clientUrl + "/profile?userId=" + userId, null)
-				]));
-			} else if (input === "MENU_ACCOUNT") {
-				reply(facebookResponse.getButtonMessage("Take a look at your account:", [
-					facebookResponse.getGenericButton("web_url", "My Account", null, ZoiConfig.clientUrl + "/account?userId=" + userId, null)
-				]));
-			} else if (input === "MENU_INTEGRATIONS") {
+			if (input === "MENU_INTEGRATIONS") {
 				reply(facebookResponse.getButtonMessage("Take a look at your integrations:", [
-					facebookResponse.getGenericButton("web_url", "My Integrations", null, ZoiConfig.clientUrl + "/integrations?userId=" + userId, null, false)
-				]));
-			} else if (input === "MENU_SETTINGS") {
-				reply(facebookResponse.getButtonMessage("Take a look at your settings:", [
-					facebookResponse.getGenericButton("web_url", "My Settings", null, ZoiConfig.clientUrl + "/settings?userId=" + userId, null)
+					facebookResponse.getGenericButton("web_url", "My Integrations", null, `${ZoiConfig.clientUrl}/integrations?userId=${userId}&skipExtension=true`, null, false)
 				]));
 			}
 		}
