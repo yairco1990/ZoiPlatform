@@ -12,23 +12,9 @@ angular.module('Zoi.controllers.profile', [])
 				zoiUserId: function () {
 					return getZoiUserId();
 				},
-				zoiUser: function ($http, $log, zoiUserId, zoiConfig, $timeout, $state) {
-					return $http({
-						url: zoiConfig.getServerUrl() + "/api/getUser",
-						method: "GET",
-						params: {
-							userId: zoiUserId
-						},
-						timeout: 10000
-					}).then(function (result) {
-						return result.data;
-					}, function (err) {
-						$log.error(err);
-						$timeout(function () {
-							$state.go('404');
-						});
-					});
-				}
+				zoiUser: function (zoiUserId, zoiApi) {
+					return zoiApi.getUser(Number(zoiUserId));
+				},
 			}
 		})
 	}]).controller('ProfileCtrl', ProfileCtrl);
@@ -64,7 +50,11 @@ ProfileCtrl.prototype.$onInit = function () {
 
 	if (vm.zoiUser != "NO_SUCH_USER") {
 
-		vm.currency = vm.zoiUser.integrations.Acuity.userDetails.currency;
+		if (vm.zoiUser.integrations.Acuity) {
+			vm.currency = vm.zoiUser.integrations.Acuity.userDetails.currency;
+		} else {
+			vm.currency = "USD";
+		}
 
 		vm.integrationsOn = vm.zoiUser.integrations && Object.keys(vm.zoiUser.integrations).length;
 		if (vm.zoiUser.profile[vm.actionTime]) {

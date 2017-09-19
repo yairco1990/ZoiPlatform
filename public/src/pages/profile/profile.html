@@ -5,10 +5,10 @@
             <div class="profile-header box-header">
                 {{vm.zoiUser.fullname}}'s profile
             </div>
-            <div class="box-sub-header">
+            <div class="box-sub-header" ng-show="vm.isIntegratedWithAcuity">
                 Your Zoi.ai profile page
             </div>
-            <div class="box-body"
+            <div class="box-body" ng-show="vm.isIntegratedWithAcuity"
                  style="  border-top: solid #f5ebeb 1px;  border-bottom: solid #f5ebeb 1px; padding-top:20px; padding-bottom: 40px">
                 <div class="text-center">
                     {{vm.zoiUser.fullname}}, this month Zoi booked:

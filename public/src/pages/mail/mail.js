@@ -9,9 +9,12 @@ angular.module('Zoi.controllers.mail', [])
 			controller: 'MailCtrl as vm',
 			templateUrl: 'src/pages/mail/mail.html',
 			resolve: {
-				emails: function ($log, $http, $stateParams, zoiConfig, $timeout, $state) {
+				zoiUserId: function () {
+					return getZoiUserId();
+				},
+				emails: function ($log, $http, $stateParams, zoiConfig, $timeout, $state, zoiUserId) {
 					return $http({
-						url: zoiConfig.getServerUrl() + "/acuity/getEmails?userId=" + $stateParams.userId,
+						url: zoiConfig.getServerUrl() + "/acuity/getEmails?userId=" + Number(zoiUserId),
 						method: "GET"
 					}).then(function (result) {
 						result.data.forEach(function (email) {

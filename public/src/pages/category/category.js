@@ -9,9 +9,12 @@ angular.module('Zoi.controllers.category', [])
 			controller: 'categoryCtrl as vm',
 			templateUrl: 'src/pages/category/category.html',
 			resolve: {
-				zoiUser: function (zoiApi, $stateParams) {
-					return zoiApi.getUser($stateParams.userId);
-				}
+				zoiUserId: function () {
+					return getZoiUserId();
+				},
+				zoiUser: function (zoiUserId, zoiApi) {
+					return zoiApi.getUser(Number(zoiUserId));
+				},
 			}
 		})
 	}]).controller('categoryCtrl', categoryCtrl);

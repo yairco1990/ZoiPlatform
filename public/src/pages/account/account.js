@@ -12,23 +12,9 @@ angular.module('Zoi.controllers.account', [])
 				zoiUserId: function () {
 					return getZoiUserId();
 				},
-				zoiUser: function ($http, $log, zoiUserId, zoiConfig, $timeout, $state) {
-					return $http({
-						url: zoiConfig.getServerUrl() + "/api/getUser",
-						method: "GET",
-						params: {
-							userId: zoiUserId
-						},
-						timeout: 10000
-					}).then(function (result) {
-						return result.data;
-					}, function (err) {
-						$log.error(err);
-						$timeout(function () {
-							$state.go('404');
-						});
-					});
-				}
+				zoiUser: function (zoiUserId, zoiApi) {
+					return zoiApi.getUser(Number(zoiUserId));
+				},
 			}
 		})
 	}]).controller('AccountCtrl', AccountCtrl);

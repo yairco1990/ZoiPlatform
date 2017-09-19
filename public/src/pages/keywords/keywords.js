@@ -9,9 +9,12 @@ angular.module('Zoi.controllers.keywords', [])
 			controller: 'keywordsCtrl as vm',
 			templateUrl: 'src/pages/keywords/keywords.html',
 			resolve: {
-				zoiUser: function (zoiApi, $stateParams) {
-					return zoiApi.getUser($stateParams.userId);
-				}
+				zoiUserId: function () {
+					return getZoiUserId();
+				},
+				zoiUser: function (zoiUserId, zoiApi) {
+					return zoiApi.getUser(Number(zoiUserId));
+				},
 			}
 		})
 	}]).controller('keywordsCtrl', keywordsCtrl);

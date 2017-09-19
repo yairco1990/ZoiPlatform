@@ -625,7 +625,8 @@ class AppointmentLogic extends ConversationLogic {
 					notes: template.zoiCoupon,
 					promotionTitle: template.title,
 					promotionImage: template.image,
-					promotionType: "facebook"
+					promotionType: "facebook",
+					skipExtension: true
 				};
 				const appointmentSumUrl = MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams).replace("%", "%25");
 
@@ -946,7 +947,8 @@ class AppointmentLogic extends ConversationLogic {
 			date: (new Date().valueOf()).toString(16),
 			notes: template.zoiCoupon,
 			promotionTitle: template.title,
-			promotionImage: template.image
+			promotionImage: template.image,
+			skipExtension: true
 		};
 		const iWantUrl = MyUtils.addParamsToUrl(ZoiConfig.clientUrl + '/appointment-sum', appointmentParams).replace("%", "%25");
 		emailHtml = emailHtml.replace('{{href}}', iWantUrl);

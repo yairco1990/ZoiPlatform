@@ -9,9 +9,12 @@ angular.module('Zoi.controllers.scheduling-page-link', [])
 			controller: 'schedulingPageLinkCtrl as vm',
 			templateUrl: 'src/pages/scheduling-page-link/scheduling-page-link.html',
 			resolve: {
-				zoiUser: function (zoiApi, $stateParams) {
-					return zoiApi.getUser($stateParams.userId);
-				}
+				zoiUserId: function () {
+					return getZoiUserId();
+				},
+				zoiUser: function (zoiUserId, zoiApi) {
+					return zoiApi.getUser(Number(zoiUserId));
+				},
 			}
 		})
 	}]).controller('schedulingPageLinkCtrl', schedulingPageLinkCtrl);

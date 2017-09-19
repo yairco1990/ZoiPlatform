@@ -9,9 +9,12 @@ angular.module('Zoi.controllers.content-preview', [])
 			controller: 'contentPreviewCtrl as vm',
 			templateUrl: 'src/pages/content-preview/content-preview.html',
 			resolve: {
-				zoiUser: function (zoiApi, $stateParams) {
-					return zoiApi.getUser($stateParams.userId);
-				}
+				zoiUserId: function () {
+					return getZoiUserId();
+				},
+				zoiUser: function (zoiUserId, zoiApi) {
+					return zoiApi.getUser(Number(zoiUserId));
+				},
 			}
 		})
 	}]).controller('contentPreviewCtrl', contentPreviewCtrl);

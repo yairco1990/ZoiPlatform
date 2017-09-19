@@ -241,6 +241,10 @@ class ListenLogic {
 			"new-customer": {
 				context: "CLIENT",
 				intent: "client new customer join"
+			},
+			"show-emails": {
+				context: "GENERIC",
+				intent: "generic unread emails"
 			}
 		};
 

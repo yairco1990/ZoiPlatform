@@ -51,15 +51,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			} else if (input === "ACTION_AGENDA") {
 				self.listenLogic.processInput("f:schedule", payload, setBotTyping, reply);
 			} else if (input === "ACTION_MAILS") {
-				//check that the user made first integration with gmail
-				let user = await self.DBManager.getUser({_id: userId});
-				if (user.integrations.Gmail) {
-					self.listenLogic.processInput("Fetch unread emails", payload, setBotTyping, reply);
-				} else {
-					reply(facebookResponse.getButtonMessage("First things first :), let's integrate with Gmail:", [
-						facebookResponse.getGenericButton("web_url", "My Integrations", null, `${ZoiConfig.clientUrl}/integrations?userId=${userId}&skipExtension=true`, null, false)
-					]));
-				}
+				self.listenLogic.processInput("f:show-emails", payload, setBotTyping, reply);
 			}
 		} else if (input.includes("MENU")) {
 

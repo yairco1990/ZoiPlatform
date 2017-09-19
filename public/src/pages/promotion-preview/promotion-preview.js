@@ -9,9 +9,12 @@ angular.module('Zoi.controllers.promotion-preview', [])
 			controller: 'promotionPreviewCtrl as vm',
 			templateUrl: 'src/pages/promotion-preview/promotion-preview.html',
 			resolve: {
-				zoiUser: function (zoiApi, $stateParams) {
-					return zoiApi.getUser($stateParams.userId);
-				}
+				zoiUserId: function () {
+					return getZoiUserId();
+				},
+				zoiUser: function (zoiUserId, zoiApi) {
+					return zoiApi.getUser(Number(zoiUserId));
+				},
 			}
 		})
 	}]).controller('promotionPreviewCtrl', promotionPreviewCtrl);
