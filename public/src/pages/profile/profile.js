@@ -51,8 +51,10 @@ ProfileCtrl.prototype.$onInit = function () {
 	if (vm.zoiUser != "NO_SUCH_USER") {
 
 		if (vm.zoiUser.integrations.Acuity) {
+			vm.isIntegratedWithAcuity = true;
 			vm.currency = vm.zoiUser.integrations.Acuity.userDetails.currency;
 		} else {
+			vm.isIntegratedWithAcuity = false;
 			vm.currency = "USD";
 		}
 

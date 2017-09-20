@@ -70,7 +70,7 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://52.174.244.154:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
-		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_53/v1505858944/Scene_2_bmlllw.mp4",
+		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_47/v1505858944/Scene_2_bmlllw.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
 			"clientId": "zcKdLO4OnUUIpIUV",
@@ -112,7 +112,7 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://localhost:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
-		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_53/v1505858944/Scene_2_bmlllw.mp4",
+		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_47/v1505858944/Scene_2_bmlllw.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
 			"clientId": "zcKdLO4OnUUIpIUV",
@@ -155,7 +155,7 @@ const Environments = {
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://localhost:9200",
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
-		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_53/v1505858944/Scene_2_bmlllw.mp4",
+		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_47/v1505858944/Scene_2_bmlllw.mp4",
 		BOT_DETAILS: PRODUCTION_BOT_DETAILS,
 		ACUITY_OAUTH: {
 			"clientId": "zyD9dntj6EnOQ0tH",
@@ -192,6 +192,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.NGROK;
+const selectedEnvironment = Environments.PRODUCTION;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

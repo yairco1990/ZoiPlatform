@@ -633,14 +633,16 @@ class AppointmentLogic extends ConversationLogic {
 				//create short link of zoi
 				const shortnerId = await LinkShortner.saveLink(appointmentSumUrl);
 
-				//save promotion times
-				ConversationLogic.setPromotionsTimesToUser(user);
+				const schedulingLink = `${ZoiConfig.serverUrl}/s/${shortnerId}`;
 
 				//post on facebook page
-				FacebookLogic.postContentOnUserPages(user, {
-					message: selectedPromotion.title,
-					link: `${ZoiConfig.serverUrl}/s/${shortnerId}`
+				FacebookLogic.postPhotoOnUserPages(user, {
+					message: selectedPromotion.title + "\n" + schedulingLink,
+					url: selectedPromotion.imageUrl
 				});
+
+				//save promotion times
+				ConversationLogic.setPromotionsTimesToUser(user);
 
 				//clear the session and the conversation data
 				await self.clearConversation();

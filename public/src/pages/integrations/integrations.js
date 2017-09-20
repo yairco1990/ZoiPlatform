@@ -88,6 +88,12 @@ integrationsCtrl.prototype.onFacebookClicked = function () {
 				vm.$timeout(function () {
 					vm.$state.go('facebook-pages', {userId: vm.zoiUser._id});
 				}, 500);
+			}).catch(function (err) {
+				MyUtils.removeLoader();
+
+				alert("Failed to integrate with Facebook");
+				//user hit cancel button
+				console.log('User cancelled login or did not fully authorize.');
 			});
 
 		} else {
