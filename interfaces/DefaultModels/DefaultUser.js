@@ -1,5 +1,4 @@
 const moment = require('moment-timezone');
-const deepCopy = require('deepcopy');
 
 let DefaultUser = {
 	integrations: {},
@@ -27,4 +26,4 @@ let DefaultUser = {
 	lastMessageTime: moment().valueOf(),
 };
 
-module.exports = deepCopy(DefaultUser);
+module.exports = DefaultUser;

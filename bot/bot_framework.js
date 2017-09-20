@@ -4,8 +4,6 @@ const qs = require('querystring');
 const EventEmitter = require('events').EventEmitter;
 const request = require('request-promise');
 const crypto = require('crypto');
-const MyUtils = require('../interfaces/utils');
-const RequestLogic = require('../logic/Listeners/RequestLogic');
 const MyLog = require('../interfaces/MyLog');
 
 class Bot extends EventEmitter {

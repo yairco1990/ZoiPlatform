@@ -1,6 +1,6 @@
 'use strict';
-const fs = require('fs');
 const zoiBot = require('./bot/ZoiBot');
+const fs = require('fs');
 const ListenLogic = require('./logic/Listeners/ListenLogic');
 const MyLog = require('./interfaces/MyLog');
 const cors = require('cors');

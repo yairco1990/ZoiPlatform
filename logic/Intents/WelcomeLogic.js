@@ -10,6 +10,8 @@ const ZoiConfig = require('../../config');
 const ConversationLogic = require('../ConversationLogic');
 const Acuity = require('acuityscheduling');
 const AppointmentLogic = require('./AppointmentLogic');
+const zoiBot = require('../../bot/ZoiBot');
+const deepCopy = require('deepcopy');
 
 const delayTime = ZoiConfig.delayTime;
 
@@ -115,16 +117,15 @@ class WelcomeLogic extends ConversationLogic {
 		const self = this;
 		const {conversationData} = self;
 
-		const zoiBot = require('../../bot/ZoiBot');
+		//delete the user if exist
+		await self.DBManager.deleteUser({_id: senderId});
+
 		//get user profile
 		const profile = await zoiBot.getProfile(senderId);
 		const displayName = profile.first_name + ' ' + profile.last_name;
 
-		//delete the user if exist
-		await self.DBManager.deleteUser({_id: senderId});
-
 		//create default user with default parameters
-		const newUser = require('../../interfaces/DefaultModels/DefaultUser');
+		const newUser = deepCopy(require('../../interfaces/DefaultModels/DefaultUser'));
 		newUser._id = senderId;
 		newUser.fullname = displayName;
 		newUser.conversationData = conversationData;
@@ -172,7 +173,7 @@ class WelcomeLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, facebookResponse.getVideoMessage(ZoiConfig.ON_BOARDING_VIDEO_URL), false, delayTime),
 				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Awesome :) Now I need you to integrate me with the other tools you use in order to run your business:", [
 					facebookResponse.getGenericButton("web_url", "My Integration", null, `${ZoiConfig.clientUrl}/integrations?userId=${user._id}&skipExtension=true`, null, false)
-				]), false, delayTime * 2)
+				]), false, delayTime * 5)
 			]);
 
 			return "gotIntegrationButton";

@@ -5,6 +5,7 @@ const moment = require('moment-timezone');
 const ZoiConfig = require('../config');
 const AcuityLogic = require('./ApiHandlers/AcuitySchedulingLogic');
 const async = require('async');
+const zoiBot = require('../bot/ZoiBot');
 
 class ConversationLogic {
 
@@ -14,8 +15,6 @@ class ConversationLogic {
 	 * @param conversationData - represent the current conversation data by the last input
 	 */
 	constructor(user, conversationData) {
-		const zoiBot = require('../bot/ZoiBot');
-		this.zoiBot = zoiBot;
 		this.user = user;
 		this.conversationData = conversationData;
 		this.reply = zoiBot.getBotReplyFunction(user);
@@ -32,8 +31,8 @@ class ConversationLogic {
 	 */
 	setUser(user) {
 		this.user = user;
-		this.reply = this.zoiBot.getBotReplyFunction(user);
-		this.botTyping = this.zoiBot.getBotWritingFunction(user);
+		this.reply = zoiBot.getBotReplyFunction(user);
+		this.botTyping = zoiBot.getBotWritingFunction(user);
 	}
 
 	/**
