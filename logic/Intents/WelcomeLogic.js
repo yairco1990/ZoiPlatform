@@ -12,6 +12,7 @@ const Acuity = require('acuityscheduling');
 const AppointmentLogic = require('./AppointmentLogic');
 const zoiBot = require('../../bot/ZoiBot');
 const deepCopy = require('deepcopy');
+const DefaultUserModel = require('../../interfaces/DefaultModels/DefaultUser');
 
 const delayTime = ZoiConfig.delayTime;
 
@@ -125,7 +126,7 @@ class WelcomeLogic extends ConversationLogic {
 		const displayName = profile.first_name + ' ' + profile.last_name;
 
 		//create default user with default parameters
-		const newUser = deepCopy(require('../../interfaces/DefaultModels/DefaultUser'));
+		const newUser = deepCopy(DefaultUserModel);
 		newUser._id = senderId;
 		newUser.fullname = displayName;
 		newUser.conversationData = conversationData;

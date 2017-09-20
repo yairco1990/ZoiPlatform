@@ -78,11 +78,9 @@ integrationsCtrl.prototype.onFacebookClicked = function () {
 
 			MyUtils.addLoader();
 
-			console.log('Welcome!  Fetching your information.... ');
+			console.log('Welcome! Fetching your information.... ');
 
 			vm.zoiApi.sendFacebookAccessToken(vm.zoiUser._id, response.authResponse).then(function () {
-
-				MyUtils.removeLoader();
 
 				console.log("integrated with facebook successfully");
 				vm.isFacebookAssociated = true;
@@ -93,6 +91,9 @@ integrationsCtrl.prototype.onFacebookClicked = function () {
 			});
 
 		} else {
+			MyUtils.removeLoader();
+
+			alert("Failed to integrate with Facebook");
 			//user hit cancel button
 			console.log('User cancelled login or did not fully authorize.');
 

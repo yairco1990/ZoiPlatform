@@ -5,8 +5,9 @@
     <list default="true" id="68327a1f-cf9c-4f42-96ef-79d59ab8ca6a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config.js" afterPath="$PROJECT_DIR$/config.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logic/Intents/WelcomeLogic.js" afterPath="$PROJECT_DIR$/logic/Intents/WelcomeLogic.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/index.html" afterPath="$PROJECT_DIR$/public/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/services/config.js" afterPath="$PROJECT_DIR$/public/src/services/config.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/src/pages/integrations/integrations.js" afterPath="$PROJECT_DIR$/public/src/pages/integrations/integrations.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -26,31 +27,61 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="integrations.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/src/pages/integrations/integrations.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="9" column="50" lean-forward="false" selection-start-line="9" selection-start-column="50" selection-end-line="9" selection-end-column="50" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="719">
-              <caret line="193" column="51" lean-forward="false" selection-start-line="193" selection-start-column="51" selection-end-line="193" selection-end-column="51" />
+            <state relative-caret-position="448">
+              <caret line="170" column="24" lean-forward="true" selection-start-line="170" selection-start-column="24" selection-end-line="170" selection-end-column="24" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/src/services/config.js">
+      <file leaf-file-name="WelcomeLogic.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/logic/Intents/WelcomeLogic.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="23" column="61" lean-forward="false" selection-start-line="23" selection-start-column="61" selection-end-line="23" selection-end-column="61" />
+            <state relative-caret-position="204">
+              <caret line="12" column="43" lean-forward="true" selection-start-line="12" selection-start-column="43" selection-end-line="12" selection-end-column="43" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="52" column="0" lean-forward="true" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
+            <state relative-caret-position="447">
+              <caret line="71" column="32" lean-forward="false" selection-start-line="71" selection-start-column="32" selection-end-line="71" selection-end-column="32" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FacebookLogic.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/logic/FacebookLogic.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="389">
+              <caret line="160" column="38" lean-forward="true" selection-start-line="160" selection-start-column="38" selection-end-line="160" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="136">
+              <caret line="29" column="38" lean-forward="true" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -69,12 +100,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>myCa</find>
-      <find>getVideo</find>
-      <find>bot/ZoiBot</find>
-      <find>bot</find>
-      <find>bot.</find>
-      <find>node</find>
       <find>github</find>
       <find>replyFunction</find>
       <find>zoiai.com</find>
@@ -99,9 +124,14 @@
       <find>deepcopy</find>
       <find>RequestLogic</find>
       <find>reply</find>
+      <find>Failed to int</find>
+      <find>appSe</find>
+      <find>1b27655a518d7d7ee75312074afabe09</find>
+      <find>DefaultUserModel</find>
+      <find>remove</find>
+      <find>ON_BOARDING_VIDEO_URL: &quot;http://res.cloudinary.com/gotime-systems/video/upload/v1505852434/Zoi-intro.mp4&quot;,</find>
     </findStrings>
     <replaceStrings>
-      <replace />
       <replace>resolveMessage</replace>
       <replace>===</replace>
       <replace>MyUtils.log.info</replace>
@@ -129,8 +159,9 @@
       <replace>isAcuityIntegrated</replace>
       <replace>watchItOnClient</replace>
       <replace>&quot;Acuity Scheduling&quot;</replace>
-      <replace>1000</replace>
       <replace>ON_BOARDING_VIDEO_URL: &quot;http://res.cloudinary.com/gotime-systems/video/upload/v1505852434/Zoi-intro.mp4&quot;,</replace>
+      <replace>1000</replace>
+      <replace>ON_BOARDING_VIDEO_URL: &quot;http://res.cloudinary.com/gotime-systems/video/upload/q_53/v1505858944/Scene_2_bmlllw.mp4&quot;,</replace>
     </replaceStrings>
     <dirStrings>
       <dir>D:\Dev\facebook-testbot</dir>
@@ -170,7 +201,6 @@
         <option value="$PROJECT_DIR$/public/src/pages/settings/settings.js" />
         <option value="$PROJECT_DIR$/public/loader.js" />
         <option value="$PROJECT_DIR$/public/src/utils/utils.js" />
-        <option value="$PROJECT_DIR$/public/src/pages/integrations/integrations.js" />
         <option value="$PROJECT_DIR$/logic/GmailLogic.js" />
         <option value="$PROJECT_DIR$/logic/Intents/ClientLogic.js" />
         <option value="$PROJECT_DIR$/interfaces/FacebookResponse.js" />
@@ -202,10 +232,11 @@
         <option value="$PROJECT_DIR$/bot/bot_framework.js" />
         <option value="$PROJECT_DIR$/logic/ConversationLogic.js" />
         <option value="$PROJECT_DIR$/interfaces/DefaultModels/DefaultUser.js" />
-        <option value="$PROJECT_DIR$/logic/Intents/WelcomeLogic.js" />
-        <option value="$PROJECT_DIR$/config.js" />
         <option value="$PROJECT_DIR$/public/src/services/config.js" />
         <option value="$PROJECT_DIR$/public/index.html" />
+        <option value="$PROJECT_DIR$/logic/Intents/WelcomeLogic.js" />
+        <option value="$PROJECT_DIR$/public/src/pages/integrations/integrations.js" />
+        <option value="$PROJECT_DIR$/config.js" />
       </list>
     </option>
   </component>
@@ -489,21 +520,7 @@
       <workItem from="1504615295830" duration="20771000" />
       <workItem from="1504690894442" duration="10465000" />
       <workItem from="1505311892217" duration="7013000" />
-      <workItem from="1505644883105" duration="80534000" />
-    </task>
-    <task id="LOCAL-00046" summary="change cfg">
-      <created>1502367155345</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1502367155345</updated>
-    </task>
-    <task id="LOCAL-00047" summary="fix timezones">
-      <created>1502370157778</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1502370157778</updated>
+      <workItem from="1505644883105" duration="82292000" />
     </task>
     <task id="LOCAL-00048" summary="fix timezones">
       <created>1502372559651</created>
@@ -834,7 +851,21 @@
       <option name="project" value="LOCAL" />
       <updated>1505872004842</updated>
     </task>
-    <option name="localTasksCounter" value="95" />
+    <task id="LOCAL-00095" summary="Fix override messages - PRODUCTION">
+      <created>1505872121236</created>
+      <option name="number" value="00095" />
+      <option name="presentableId" value="LOCAL-00095" />
+      <option name="project" value="LOCAL" />
+      <updated>1505872121236</updated>
+    </task>
+    <task id="LOCAL-00096" summary="Fix override messages - PRODUCTION">
+      <created>1505872657528</created>
+      <option name="number" value="00096" />
+      <option name="presentableId" value="LOCAL-00096" />
+      <option name="project" value="LOCAL" />
+      <updated>1505872657528</updated>
+    </task>
+    <option name="localTasksCounter" value="97" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -870,7 +901,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="955707000" />
+    <option name="totallyTimeSpent" value="957465000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -894,7 +925,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35434783" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1937698" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.49789253" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32934782" sideWeight="0.49789253" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3478261" sideWeight="0.49578503" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -936,7 +967,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix agenda quick action" />
     <MESSAGE value="try fix old customers interval" />
     <MESSAGE value="transfer unread emails postback button to actions" />
     <MESSAGE value="add random texts in case we didn't sent old customers promotions" />
@@ -961,7 +991,8 @@
     <MESSAGE value="version v1.0.4 - DEV" />
     <MESSAGE value="version v1.0.4 - PRODUCTION" />
     <MESSAGE value="Fix override messages" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix override messages" />
+    <MESSAGE value="Fix override messages - PRODUCTION" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix override messages - PRODUCTION" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1012,14 +1043,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/services/ApiService.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="22" column="50" lean-forward="false" selection-start-line="22" selection-start-column="50" selection-end-line="22" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dal/DBManager.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
@@ -1172,14 +1195,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/src/pages/facebook-pages/facebook-pages.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="70" lean-forward="false" selection-start-line="12" selection-start-column="70" selection-end-line="12" selection-end-column="70" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/GeneralLogicTest.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="491">
@@ -1276,14 +1291,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/src/pages/integrations/integrations.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="13" lean-forward="true" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logic/SharedLogic.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1320,14 +1327,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
           <caret line="31" column="2" lean-forward="false" selection-start-line="31" selection-start-column="2" selection-end-line="31" selection-end-column="2" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="15" lean-forward="true" selection-start-line="3" selection-start-column="15" selection-end-line="3" selection-end-column="15" />
           <folding />
         </state>
       </provider>
@@ -1380,14 +1379,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logic/Intents/WelcomeLogic.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="134" column="51" lean-forward="true" selection-start-line="134" selection-start-column="51" selection-end-line="134" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logic/Intents/GenericLogic.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
@@ -1396,26 +1387,66 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.js">
+    <entry file="file://$PROJECT_DIR$/public/src/pages/facebook-pages/facebook-pages.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="719">
-          <caret line="193" column="51" lean-forward="false" selection-start-line="193" selection-start-column="51" selection-end-line="193" selection-end-column="51" />
+        <state relative-caret-position="306">
+          <caret line="39" column="3" lean-forward="true" selection-start-line="39" selection-start-column="3" selection-end-line="39" selection-end-column="3" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/src/services/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="61" lean-forward="false" selection-start-line="23" selection-start-column="61" selection-end-line="23" selection-end-column="61" />
+        <state relative-caret-position="136">
+          <caret line="8" column="17" lean-forward="false" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/Intents/WelcomeLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="43" lean-forward="true" selection-start-line="12" selection-start-column="43" selection-end-line="12" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="52" column="0" lean-forward="true" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
+        <state relative-caret-position="447">
+          <caret line="71" column="32" lean-forward="false" selection-start-line="71" selection-start-column="32" selection-end-line="71" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logic/FacebookLogic.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="389">
+          <caret line="160" column="38" lean-forward="true" selection-start-line="160" selection-start-column="38" selection-end-line="160" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="29" column="38" lean-forward="true" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/src/pages/integrations/integrations.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="50" lean-forward="false" selection-start-line="9" selection-start-column="50" selection-end-line="9" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="448">
+          <caret line="170" column="24" lean-forward="true" selection-start-line="170" selection-start-column="24" selection-end-line="170" selection-end-column="24" />
           <folding />
         </state>
       </provider>
