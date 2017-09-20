@@ -148,6 +148,7 @@ const Environments = {
 	/**************PRODUCTION****************/
 	PRODUCTION: {
 		appId: "1357774290981012",
+		appSecret: "1b27655a518d7d7ee75312074afabe09",
 		serverUrl: "https://zoiai.com:3000",
 		clientUrl: "https://zoiai.com/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
