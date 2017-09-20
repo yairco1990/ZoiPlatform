@@ -142,7 +142,7 @@ UserApiLogic.prototype.saveUser = async function (savedUser) {
 		const userResult = await self.getUser(savedUser._id);
 
 		//if user set pages enabled - start rss convo
-		if (isFacebookPagesEnables && ~userResult.conversationData) {
+		if (isFacebookPagesEnables && !userResult.conversationData && userResult.isOnBoarded) {
 			const listenLogic = new ListenLogic();
 			listenLogic.processInput("f:rss", {sender: {id: savedUser._id}}, botTyping, reply);
 		}
