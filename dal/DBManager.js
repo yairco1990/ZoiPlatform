@@ -43,30 +43,40 @@ class DBManager {
 	}
 
 	/**
-	 * get user
+	 * get user by where object
 	 */
 	getUser(where, throwErrorIfNull = true) {
 
-		return new Promise(function (resolve, reject) {
-			User.findOne(where, function (err, user) {
-				if (err) {
-					reject(err);
-				} else if (throwErrorIfNull && !user) {
-					reject("NO SUCH USER");
-				} else {
-					resolve(user);
-				}
-			});
-		});
+		return this.getUserBy(where, throwErrorIfNull);
 	}
 
 	/**
-	 * get user
+	 * get user by id
 	 */
 	getUserById(id, throwErrorIfNull = true) {
 
+		return this.getUserBy({_id: id}, throwErrorIfNull);
+	}
+
+	/**
+	 * get user by facebook page user id
+	 */
+	getUserByPageId(pageId, throwErrorIfNull = true) {
+
+		return this.getUserBy({pageUserId: pageId}, throwErrorIfNull);
+	}
+
+	/**
+	 * get user by facebook user id
+	 */
+	getUserByFacebookId(facebookUserId, throwErrorIfNull = true) {
+
+		return this.getUserBy({facebookUserId: facebookUserId}, throwErrorIfNull);
+	}
+
+	getUserBy(where, throwErrorIfNull) {
 		return new Promise(function (resolve, reject) {
-			User.findOne({_id: id}, function (err, user) {
+			User.findOne(where, function (err, user) {
 				if (err) {
 					reject(err);
 				} else if (throwErrorIfNull && !user) {

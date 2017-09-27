@@ -1,0 +1,36 @@
+REGULAR:
+facebookResponse.getTextMessage("OK! see you later... :)")
+
+QR:
+facebookResponse.getQRElement("Awesome! Now I have access to your calendar 👏 Can we proceed to fill your openings?", [
+				facebookResponse.getQRButton('text', "Yes we can!", {id: 1})
+			])
+
+LIST ITEMS:
+facebookResponse.getGenericTemplate([
+    facebookResponse.getGenericElement(article.title,
+    				article.image,
+    				article.description,
+    				[
+    					facebookResponse.getGenericButton("web_url", "Open Article", null, article.link, null, false),
+    					facebookResponse.getGenericButton("postback", "I like it!", {
+    						link: article.link,
+    						title: article.title
+    					})
+    				]),
+    facebookResponse.getGenericElement(article.title,
+    				article.image,
+    				article.description,
+    				[
+    					facebookResponse.getGenericButton("web_url", "Open Article", null, article.link, null, false),
+    					facebookResponse.getGenericButton("postback", "I like it!", {
+    						link: article.link,
+    						title: article.title
+    					})
+    				])
+])
+
+ITEM:
+facebookResponse.getGenericTemplate([
+						facebookResponse.getGenericElement("Welcome Email", EmailConfig.newCustomerEmail.bannerImage, "Send a friendly welcome email to your customer", null)
+					]), true, delayTime)

@@ -292,22 +292,22 @@ class Bot extends EventEmitter {
 				delay = delay || 0;
 				setTimeout(() => {
 					//send reply
-					bot.sendMessage(user._id, rep, (err) => {
+					bot.sendMessage(user.pageUserId, rep, (err) => {
 						if (err) {
 							reject(err);
 							return;
 						}
 						if (isBotTyping) {
-							bot.sendSenderAction(user._id, "typing_on", () => {
+							bot.sendSenderAction(user.pageUserId, "typing_on", () => {
 								resolve();
 							});
 						} else {
 							resolve();
 						}
 						if (user.fullname) {
-							MyLog.info(`Message returned to ${user.fullname} [id: ${user._id}] -> ${rep.text ? rep.text : "Attachment"}`);
+							MyLog.info(`Message returned to ${user.fullname} [id: ${user.pageUserId}] -> ${rep.text ? rep.text : "Attachment"}`);
 						} else {
-							MyLog.info(`Message returned to [id: ${user._id}] -> ${rep.text ? rep.text : "Attachment"}`);
+							MyLog.info(`Message returned to [id: ${user.pageUserId}] -> ${rep.text ? rep.text : "Attachment"}`);
 						}
 					});
 				}, delay);
@@ -324,7 +324,7 @@ class Bot extends EventEmitter {
 		const bot = this;
 		return function () {
 			return new Promise(function (resolve, reject) {
-				bot.sendSenderAction(user._id, "typing_on", () => {
+				bot.sendSenderAction(user.pageUserId, "typing_on", () => {
 					resolve();
 				});
 			});

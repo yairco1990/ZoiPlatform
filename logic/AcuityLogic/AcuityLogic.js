@@ -337,7 +337,7 @@ class AcuityLogic {
 
 		try {
 			//get the user
-			const user = await self.DBManager.getUser({_id: data.userId});
+			const user = await self.DBManager.getUserByPageId(data.userId);
 
 			if (user.integrations.Gmail) {
 				//init the acuity api
@@ -372,15 +372,20 @@ class AcuityLogic {
 			MyLog.error(err);
 			callback(Response.UNFULLFILLED, err);
 		}
-
 	}
 
-	async onAppointmentScheduled(userId, data, bot, callback) {
+	/**
+	 * on appointment scheduled (acuity webhook)
+	 * @param userId
+	 * @param data
+	 * @param callback
+	 */
+	async onAppointmentScheduled(userId, data, callback) {
 		const self = this;
 
 		try {
 			//get the user that wants to integrate
-			let user = await self.DBManager.getUser({_id: userId});
+			let user = await self.DBManager.getUserById(userId);
 
 			//check if the user integrated with Acuity(in some case, the user deleted himself, but the webhook is still exist)
 			if (user.integrations.Acuity) {

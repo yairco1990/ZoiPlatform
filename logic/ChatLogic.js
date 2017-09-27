@@ -12,7 +12,7 @@ class ChatLogic {
 	 * @param link
 	 * @param title
 	 */
-	static async postFacebookContent({userId, link, title}) {
+	static async postFacebookContent({userId, link, title, toPost}) {
 
 		const user = await DBManager.getUserById(userId);
 		const conversationData = {
@@ -20,7 +20,8 @@ class ChatLogic {
 			intent: "general suggest to post article",
 			payload: {
 				link,
-				title
+				title,
+				toPost
 			}
 		};
 		const generalLogic = new GeneralLogic(user, conversationData);
@@ -33,9 +34,11 @@ class ChatLogic {
 	 * post promotion on facebook page
 	 * @param userId
 	 * @param link
+	 * @param imageUrl
+	 * @param toPost
 	 * @param title
 	 */
-	static async postFacebookPromotion({userId, title, imageUrl, link}) {
+	static async postFacebookPromotion({userId, title, imageUrl, link, toPost}) {
 
 		const user = await DBManager.getUserById(userId);
 		const conversationData = {
@@ -45,7 +48,7 @@ class ChatLogic {
 				title,
 				imageUrl,
 				link,
-				answer: "yes"
+				answer: toPost === "true" ? "yes" : "no"
 			}
 		};
 		const appointmentLogic = new AppointmentLogic(user, conversationData);

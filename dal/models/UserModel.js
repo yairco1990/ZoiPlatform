@@ -24,7 +24,10 @@ const userSchema = new Schema({
 	lastMessageTime: Number,
 	timezone: String,
 	schedulingPageLink: String,
-	isOnBoarded: Boolean
+	isOnBoarded: Boolean,
+	facebookUserId: String,
+	pageUserId: String,
+	campaignData: Object
 }, {minimize: false});
 
 userSchema.virtual('isAcuityIntegrated').get(function () {

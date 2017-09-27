@@ -6,6 +6,7 @@ const ZoiConfig = require('../config');
 const AcuityLogic = require('./ApiHandlers/AcuitySchedulingLogic');
 const async = require('async');
 const zoiBot = require('../bot/ZoiBot');
+const CryptoJS = require('crypto-js');
 
 class ConversationLogic {
 
@@ -44,6 +45,19 @@ class ConversationLogic {
 	}
 
 	/**
+	 * check if the response is qr - if not, send message to the user.
+	 * @returns {Promise.<boolean>}
+	 */
+	async isValidQR() {
+		if (this.conversationData.payload) {
+			return true;
+		} else {
+			await this.sendLetsFinishWhatWeStarted();
+			return false;
+		}
+	}
+
+	/**
 	 * set current question to the user object
 	 * @param question
 	 * @param nextAnswerType
@@ -60,6 +74,30 @@ class ConversationLogic {
 		}
 		//return the selected question
 		return question;
+	}
+
+	/**
+	 * say goodbye message to the user
+	 * finish onboarding in case the user still didn't finish it
+	 */
+	async sayGoodbye() {
+		if (this.user.isOnBoarded) {
+			this.sendMessages([
+				MyUtils.resolveMessage(this.reply, FacebookResponse.getTextMessage("I'll be right here if you need me ☺"), false)
+			]);
+		} else {
+			await this.finishOnBoarding();
+		}
+	}
+
+	/**
+	 * say goodbye message to the user
+	 */
+	async sendLetsFinishWhatWeStarted() {
+		return await this.sendMessages([
+			MyUtils.resolveMessage(this.reply, FacebookResponse.getTextMessage("Let's finish what we started"), true),
+			MyUtils.resolveMessage(this.reply, user.conversationData.lastQRResponse, false, ZoiConfig.delayTime),
+		]);
 	}
 
 	/**
@@ -104,6 +142,33 @@ class ConversationLogic {
 				}
 				resolve(true);
 			});
+		});
+	}
+
+	sendMessagesV2(messages) {
+		const newMessages = messages.map(message => {
+			return MyUtils.resolveMessage(this.reply, message[0], message[1], message[2]);
+		});
+		this.sendMessages(newMessages);
+	}
+
+	/**
+	 * get facebook user id by page user id
+	 * @param userId
+	 * @returns {Promise}
+	 */
+	static getFacebookUserIdByPageUserId(userId) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				const result = await MyUtils.makeRequest("GET", MyUtils.addParamsToUrl(`https://graph.facebook.com/v2.8/${userId}/ids_for_apps`, {
+					access_token: ZoiConfig.BOT_DETAILS.token,
+					app: ZoiConfig.appId,
+					appsecret_proof: CryptoJS.HmacSHA256(ZoiConfig.BOT_DETAILS.token, ZoiConfig.BOT_DETAILS.app_secret).toString(CryptoJS.enc.Hex)
+				}));
+				resolve(result);
+			} catch (err) {
+				reject(err);
+			}
 		});
 	}
 
@@ -171,6 +236,27 @@ class ConversationLogic {
 		}
 
 		return MyUtils.getRandomValueFromArray(relevantMessages);
+	}
+
+	/**
+	 * finish on boarding step
+	 */
+	async finishOnBoarding(userFinishedFirstStep) {
+		const {user} = this;
+
+		const conversationData = {
+			userFinishedFirstStep,
+			context: "WELCOME",
+			intent: "welcome acuity integrated",
+			lastQuestion: {id: 4},
+			payload: {id: 1}
+		};
+		user.conversationData = conversationData;
+		const WelcomeLogic = require('./Intents/WelcomeLogic');
+		const welcomeLogic = new WelcomeLogic(user, conversationData);
+		await welcomeLogic.processIntent();
+
+		return MyUtils.SUCCESS;
 	}
 
 	/**

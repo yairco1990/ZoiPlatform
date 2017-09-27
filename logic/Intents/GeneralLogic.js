@@ -228,8 +228,9 @@ class GeneralLogic extends ConversationLogic {
 	 */
 	async suggestRandomArticle() {
 
+		const {user, conversationData, reply} = this;
+
 		try {
-			const {user, conversationData, reply} = this;
 
 			this.setCurrentQuestion(suggestToPostQuestions.suggestArticle, "payload");
 
@@ -342,35 +343,53 @@ class GeneralLogic extends ConversationLogic {
 			//check valid answer
 			if (conversationData.payload) {
 
-				const selectedArticle = conversationData.payload;
+				if (MyUtils.nestedValue(conversationData, "payload.toPost") === "true") {
+					const selectedArticle = conversationData.payload;
 
-				//save the link to zoi shortner
-				const linkId = await LinkShortner.saveLink(selectedArticle.link);
+					//save the link to zoi shortner
+					const linkId = await LinkShortner.saveLink(selectedArticle.link);
 
-				//start posting on user's pages
-				user.integrations.Facebook.pages
-					.filter(page => page.isEnabled)
-					.forEach(async (page) => {
-						try {
-							await FacebookLogic.postContentOnFacebookPage(page.id, {
-								access_token: page.access_token,
-								message: selectedArticle.title,
-								link: `${ZoiConfig.serverUrl}/s/${linkId}`
-							});
-						} catch (err) {
-							MyLog.error("Error from facebook when posting an article", err);
-							return MyUtils.ERROR;
-						}
-					});
+					//start posting on user's pages
+					user.integrations.Facebook.pages
+						.filter(page => page.isEnabled)
+						.forEach(async (page) => {
+							try {
+								await FacebookLogic.postContentOnFacebookPage(page.id, {
+									access_token: page.access_token,
+									message: selectedArticle.title,
+									link: `${ZoiConfig.shortnerUrl}/s/${linkId}`
+								});
+							} catch (err) {
+								MyLog.error("Error from facebook when posting an article", err);
+								return MyUtils.ERROR;
+							}
+						});
 
-				//clear convo
-				await this.clearConversation();
+					//clear convo
+					await this.clearConversation();
 
-				await this.sendMessages([
-					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Wheehee!!! I posted on your Facebook page :) we should do that at least twice a week."), false, delayTime * 2)
-				]);
+					await this.sendMessages([
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Wheehee!!! I posted on your Facebook page :) we should do that at least twice a week."), false, delayTime * 2)
+					]);
 
-				return MyUtils.SUCCESS;
+					//finish onboarding if needed to
+					if (!user.isOnBoarded) {
+						await this.finishOnBoarding(true);
+					}
+
+					return MyUtils.SUCCESS;
+
+				} else {
+
+					if (user.isOnBoarded) {
+						await this.clearConversation();
+						await this.sendMessagesV2([
+							[facebookResponse.getTextMessage("Ok boss! I will be here if you need me :)")]
+						]);
+					} else {
+						await this.finishOnBoarding(false);
+					}
+				}
 			} else {
 				//case he was typing
 				await this.sendMessages([

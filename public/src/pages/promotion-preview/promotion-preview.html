@@ -32,8 +32,14 @@
             </div>
 
             <div class="post-button">
-                <md-button class="md-raised md-primary no-margin" ng-click="vm.postIt($event)" style="width: 86%;">
+                <md-button class="md-raised md-primary no-margin" ng-click="vm.postIt($event, 'true')"
+                           style="width: 86%;">
                     Post Promotion!
+                </md-button>
+
+                <md-button class="md-raised md-warn no-margin" ng-click="vm.postIt($event, 'false')"
+                           style="width: 86%;margin-top: 10px !important;">
+                    Don't promote it
                 </md-button>
             </div>
 

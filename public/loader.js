@@ -41,6 +41,7 @@ function startZoi() {
 		loadFile('src/pages/content-preview/content-preview.css', 'css'),
 		loadFile('src/pages/promotion-preview/promotion-preview.css', 'css'),
 		loadFile('src/pages/scheduling-page-link/scheduling-page-link.css', 'css'),
+		loadFile('src/pages/welcome-video/welcome-video.css', 'css'),
 		loadFile('src/pages/404/404.css', 'css'),
 	]).then(function () {
 
@@ -101,6 +102,7 @@ function startZoi() {
 			loadFile('src/pages/content-preview/content-preview.js', 'js'),
 			loadFile('src/pages/promotion-preview/promotion-preview.js', 'js'),
 			loadFile('src/pages/scheduling-page-link/scheduling-page-link.js', 'js'),
+			loadFile('src/pages/welcome-video/welcome-video.js', 'js'),
 			loadFile('src/app.js', 'js')
 			//END OF CONTROLLERS
 

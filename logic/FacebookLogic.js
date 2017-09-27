@@ -4,6 +4,8 @@ const DBManager = require('../dal/DBManager');
 const MyLog = require('../interfaces/MyLog');
 const MyUtils = require('../interfaces/utils');
 const request = require('request');
+const deepCopy = require('deepcopy');
+const DefaultUserModel = require('../interfaces/DefaultModels/DefaultUser');
 
 class FacebookLogic {
 
@@ -11,9 +13,8 @@ class FacebookLogic {
 	 * add facebook integration to the user object
 	 * @param userId
 	 * @param authResponse
-	 * @param callback
 	 */
-	static async addFacebookIntegration(userId, authResponse, callback) {
+	static async addFacebookIntegration(userId, authResponse) {
 
 		try {
 
@@ -22,6 +23,17 @@ class FacebookLogic {
 
 			//get the user
 			const user = await DBManager.getUserById(userId);
+
+			//if this is a new user
+			if (!user) {
+				//create default user with default parameters
+				const newUser = deepCopy(DefaultUserModel);
+				newUser._id = userId;
+				newUser.fullname = displayName;
+				newUser.conversationData = conversationData;
+
+				await DBManager.saveUser(newUser);
+			}
 
 			//set the facebook integration to the user
 			user.integrations.Facebook = longTermUserAuth;
@@ -44,7 +56,7 @@ class FacebookLogic {
 			//save user
 			await DBManager.saveUser(user);
 
-			callback(200, {message: "integrated successfully with Facebook"});
+			return {status: 200, message: "integrated successfully with Facebook"};
 
 		} catch (err) {
 			MyLog.error("Failed to integrate with Facebook", err);
@@ -90,10 +102,10 @@ class FacebookLogic {
 		//post on facebook page
 		user.integrations.Facebook.pages
 			.filter(page => page.isEnabled)
-			.forEach(page => {
+			.forEach(async page => {
 				try {
 					payload.access_token = page.access_token;
-					FacebookLogic.postContentOnFacebookPage(page.id, payload)
+					await FacebookLogic.postContentOnFacebookPage(page.id, payload)
 				} catch (err) {
 					MyLog.error(err);
 				}

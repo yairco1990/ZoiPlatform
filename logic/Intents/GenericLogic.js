@@ -18,16 +18,17 @@ const fallbackText = "I don't know what that means 😕, Please try to say it ag
 
 class GenericLogic extends ConversationLogic {
 
-	constructor(user) {
-		super(user);
+	constructor(user, conversationData) {
+		super(user, conversationData);
 	}
 
 	/**
 	 * process the user input
 	 */
-	processIntent(conversationData, setBotTyping, requestObj, reply) {
+	async processIntent() {
 
 		const self = this;
+		const {reply, user, conversationData} = self;
 
 		//get response from small talk object
 		let responseText = MyUtils.getResponseByIntent(conversationData.intent);
@@ -49,8 +50,15 @@ class GenericLogic extends ConversationLogic {
 				]));
 				break;
 			case "generic say goodbye":
-				reply(facebookResponse.getTextMessage(responseText));
-				self.clearConversation();
+				//if the user is onboarded - say goodbye and clear convo data
+				if (user.isOnBoarded) {
+					await self.clearConversation();
+					reply(facebookResponse.getTextMessage(responseText));
+				}
+				//if the user is not onboarded - finish the onboarding process
+				else {
+					await self.finishOnBoarding();
+				}
 				break;
 			default:
 				//if we didn't find response for this intent - send fallback.

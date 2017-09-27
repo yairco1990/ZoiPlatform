@@ -38,7 +38,7 @@ const intentions = {
 	},
 	"generic unread emails": {
 		$must: {
-			$and: ["Gmail", "Facebook"]
+			$and: ["Gmail", "Acuity"]
 		}
 	},
 	"test": {

@@ -47,7 +47,7 @@ PostbackLogic.prototype.processAction = async function (input, payload, setBotTy
 			} else if (input === "ACTION_POST_CONTENT") {
 				self.listenLogic.processInput("f:rss", payload, setBotTyping, reply);
 			} else if (input === "ACTION_GET_STARTED") {
-				self.listenLogic.processInput("resetzoi", payload, setBotTyping, reply);
+				self.listenLogic.processInput("f:get-started", payload, setBotTyping, reply);
 			} else if (input === "ACTION_AGENDA") {
 				self.listenLogic.processInput("f:schedule", payload, setBotTyping, reply);
 			} else if (input === "ACTION_MAILS") {

@@ -14,4 +14,13 @@ router.get('/:linkId', async function (req, res) {
 	res.send();
 });
 
+//get link by id 2
+router.get('/link/:linkId', async function (req, res) {
+	MyLog.log(PREFIX_LOG + "get link by id");
+
+	const result = await LinkShortnerLogic.getLink(req.params.linkId, false);
+
+	res.status(result.status).send(result.data);
+});
+
 module.exports = router;

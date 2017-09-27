@@ -33,6 +33,7 @@ angular.module('ZoiClient', [
 	'Zoi.controllers.content-preview',
 	'Zoi.controllers.promotion-preview',
 	'Zoi.controllers.scheduling-page-link',
+	'Zoi.controllers.welcome-video',
 	'Zoi.controllers.404'
 
 ]).run(['$rootScope', '$state', function ($rootScope, $state) {

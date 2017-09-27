@@ -101,7 +101,7 @@ class BackgroundLogic {
 				});
 
 				//start convo
-				generalLogic.processIntent();
+				await generalLogic.processIntent();
 			}
 		});
 
@@ -241,7 +241,7 @@ class BackgroundLogic {
 				});
 
 				//start convo
-				clientLogic.processIntent();
+				await clientLogic.processIntent();
 
 			}
 		});

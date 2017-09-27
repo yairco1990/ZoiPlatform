@@ -6,6 +6,9 @@ const MyLog = require('../../interfaces/MyLog');
 const moment = require('moment-timezone');
 const ListenLogic = require('../Listeners/ListenLogic');
 const zoiBot = require('../../bot/ZoiBot');
+const DefaultUserModel = require('../../interfaces/DefaultModels/DefaultUser');
+const deepcopy = require('deepcopy');
+const FacebookLogic = require('../../logic/FacebookLogic');
 
 function UserApiLogic() {
 	this.DBManager = require('../../dal/DBManager');
@@ -18,16 +21,57 @@ const Response = {
 };
 
 /**
+ * create new user (called after login with facebook outside of the messenger)
+ * @param userData
+ */
+UserApiLogic.prototype.createUser = async function (userData) {
+	const self = this;
+
+	try {
+
+		const newUser = deepcopy(DefaultUserModel);
+		newUser.facebookUserId = userData.userID;
+		newUser.campaignData = userData.campaignData;
+		newUser._id = MyUtils.generateUUID();
+
+		await self.DBManager.saveUser(newUser);
+
+		const {status} = await FacebookLogic.addFacebookIntegration(newUser._id, userData);
+
+		if (status !== Response.SUCCESS) {
+			throw new Error("Failed to add facebook integration");
+		}
+
+		return {status: Response.SUCCESS, data: newUser};
+
+	} catch (err) {
+		return {status: Response.ERROR, message: "Error on creating new user"};
+	}
+};
+
+/**
+ * get user by id
+ * @param userId - can be or pageUserId or userId.
+ */
+UserApiLogic.prototype.getUserById = async function (userId) {
+	if (MyUtils.isUUID(userId)) {
+		return await this.getUser({_id: userId});
+	} else {
+		return await this.getUser({pageUserId: userId});
+	}
+};
+
+/**
  * get user by facebook id
  * @param userId
  */
-UserApiLogic.prototype.getUser = async function (userId) {
+UserApiLogic.prototype.getUser = async function (where) {
 
 	const self = this;
 
 	try {
 		//get the user
-		const user = await self.DBManager.getUser({_id: userId});
+		const user = await self.DBManager.getUser(where);
 
 		//delete sensitive information
 		if (user.isAcuityIntegrated) {
@@ -58,7 +102,7 @@ UserApiLogic.prototype.getUser = async function (userId) {
 		}
 
 	} catch (err) {
-		MyLog.error(`Failed to get user by facebook id -> ${userId}`, err);
+		MyLog.error(`Failed to get user by facebook id -> ${where}`, err);
 		return {status: Response.NOT_FOUND, data: err};
 	}
 };
@@ -139,12 +183,12 @@ UserApiLogic.prototype.saveUser = async function (savedUser) {
 		await self.DBManager.saveUser(savedUser);
 
 		//get the updated user
-		const userResult = await self.getUser(savedUser._id);
+		const userResult = await self.getUserById(savedUser._id);
 
 		//if user set pages enabled - start rss convo
-		if (isFacebookPagesEnables && !userResult.conversationData && userResult.isOnBoarded) {
+		if (isFacebookPagesEnables && !userResult.conversationData) {
 			const listenLogic = new ListenLogic();
-			listenLogic.processInput("f:rss", {sender: {id: savedUser._id}}, botTyping, reply);
+			listenLogic.processInput("f:rss", {sender: {id: savedUser.pageUserId}}, botTyping, reply);
 		}
 
 		return {status: Response.SUCCESS, data: userResult.data};

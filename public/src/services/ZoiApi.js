@@ -53,6 +53,28 @@ angular.module('Zoi.services.zoi-api', [])
 			},
 
 			/**
+			 * get user by pageId
+			 * @param pageId
+			 */
+			getUserByPageId: function (pageId) {
+				return $http({
+					url: zoiConfig.getServerUrl() + "/api/getUserByPageId",
+					method: "GET",
+					params: {
+						pageId: pageId
+					},
+					timeout: 10000
+				}).then(function (result) {
+					return result.data;
+				}, function (err) {
+					$log.error(err);
+					$timeout(function () {
+						$state.go('404');
+					});
+				});
+			},
+
+			/**
 			 * save user
 			 * @param user
 			 * @param ev

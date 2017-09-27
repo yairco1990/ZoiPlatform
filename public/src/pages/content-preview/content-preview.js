@@ -14,7 +14,7 @@ angular.module('Zoi.controllers.content-preview', [])
 				},
 				zoiUser: function (zoiUserId, zoiApi) {
 					return zoiApi.getUser(Number(zoiUserId));
-				},
+				}
 			}
 		})
 	}]).controller('contentPreviewCtrl', contentPreviewCtrl);
@@ -56,7 +56,7 @@ contentPreviewCtrl.prototype.$onInit = function () {
 };
 
 
-contentPreviewCtrl.prototype.postIt = function (ev) {
+contentPreviewCtrl.prototype.postIt = function (ev, toPost) {
 	var vm = this;
 
 	MyUtils.addLoader();
@@ -64,7 +64,8 @@ contentPreviewCtrl.prototype.postIt = function (ev) {
 	vm.zoiApi.postContentOnFacebook({
 		userId: vm.zoiUser._id,
 		link: vm.link,
-		title: vm.selectedTitle
+		title: vm.selectedTitle,
+		toPost: toPost
 	}, ev).then(function () {
 		//close the browser via messenger extension
 		MyUtils.closeWebview();

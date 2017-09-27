@@ -4,7 +4,7 @@ const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
 
 const DEV_BOT_DETAILS = {
-	token: "EAAFGPKITtcEBAPZCd1RHNYWjUXxPXOgNwevXVMsKdaexhNfsuhGWGks5SnWhRzuu58rFZCdfCkQc8PGgGCRvZB1eLNZBp0WWhPDNZBHkaZBP9WtfzN9EstRSxy4GXR9yy1X8nTbxNSxVhHdEHsDZAoxmh756Ev5AzforaJGVY5BCwZDZD",
+	token: "EAAFGPKITtcEBAEHhdb6ZAFXUcjsFnMq3Nsb7ZBmtL9eBKruaCFA8wE2ffK6mGiljA3i4W7sMPJ1ZBw7aROysOZBxGExsXi4RP5x1IuvwYyybk7ZBBSUrPDyXjouSnIB1ZBzcnWHjilE79HNLPWPKplL5HmbZCgVNDiSZBrPa86QPwgZDZD",
 	verify: "testtoken",
 	app_secret: "364a4ac6971784586eb91066e04d0c80"
 };
@@ -65,11 +65,12 @@ const Environments = {
 		appId: "358701207893441",
 		appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "https://zoi.eu.ngrok.io",
+		shortnerUrl: "https://zoi.eu.ngrok.io",
 		clientUrl: "https://zoi.eu.ngrok.io/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
 		ELASTIC_URL: "http://52.174.244.154:9200",
-		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
+		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_47/v1505858944/Scene_2_bmlllw.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
 		ACUITY_OAUTH: {
@@ -150,6 +151,7 @@ const Environments = {
 		appId: "1357774290981012",
 		appSecret: "1b27655a518d7d7ee75312074afabe09",
 		serverUrl: "https://zoiai.com:3000",
+		shortnerUrl: "https://zoi.ai",
 		clientUrl: "https://zoiai.com/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
 		NLP_URL: "http://13.82.50.249:5000",
@@ -192,6 +194,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.PRODUCTION;
+const selectedEnvironment = Environments.NGROK;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

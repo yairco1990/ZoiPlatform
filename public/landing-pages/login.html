@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head lang="en" dir="rtl">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato"/>
+    <link rel="stylesheet" type="text/css" href="animate.css"/>
+    <link rel="stylesheet" type="text/css" href="main.css"/>
+    <title>Zoi</title>
+
+    <!--ANALYTICS-->
+    <script>
+		(function (h, o, t, j, a, r) {
+			h.hj = h.hj || function () {
+				(h.hj.q = h.hj.q || []).push(arguments)
+			};
+			h._hjSettings = {hjid: 502000, hjsv: 5};
+			a = o.getElementsByTagName('head')[0];
+			r = o.createElement('script');
+			r.async = 1;
+			r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+			a.appendChild(r);
+		})(window, document, '//static.hotjar.com/c/hotjar-', '.js?sv=');
+    </script>
+    <script>
+		(function (i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function () {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o),
+				m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+		ga('create', 'UA-77404857-8', 'auto');
+		ga('send', 'pageview');
+    </script>
+    <!--END OF ANALYTICS-->
+
+
+    <!--FACEBOOK LOGIN-->
+    <script>
+
+		//TODO change app id as needed and the server url
+		//      PROD
+		//		var zoiAppId = '1357774290981012';
+		//      var serverUrl = "https://zoiai.com";
+		//		var messengerPage = 'http://m.me/ZoiBot';
+
+		//		DEV
+		var serverUrl = "https://zoi.eu.ngrok.io";
+		var zoiAppId = '358701207893441';
+		var messengerPage = 'https://www.messenger.com/t/343185779443065';
+
+		window.fbAsyncInit = function () {
+			FB.init({
+				appId: zoiAppId,
+				cookie: true,
+				xfbml: true,
+				version: 'v2.8'
+			});
+		};
+
+		(function (d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) {
+				return;
+			}
+			js = d.createElement(s);
+			js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
+		function checkLoginState() {
+			FB.getLoginStatus(function (response) {
+				statusChangeCallback(response);
+			});
+		}
+
+		function statusChangeCallback(response) {
+			console.log("Status Changed");
+			if (response.status === "connected") {
+				console.log(response.authResponse);
+				createUser(response.authResponse);
+			}
+			//createUser(response)
+		}
+
+		function moveToMessenger() {
+			window.location.replace(messengerPage);
+		}
+
+		function createUser(userData) {
+			var xhr = new XMLHttpRequest();
+			var url = serverUrl + "/api/createUser";
+			xhr.open("POST", url, true);
+			xhr.setRequestHeader("Content-type", "application/json");
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState === 4 && xhr.status === 200) {
+					var json = JSON.parse(xhr.responseText);
+					console.log(json.status);
+					//move to messenger after facebook login
+					moveToMessenger();
+				}
+			};
+			//insert the campaign data
+			userData.campaignData = getUrlValues();
+			var data = JSON.stringify(userData);
+			xhr.send(data);
+		}
+
+		//get url values
+		function getUrlValues() {
+			var url = new URL(window.location.href);
+			return {
+				stage: url.searchParams.get("stage"),
+				utm_campaign: url.searchParams.get("utm_campaign"),
+				mailtime: url.searchParams.get("mailtime"),
+				segment: url.searchParams.get("segment"),
+				quantity: url.searchParams.get("quantity"),
+				utm_source: url.searchParams.get("utm_source"),
+				utm_content: url.searchParams.get("utm_content"),
+				user_id: url.searchParams.get("user_id"),
+				utm_medium: url.searchParams.get("utm_medium"),
+			};
+		}
+
+
+    </script>
+    <!--END OF FACEBOOK LOGIN-->
+
+
+</head>
+<body ng-controller="AppCtrl" dir="ltr">
+
+<div class="page-container">
+
+    <div id="abilities-page" class="boxed-page" ng-cloak>
+        <div class="boxed-area">
+
+            <div class="box-area-wrapper">
+                <div id="left-panel">
+
+                    <div style=" color: #2e4c89;">
+                        <!--<b> General</b>-->
+                        <!--f8f8f8-->
+                        <!--<fb:login-button-->
+                        <!--scope="public_profile,manage_pages,publish_pages"-->
+                        <!--onlogin="checkLoginState();">-->
+                        <!--</fb:login-button>-->
+
+                        <div style="font-size: 24px;">
+                            SIGN IN
+                        </div>
+                        <div style="font-size: 14px; margin-bottom: 100px">
+                            Login with facebook<br> to continue
+                        </div>
+                        <div class="fb-login-button" data-max-rows="1" data-size="large"
+                             onlogin="checkLoginState();"
+                             scope="public_profile,manage_pages,publish_pages"
+                             data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false"
+                             data-use-continue-as="true"></div>
+                        <div style="font-size: 12px; margin-top: 20px;  padding: 10px;">
+                            We will never post or make<br> any action on your behalf without your permission.
+                        </div>
+                    </div>
+                </div>
+                <div id="right-panel">
+                    <div class="text-overlay">
+                        <div style="font-size: 34px;    text-shadow: 0px 0px 5px #181818;">
+                            Meet Zoi
+                        </div>
+                        <div style="    text-shadow: 0px 0px 5px #181818;">
+                            Your artificial marketing assistant
+                        </div>
+                    </div>
+                    <div class="overlay">
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

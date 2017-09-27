@@ -230,12 +230,6 @@ class AppointmentLogic extends ConversationLogic {
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("You don't have openings tomorrow, that's great!"), false, delayTime),
 				]);
 
-				if (!user.isOnBoarded) {
-					await self.checkAndFinishOnBoarding(true);
-
-					return "ThereAreNoOpenSlots - userNotOnBoarded";
-				}
-
 				return "ThereAreNoOpenSlots - userOnBoarded";
 			}
 		}
@@ -310,21 +304,14 @@ class AppointmentLogic extends ConversationLogic {
 			//if the user wants to quit
 			else {
 
-				if (!user.isOnBoarded) {
-					await self.checkAndFinishOnBoarding(false);
+				await this.clearConversation();
 
-					return "userQuitPromotionProcess - finishOnBoarding";
-				} else {
+				//send messages
+				await self.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false)
+				]);
 
-					await this.clearConversation();
-
-					//send messages
-					await self.sendMessages([
-						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false)
-					]);
-
-					return "userQuitPromotionProcess";
-				}
+				return "userQuitPromotionProcess";
 			}
 		}
 		//send qr again
@@ -440,24 +427,19 @@ class AppointmentLogic extends ConversationLogic {
 			}
 			//
 			else if (MyUtils.nestedValue(conversationData, "payload.answer") === "no") {
-				if (!user.isOnBoarded) {
-					await this.checkAndFinishOnBoarding(false);
 
-					return "userQuitPostOnFacebookProcess - finishOnBoarding";
-				} else {
-					user.conversationData = null;
-					user.session = null;
+				user.conversationData = null;
+				user.session = null;
 
-					//save the user
-					await this.DBManager.saveUser(user);
+				//save the user
+				await this.DBManager.saveUser(user);
 
-					//send messages
-					await this.sendMessages([
-						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false)
-					]);
+				//send messages
+				await this.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll be right here if you need me ☺"), false)
+				]);
 
-					return "userQuitPostOnFacebookProcess";
-				}
+				return "userQuitPostOnFacebookProcess";
 			}
 			//send qr again
 			else {
@@ -484,27 +466,34 @@ class AppointmentLogic extends ConversationLogic {
 
 		if (conversationData.payload) {
 
-			if (user.isAcuityIntegrated) {
-				//get the service by the user input
-				user.session["service"] = conversationData.payload;
+			if (MyUtils.nestedValue(conversationData, "payload.promotionType") !== "dontPromote") {
+				if (user.isAcuityIntegrated) {
+					//get the service by the user input
+					user.session["service"] = conversationData.payload;
+				} else {
+					user.session = {promotionType: conversationData.payload.promotionType};
+				}
+
+				//set current question
+				self.setCurrentQuestion(sendPromotionsQuestions.whichTemplate, "payload");
+
+				//save the user
+				await this.saveUser();
+
+				//send messages
+				await self.sendMessages([
+					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I made five types of discount for you to choose from.  Which of them you want me to send to your customers?"), true),
+					//get coupons
+					MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
+				]);
+
+				return "userGotTemplateList";
 			} else {
-				user.session = {promotionType: conversationData.payload.promotionType};
+				await self.clearConversation();
+				reply(facebookResponse.getTextMessage("Ok boss. Talk to me later! ;)"), false);
+
+				return "promotionRejected";
 			}
-
-			//set current question
-			self.setCurrentQuestion(sendPromotionsQuestions.whichTemplate, "payload");
-
-			//save the user
-			await this.saveUser();
-
-			//send messages
-			await self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I made five types of discount for you to choose from.  Which of them you want me to send to your customers?"), true),
-				//get coupons
-				MyUtils.resolveMessage(reply, AppointmentLogic.getCoupons(), false, delayTime),
-			]);
-
-			return "userGotTemplateList";
 		} else {
 			//send qr again
 			await self.sendMessages([
@@ -552,7 +541,7 @@ class AppointmentLogic extends ConversationLogic {
 
 					//send messages
 					await self.sendMessages([
-						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Great! 😊"), true),
+						MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Excellent! 😉"), true),
 						MyUtils.resolveMessage(reply, user.conversationData.lastQRResponse, false, delayTime),
 					]);
 
@@ -633,7 +622,7 @@ class AppointmentLogic extends ConversationLogic {
 				//create short link of zoi
 				const shortnerId = await LinkShortner.saveLink(appointmentSumUrl);
 
-				let schedulingLink = `${ZoiConfig.serverUrl}/s/${shortnerId}`;
+				let schedulingLink = `${ZoiConfig.shortnerUrl}/s/${shortnerId}`;
 				//remove the port
 				schedulingLink = schedulingLink.replace(":3000", "");
 
@@ -655,12 +644,6 @@ class AppointmentLogic extends ConversationLogic {
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Done! 😎 I posted the promotion on your facebook page."), true, delayTime),
 					MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
 				]);
-
-				if (!user.isOnBoarded) {
-					await self.checkAndFinishOnBoarding(true);
-
-					return "promotionSent - proceed with onboarding";
-				}
 
 				return "promotionSent";
 			} else {
@@ -692,16 +675,11 @@ class AppointmentLogic extends ConversationLogic {
 
 
 		} else {
-			if (!user.isOnBoarded) {
-				await self.checkAndFinishOnBoarding(false);
 
-				return "finishOnBoarding";
-			} else {
-				await self.clearConversation();
-				reply(facebookResponse.getTextMessage("Ok boss"), false);
+			await self.clearConversation();
+			reply(facebookResponse.getTextMessage("Ok boss. See you later! :)"), false);
 
-				return "promotionRejected";
-			}
+			return "promotionRejected";
 		}
 	}
 
@@ -782,48 +760,15 @@ class AppointmentLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Your calendar is going to be full in no time"), false, delayTime),
 			]);
 
-			if (!user.isOnBoarded) {
-				await self.checkAndFinishOnBoarding(true);
-
-				return "promotionSent - proceed with onboarding";
-			}
-
 			return "promotionSent";
 
 		} else {
-			if (!user.isOnBoarded) {
-				await self.checkAndFinishOnBoarding(false);
 
-				return "finishOnBoarding";
-			} else {
-				await self.clearConversation();
-				reply(facebookResponse.getTextMessage("Ok boss"), false);
+			await self.clearConversation();
+			reply(facebookResponse.getTextMessage("Ok boss. Talk to me later! ;)"), false);
 
-				return "promotionRejected";
-			}
+			return "promotionRejected";
 		}
-	}
-
-	/**
-	 * finish on boarding in case the user still didn't finish it
-	 */
-	async checkAndFinishOnBoarding(userFinishedFirstPromotion) {
-		const self = this;
-		const {user, reply} = self;
-
-		const conversationData = {
-			userFinishedFirstPromotion,
-			context: "WELCOME",
-			intent: "welcome acuity integrated",
-			lastQuestion: {id: 4},
-			payload: {id: 1}
-		};
-		user.conversationData = conversationData;
-		const WelcomeLogic = require('./WelcomeLogic');
-		const welcomeLogic = new WelcomeLogic(user, conversationData);
-		await welcomeLogic.processIntent();
-
-		return MyUtils.SUCCESS;
 	}
 
 	/**

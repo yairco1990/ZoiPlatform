@@ -119,7 +119,7 @@ router.post('/promoteOldCustomers', function (req, res) {
 router.post('/webhook/:id/scheduled', function (req, res) {
 	MyLog.log(PREFIX_LOG + "Acuity Webhook Schedule. userId = " + req.params.id);
 	let acuityLogic = new AcuityLogic();
-	acuityLogic.onAppointmentScheduled(req.params.id, req.body, zoiBot, function (status, data) {
+	acuityLogic.onAppointmentScheduled(req.params.id, req.body, function (status, data) {
 		res.status(status).send(data);
 	});
 });

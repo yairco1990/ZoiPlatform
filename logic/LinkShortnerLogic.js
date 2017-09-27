@@ -27,7 +27,7 @@ class LinkShortnerLogic {
 	 * @param id
 	 * @returns {Promise.<*>}
 	 */
-	static async getLink(id) {
+	static async getLink(id, toRedirect = true) {
 
 		try {
 
@@ -37,7 +37,11 @@ class LinkShortnerLogic {
 			requestedLink.numOfOpenings += 1;
 			DBManager.saveLink(requestedLink);
 
-			return {status: 302, data: {'location': requestedLink.url}};
+			if (toRedirect) {
+				return {status: 302, data: {'location': requestedLink.url}};
+			} else {
+				return {status: 200, data: requestedLink.url};
+			}
 
 		} catch (err) {
 			MyLog.error("Failed to get link", err);

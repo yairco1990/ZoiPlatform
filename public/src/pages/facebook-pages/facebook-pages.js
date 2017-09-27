@@ -9,8 +9,11 @@ angular.module('Zoi.controllers.facebook-pages', [])
 			controller: 'FacebookPagesCtrl as vm',
 			templateUrl: 'src/pages/facebook-pages/facebook-pages.html',
 			resolve: {
-				zoiUser: function ($stateParams, zoiApi) {
-					return zoiApi.getUser(Number($stateParams.userId));
+				zoiUserId: function () {
+					return getZoiUserId();
+				},
+				zoiUser: function (zoiUserId, zoiApi) {
+					return zoiApi.getUser(zoiUserId);
 				},
 			}
 		})

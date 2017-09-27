@@ -43,8 +43,8 @@ class ListenLogic {
 
 		try {
 
-			//get the user
-			let user = await self.DBManager.getUserById(payload.sender.id, false);
+			//get the user by the page user id
+			let user = await self.DBManager.getUserByPageId(payload.sender.id, false);
 
 			let isNewUser = false;
 
@@ -166,7 +166,7 @@ class ListenLogic {
 						break;
 					case "GENERIC":
 						const genericLogic = new GenericLogic(user, conversationData);
-						return await genericLogic.processIntent(conversationData, setBotTyping, payload, reply);
+						return await genericLogic.processIntent();
 						break;
 					default:
 						reply(facebookResponse.getTextMessage(fallbackText));
@@ -190,7 +190,7 @@ class ListenLogic {
 
 			try {
 
-				const user = await self.DBManager.getUser({_id: payload.sender.id});
+				const user = await self.DBManager.getUserByPageId(payload.sender.id);
 
 				user.conversationData = null;
 				await self.DBManager.saveUser(user).then(function () {
@@ -245,6 +245,10 @@ class ListenLogic {
 			"show-emails": {
 				context: "GENERIC",
 				intent: "generic unread emails"
+			},
+			"get-started": {
+				context: "WELCOME",
+				intent: "welcome get started"
 			}
 		};
 

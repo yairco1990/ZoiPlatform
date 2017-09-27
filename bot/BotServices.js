@@ -27,8 +27,8 @@ async function onMessageArrived(payload, reply) {
 		}
 
 		//get bot functions
-		const setTypingFunction = zoiBot.getBotWritingFunction({_id: sender_id});
-		const replyFunction = zoiBot.getBotReplyFunction({_id: sender_id, fullname: display_name});
+		const setTypingFunction = zoiBot.getBotWritingFunction({pageUserId: sender_id});
+		const replyFunction = zoiBot.getBotReplyFunction({pageUserId: sender_id, fullname: display_name});
 
 		const textMessage = payload.message.text;
 
@@ -117,8 +117,8 @@ async function onPostbackArrived(payload) {
 		const sender_id = payload.sender.id;
 
 		//get functions
-		const setTypingFunction = zoiBot.getBotWritingFunction({_id: sender_id});
-		const replyFunction = zoiBot.getBotReplyFunction({_id: sender_id, fullname: display_name});
+		const setTypingFunction = zoiBot.getBotWritingFunction({pageUserId: sender_id});
+		const replyFunction = zoiBot.getBotReplyFunction({pageUserId: sender_id, fullname: display_name});
 
 		const postbackPayload = payload.postback.payload;
 

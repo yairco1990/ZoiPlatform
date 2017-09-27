@@ -7,11 +7,19 @@ const router = require('express').Router();
 
 const PREFIX_LOG = "Api Request -> ";
 
+//create user
+router.post('/createUser', async function (req, res) {
+	MyLog.log(PREFIX_LOG + "createUser. facebookId = " + req.body.userID);
+	let userApiLogic = new UserApiLogic();
+	const {status, data} = await userApiLogic.createUser(req.body);
+	res.status(status).send(data);
+});
+
 //get user
 router.get('/getUser', async function (req, res) {
 	MyLog.log(PREFIX_LOG + "getUser. userId = " + req.query.userId);
 	let userApiLogic = new UserApiLogic();
-	const {status, data} = await userApiLogic.getUser(req.query.userId);
+	const {status, data} = await userApiLogic.getUserById(req.query.userId);
 	res.status(status).send(data);
 });
 
