@@ -357,7 +357,7 @@ class GeneralLogic extends ConversationLogic {
 								await FacebookLogic.postContentOnFacebookPage(page.id, {
 									access_token: page.access_token,
 									message: selectedArticle.title,
-									link: `${ZoiConfig.shortnerUrl}/s/${linkId}`
+									link: `${ZoiConfig.shortnerUrl}/${linkId}`
 								});
 							} catch (err) {
 								MyLog.error("Error from facebook when posting an article", err);

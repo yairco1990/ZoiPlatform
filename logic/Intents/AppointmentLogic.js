@@ -622,7 +622,7 @@ class AppointmentLogic extends ConversationLogic {
 				//create short link of zoi
 				const shortnerId = await LinkShortner.saveLink(appointmentSumUrl);
 
-				let schedulingLink = `${ZoiConfig.shortnerUrl}/s/${shortnerId}`;
+				let schedulingLink = `${ZoiConfig.shortnerUrl}/${shortnerId}`;
 				//remove the port
 				schedulingLink = schedulingLink.replace(":3000", "");
 
