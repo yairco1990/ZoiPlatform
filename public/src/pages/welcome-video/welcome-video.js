@@ -23,7 +23,7 @@ function WelcomeVideoCtrl($log, $rootScope, $timeout, $sce) {
 	vm.$log = $log;
 	vm.$rootScope = $rootScope;
 	vm.$timeout = $timeout;
-	vm.videoUrl = $sce.trustAsResourceUrl("https://res.cloudinary.com/gotime-systems/video/upload/q_80/v1505858944/Scene_2_bmlllw.mp4");
+	vm.videoUrl = $sce.trustAsResourceUrl("http://res.cloudinary.com/gotime-systems/video/upload/q_100/v1506558920/Scene_1_mhj5xc.mp4");
 
 	vm.$log.info("WelcomeVideoCtrl loaded");
 }
