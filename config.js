@@ -151,7 +151,7 @@ const Environments = {
 		appId: "1357774290981012",
 		appSecret: "1b27655a518d7d7ee75312074afabe09",
 		serverUrl: "https://zoiai.com:3000",
-		shortnerUrl: "https://zoi.ai",
+		shortnerUrl: "https://zoi.ai/s",
 		clientUrl: "https://zoiai.com/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoi_db",
 		NLP_URL: "http://13.82.50.249:5000",

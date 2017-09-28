@@ -48,6 +48,10 @@ let server;
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+app.get('/mes', function (req, res) {
+	res.redirect("https://www.messenger.com/t/zoibot" || '/');
+});
+
 // Add headers
 app.use(cors());
 
