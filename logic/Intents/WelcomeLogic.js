@@ -352,7 +352,7 @@ class WelcomeLogic extends ConversationLogic {
 			} else {
 				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Ok boss!"), true, delayTime));
 			}
-			messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with your morning brief"), true, delayTime));
+			// messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with your morning brief"), true, delayTime));
 			messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Remember, You can always press the menu button below (☰) to see my preset actions and settings."), true, delayTime));
 			messages.push(MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime));
 
