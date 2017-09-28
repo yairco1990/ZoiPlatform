@@ -36,7 +36,7 @@ angular.module('ZoiClient', [
 	'Zoi.controllers.welcome-video',
 	'Zoi.controllers.404'
 
-]).run(['$rootScope', '$state', function ($rootScope, $state) {
+]).run(['$rootScope', '$state', '$window', '$location', function ($rootScope, $state, $window, $location) {
 
 	$rootScope.$on('$stateChangeStart', function () {
 		MyUtils.addLoader();
@@ -47,6 +47,7 @@ angular.module('ZoiClient', [
 	$rootScope.$on('$stateChangeSuccess', function () {
 		MyUtils.removeLoader();
 		$rootScope.stateIsLoading = false;
+		$window.ga('send', 'pageview', $location.path());
 	});
 
 }]).config(['$stateProvider', '$urlRouterProvider', '$logProvider', '$locationProvider', function ($stateProvider, $urlRouterProvider, $logProvider, $locationProvider) {
