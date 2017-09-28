@@ -29,20 +29,25 @@ UserApiLogic.prototype.createUser = async function (userData) {
 
 	try {
 
-		const newUser = deepcopy(DefaultUserModel);
-		newUser.facebookUserId = userData.userID;
-		newUser.campaignData = userData.campaignData;
-		newUser._id = MyUtils.generateUUID();
+		let user = await self.DBManager.getUserByFacebookId(userData.userID, false);
 
-		await self.DBManager.saveUser(newUser);
+		//if user doesn't exist - create it.
+		if (!user || !user._id) {
+			user = deepcopy(DefaultUserModel);
+			user.facebookUserId = userData.userID;
+			user.campaignData = userData.campaignData;
+			user._id = MyUtils.generateUUID();
 
-		const {status} = await FacebookLogic.addFacebookIntegration(newUser._id, userData);
+			await self.DBManager.saveUser(user);
+		}
+
+		const {status} = await FacebookLogic.addFacebookIntegration(user._id, userData);
 
 		if (status !== Response.SUCCESS) {
 			throw new Error("Failed to add facebook integration");
 		}
 
-		return {status: Response.SUCCESS, data: newUser};
+		return {status: Response.SUCCESS, data: user};
 
 	} catch (err) {
 		return {status: Response.ERROR, message: "Error on creating new user"};

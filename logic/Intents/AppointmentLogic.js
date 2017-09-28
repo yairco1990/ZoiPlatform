@@ -93,8 +93,7 @@ class AppointmentLogic extends ConversationLogic {
 				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Let me see..."), true),
 				MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Here is your schedule for today boss:", [
 					facebookResponse.getGenericButton("web_url", "Agenda", null, ZoiConfig.clientUrl + "/agenda?userId=" + user._id, null)
-				]), true, delayTime),
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Anything else?"), false, delayTime)
+				]), false, delayTime)
 			]);
 
 			return MyUtils.SUCCESS;
