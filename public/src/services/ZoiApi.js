@@ -30,6 +30,19 @@ angular.module('Zoi.services.zoi-api', [])
 				});
 			},
 
+			sendPromotionViaEmail: function (payload) {
+				return $http({
+					url: zoiConfig.getServerUrl() + "/chat/sendPromotionViaEmail",
+					method: "POST",
+					params: payload,
+					timeout: 10000
+				}).then(function (result) {
+					return result.data;
+				}, function (err) {
+					$log.error(err);
+				});
+			},
+
 			/**
 			 * get user by id
 			 * @param userId

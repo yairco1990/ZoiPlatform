@@ -24,7 +24,7 @@ angular.module('Zoi.controllers.promotion-preview', [])
  * page constructor
  * @constructor
  */
-function promotionPreviewCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig, $stateParams) {
+function promotionPreviewCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoiUser, zoiApi, $window, zoiConfig, $stateParams, $sce) {
 
 	var vm = this;
 
@@ -38,6 +38,7 @@ function promotionPreviewCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoi
 	vm.$window = $window;
 	vm.zoiConfig = zoiConfig;
 	vm.$stateParams = $stateParams;
+	vm.$sce = $sce;
 }
 
 /**
@@ -46,31 +47,59 @@ function promotionPreviewCtrl($log, $rootScope, $timeout, $scope, $mdDialog, zoi
 promotionPreviewCtrl.prototype.$onInit = function () {
 	var vm = this;
 
-	var selectedTemplate = vm.zoiUser.session.template;
+	vm.promotionType = vm.zoiUser.session.promotionType;
 
-	vm.isIntegratedWithAcuity = !!vm.zoiUser.integrations.Acuity;
-	vm.contentTitle = selectedTemplate.promotionTitle;
-	vm.selectedTitle = vm.contentTitle;
-	vm.contentImage = selectedTemplate.image;
-	vm.schedulingPageLink = vm.zoiUser.schedulingPageLink || "";
+	if (vm.zoiUser.session.promotionType === 'facebook') {
+
+		var selectedTemplate = vm.zoiUser.session.template;
+
+		vm.isIntegratedWithAcuity = !!vm.zoiUser.integrations.Acuity;
+		vm.contentTitle = selectedTemplate.promotionTitle;
+		vm.selectedTitle = vm.contentTitle;
+		vm.contentImage = selectedTemplate.image;
+		vm.schedulingPageLink = vm.zoiUser.schedulingPageLink || "";
+
+		vm.pageTitle = "Promotion Preview";
+		vm.subHeaderText = "This is what I'm going to post on your facebook page. Change the post title if you want to.";
+		vm.approveText = "Post Promotion!";
+		vm.rejectText = "Don't Promote It";
+
+	} else if (vm.zoiUser.session.promotionType === 'email') {
+		vm.selectedEmailTemplate = vm.$sce.trustAsHtml(vm.zoiUser.session.emailTemplate);
+
+		vm.pageTitle = "Email Preview";
+		vm.subHeaderText = "This is what I'm going to send to your customers.";
+		vm.approveText = "Send Emails!";
+		vm.rejectText = "Don't Send Emails";
+	}
 
 	vm.$log.debug("promotionPreviewCtrl initiated");
 };
 
 
-promotionPreviewCtrl.prototype.postIt = function (ev, toPost) {
+promotionPreviewCtrl.prototype.sendAction = function (ev, isApproved) {
 	var vm = this;
 
 	MyUtils.addLoader();
 
-	vm.zoiApi.postPromotionOnFacebook({
-		userId: vm.zoiUser._id,
-		link: vm.schedulingPageLink,
-		title: vm.selectedTitle,
-		imageUrl: vm.contentImage,
-		toPost: toPost
-	}, ev).then(function () {
-		//close the browser via messenger extension
-		MyUtils.closeWebview();
-	});
+	if (vm.promotionType === 'facebook') {
+		vm.zoiApi.postPromotionOnFacebook({
+			userId: vm.zoiUser._id,
+			link: vm.schedulingPageLink,
+			title: vm.selectedTitle,
+			imageUrl: vm.contentImage,
+			toPost: isApproved
+		}, ev).then(function () {
+			//close the browser via messenger extension
+			MyUtils.closeWebview();
+		});
+	} else {
+		vm.zoiApi.sendPromotionViaEmail({
+			userId: vm.zoiUser._id,
+			sendEmail: isApproved
+		}, ev).then(function () {
+			//close the browser via messenger extension
+			MyUtils.closeWebview();
+		});
+	}
 };

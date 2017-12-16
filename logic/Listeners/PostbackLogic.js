@@ -1,4 +1,3 @@
-const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
 const requestify = require('requestify');
 const Util = require('util');
 const MyUtils = require('../../interfaces/utils');
@@ -19,11 +18,8 @@ const Acuity = require('acuityscheduling');
  */
 function PostbackLogic() {
 	this.listenLogic = new (require('./ListenLogic'));
-	this.DBManager = require('../../dal/DBManager');
 }
 
-//for now, if the user sent ACTION - listen logic class will handle it and decide if it's a valid request.
-//for MENU buttons - we do the logic here and check if it's a valid request.
 /**
  * process action and return response
  */

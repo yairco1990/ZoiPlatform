@@ -222,3 +222,22 @@ md-dialog {
 }
 
 /* end of angular material popup */
+
+.stop-convo-button {
+    background-color: #737373 !important;
+    width: 90%;
+    margin-top: 10px !important;
+}
+
+.stop-convo-button:not([disabled]):hover {
+    background-color: #4c4c4c !important;
+}
+
+.keep-convo-button {
+    background-color: rgb(16, 108, 200) !important;
+    width: 90%;
+}
+
+.keep-convo-button:not([disabled]):hover {
+    background-color: rgb(11, 89, 167) !important;
+}

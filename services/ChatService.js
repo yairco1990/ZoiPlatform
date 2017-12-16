@@ -22,4 +22,13 @@ router.post('/postFacebookPromotion', async function (req, res) {
 	res.send();
 });
 
+router.post('/sendPromotionViaEmail', async function (req, res) {
+	MyLog.log(PREFIX_LOG + "sendPromotionViaEmail");
+
+	ChatLogic.sendPromotionViaEmail(req.query);
+
+	res.writeHead(200, {message: "Send promotion via email successfully"});
+	res.send();
+});
+
 module.exports = router;

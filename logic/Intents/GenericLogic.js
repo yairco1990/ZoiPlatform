@@ -6,7 +6,6 @@ const MyLog = require('../../interfaces/MyLog');
 const MyUtils = require('../../interfaces/utils');
 const moment = require('moment-timezone');
 const facebookResponse = require('../../interfaces/FacebookResponse');
-const MindbodyLogic = require('../ApiHandlers/MindbodyLogic');
 const EmailLib = require('../../interfaces/EmailLib');
 const async = require('async');
 const ZoiConfig = require('../../config');
@@ -27,37 +26,40 @@ class GenericLogic extends ConversationLogic {
 	 */
 	async processIntent() {
 
-		const self = this;
-		const {reply, user, conversationData} = self;
+		const {user, conversationData} = this;
 
 		//get response from small talk object
 		let responseText = MyUtils.getResponseByIntent(conversationData.intent);
 
 		switch (conversationData.intent) {
 			case "generic stats":
-				reply(facebookResponse.getButtonMessage(responseText, [
-					facebookResponse.getGenericButton("web_url", "My Profile", null, ZoiConfig.clientUrl + "/profile?userId=" + self.user._id, null)
-				]));
+				await this.sendMessagesV2([
+					[facebookResponse.getButtonMessage(responseText, [
+						facebookResponse.getGenericButton("web_url", "My Profile", null, ZoiConfig.clientUrl + "/profile?userId=" + this.user._id, null)
+					])]
+				]);
 				break;
 			case "generic show abilities":
-				reply(facebookResponse.getButtonMessage(responseText, [
+				await this.sendMessagesV2([facebookResponse.getButtonMessage(responseText, [
 					facebookResponse.getGenericButton("web_url", "Zoi Abilities", null, ZoiConfig.clientUrl + "/abilities", null)
-				]));
+				])]);
 				break;
 			case "generic unread emails":
-				reply(facebookResponse.getButtonMessage("View your unread emails from your customers:", [
-					facebookResponse.getGenericButton("web_url", "Unread Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + self.user._id, null)
-				]));
+				await this.sendMessagesV2([
+					[facebookResponse.getButtonMessage("View your unread emails from your customers:", [
+						facebookResponse.getGenericButton("web_url", "Unread Emails", null, ZoiConfig.clientUrl + "/mail?userId=" + this.user._id, null)
+					])]
+				]);
 				break;
 			case "generic say goodbye":
 				//if the user is onboarded - say goodbye and clear convo data
 				if (user.isOnBoarded) {
-					await self.clearConversation();
-					reply(facebookResponse.getTextMessage(responseText));
+					await this.clearConversation(false);
+					await this.sendSingleMessage(responseText);
 				}
 				//if the user is not onboarded - finish the onboarding process
 				else {
-					await self.finishOnBoarding();
+					await this.finishOnBoarding();
 				}
 				break;
 			default:
@@ -65,7 +67,7 @@ class GenericLogic extends ConversationLogic {
 				if (!responseText) {
 					responseText = fallbackText;
 				}
-				reply(facebookResponse.getTextMessage(responseText));
+				await this.sendSingleMessage(responseText);
 				break;
 		}
 	};

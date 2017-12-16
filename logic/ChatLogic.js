@@ -21,7 +21,7 @@ class ChatLogic {
 			payload: {
 				link,
 				title,
-				toPost
+				nextState: toPost === "true" ? "postArticleOnFacebook" : "dontPostArticleOnFacebook"
 			}
 		};
 		const generalLogic = new GeneralLogic(user, conversationData);
@@ -48,7 +48,23 @@ class ChatLogic {
 				title,
 				imageUrl,
 				link,
-				answer: toPost === "true" ? "yes" : "no"
+				nextState: toPost === "true" ? "postPromotionOnFacebook" : "dontPostPromotion"
+			}
+		};
+		const appointmentLogic = new AppointmentLogic(user, conversationData);
+		await appointmentLogic.processIntent();
+
+		return MyUtils.SUCCESS;
+	}
+
+	static async sendPromotionViaEmail({userId, sendEmail}) {
+
+		const user = await DBManager.getUserById(userId);
+		const conversationData = {
+			context: "APPOINTMENT",
+			intent: "appointment send promotions",
+			payload: {
+				nextState: sendEmail === "true" ? "sendPromotionViaEmail" : "stopConvo"
 			}
 		};
 		const appointmentLogic = new AppointmentLogic(user, conversationData);

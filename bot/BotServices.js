@@ -33,7 +33,7 @@ async function onMessageArrived(payload, reply) {
 		const textMessage = payload.message.text;
 
 		//process the input and return an answer to the sender
-		listenLogic.processInput(textMessage, payload, setTypingFunction, replyFunction);
+		listenLogic.processInput(textMessage, payload, null, replyFunction);
 	};
 
 	try {
@@ -127,7 +127,7 @@ async function onPostbackArrived(payload) {
 			postbackLogic.processAction(postbackPayload, payload, setTypingFunction, zoiBot, replyFunction);
 		} else {
 			const listenLogic = new ListenLogic();
-			listenLogic.processInput(postbackPayload, payload, setTypingFunction, replyFunction);
+			listenLogic.processInput(postbackPayload, payload, null, replyFunction);
 		}
 	} catch (err) {
 		MyLog.error("Failed on onPostbackArrived", err);

@@ -114,34 +114,34 @@ UserApiLogic.prototype.getUser = async function (where) {
 
 /**
  * save user
- * @param savedUser
+ * @param userToSave
  */
-UserApiLogic.prototype.saveUser = async function (savedUser) {
+UserApiLogic.prototype.saveUser = async function (userToSave) {
 
 	const self = this;
 
 	try {
 
-		const oldUser = await self.DBManager.getUser({_id: savedUser._id});
+		const oldUser = await self.DBManager.getUser({_id: userToSave._id});
 
 		//get bot functions
-		const reply = zoiBot.getBotReplyFunction(savedUser);
-		const botTyping = zoiBot.getBotWritingFunction(savedUser);
+		const reply = zoiBot.getBotReplyFunction(userToSave);
+		const botTyping = zoiBot.getBotWritingFunction(userToSave);
 
 		let isFacebookPagesEnables = false;
 
 		//return sensitive information
 		if (oldUser.integrations.Acuity) {
-			savedUser.integrations.Acuity.accessToken = oldUser.integrations.Acuity.accessToken;
-			savedUser.integrations.Acuity.userDetails.accessToken = savedUser.integrations.Acuity.userDetails.accessToken;
+			userToSave.integrations.Acuity.accessToken = oldUser.integrations.Acuity.accessToken;
+			userToSave.integrations.Acuity.userDetails.accessToken = userToSave.integrations.Acuity.userDetails.accessToken;
 		}
 		if (oldUser.integrations.Gmail) {
-			savedUser.integrations.Gmail = oldUser.integrations.Gmail;
+			userToSave.integrations.Gmail = oldUser.integrations.Gmail;
 		}
 		if (oldUser.integrations.Facebook) {
-			savedUser.integrations.Facebook = oldUser.integrations.Facebook;
+			userToSave.integrations.Facebook = oldUser.integrations.Facebook;
 
-			const savedUserPagesLength = MyUtils.nestedValue(savedUser, "facebookPages.length");
+			const savedUserPagesLength = MyUtils.nestedValue(userToSave, "facebookPages.length");
 			const oldUserPagesLength = MyUtils.nestedValue(oldUser, "integrations.Facebook.pages.length");
 
 			//save the enables facebook pages
@@ -152,11 +152,11 @@ UserApiLogic.prototype.saveUser = async function (savedUser) {
 					.filter(page => page.isEnabled)
 					.length;
 
-				const savedUserEnabledPagesLength = MyUtils.nestedValue(savedUser, "facebookPages")
+				const savedUserEnabledPagesLength = MyUtils.nestedValue(userToSave, "facebookPages")
 					.filter(page => page.isEnabled)
 					.length;
 
-				savedUser.facebookPages.forEach((clientPage) => {
+				userToSave.facebookPages.forEach((clientPage) => {
 					const serverSelectedPage = oldUser.integrations.Facebook.pages.find(serverPage => clientPage.id === serverPage.id);
 					serverSelectedPage.isEnabled = clientPage.isEnabled;
 				});
@@ -164,39 +164,49 @@ UserApiLogic.prototype.saveUser = async function (savedUser) {
 				isFacebookPagesEnables = savedUserEnabledPagesLength > 0 && oldUserEnabledPagesLength === 0;
 			}
 
-			delete savedUser.facebookPages;
+			delete userToSave.facebookPages;
 		}
 
 		//calculate morning brief if the user set it
-		if (savedUser.morningBriefTime && typeof(savedUser.morningBriefTime) === "number") {
+		if (userToSave.morningBriefTime && typeof(userToSave.morningBriefTime) === "number") {
 
 			//convert the user selected time to server timezone
-			let morningBriefTime = moment(savedUser.morningBriefTime).tz(savedUser.integrations.Acuity.userDetails.timezone);
+			let morningBriefTime = moment(userToSave.morningBriefTime).tz(userToSave.integrations.Acuity.userDetails.timezone);
 
 			//if the time is before now - get future time
-			if (morningBriefTime.isBefore(moment().tz(savedUser.integrations.Acuity.userDetails.timezone))) {
-				morningBriefTime = moment(savedUser.morningBriefTime).tz(savedUser.integrations.Acuity.userDetails.timezone).add(1, 'days');
+			if (morningBriefTime.isBefore(moment().tz(userToSave.integrations.Acuity.userDetails.timezone))) {
+				morningBriefTime = moment(userToSave.morningBriefTime).tz(userToSave.integrations.Acuity.userDetails.timezone).add(1, 'days');
 			}
 
 			//set next morning brief time
-			savedUser.nextMorningBriefDate = morningBriefTime.valueOf();
+			userToSave.nextMorningBriefDate = morningBriefTime.valueOf();
 			//set static morning brief time as string
-			savedUser.morningBriefTime = morningBriefTime.format("HH:mm");
+			userToSave.morningBriefTime = morningBriefTime.format("HH:mm");
 		}
 
 		//save the user
-		await self.DBManager.saveUser(savedUser);
+		await self.DBManager.saveUser(userToSave);
 
 		//get the updated user
-		const userResult = await self.getUserById(savedUser._id);
+		const finalUser = await self.getUserById(userToSave._id);
+		const savedUser = finalUser.data;
 
-		//if user set pages enabled - start rss convo
-		if (isFacebookPagesEnables && !userResult.conversationData) {
+		//if user set pages enabled - check which convo to launch
+		if (isFacebookPagesEnables) {
 			const listenLogic = new ListenLogic();
-			listenLogic.processInput("f:rss", {sender: {id: savedUser.pageUserId}}, botTyping, reply);
+			//check if the user wanted to do some action before
+			if (savedUser.nextState) {
+				listenLogic.processInput("resumedConvo", {sender: {id: userToSave.pageUserId}}, botTyping, reply);
+			}
+			else {
+				if (!savedUser.conversationData) {
+					//default option - post content
+					listenLogic.processInput("f:rss", {sender: {id: userToSave.pageUserId}}, botTyping, reply);
+				}
+			}
 		}
 
-		return {status: Response.SUCCESS, data: userResult.data};
+		return {status: Response.SUCCESS, data: savedUser};
 	} catch (err) {
 		MyLog.error("Failed to save user", err);
 		return {status: Response.NOT_FOUND, data: err};

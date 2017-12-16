@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const timestamps = require('mongoose-timestamp');
 
 const userSchema = new Schema({
 	_id: String,
@@ -27,8 +28,15 @@ const userSchema = new Schema({
 	isOnBoarded: Boolean,
 	facebookUserId: String,
 	pageUserId: String,
-	campaignData: Object
+	campaignData: Object,
+	nextState: String,
+	promotions: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Promotion'
+	}]
 }, {minimize: false});
+
+userSchema.plugin(timestamps);
 
 userSchema.virtual('isAcuityIntegrated').get(function () {
 	return !!this.integrations.Acuity;

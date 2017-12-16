@@ -9,7 +9,6 @@ const GmailLogic = require('../GmailLogic');
 const _ = require('underscore');
 const MyUtils = require('../../interfaces/utils');
 const AcuityFactory = require('../../interfaces/Factories/AcuityFactory');
-const requestify = require('requestify');
 const facebookResponse = require('../../interfaces/FacebookResponse');
 const ClientLogic = require('../Intents/ClientLogic');
 const EmailLib = require('../../interfaces/EmailLib');
@@ -18,7 +17,7 @@ const WelcomeLogic = require('../Intents/WelcomeLogic');
 const deepcopy = require('deepcopy');
 const async = require('async');
 const Acuity = require('acuityscheduling');
-const zoiBot = require('../../bot/ZoiBot');
+const ConversationLogic = require('../ConversationLogic');
 
 const Response = {
 	SUCCESS: 200,
@@ -70,9 +69,14 @@ class AcuityLogic {
 			let acuityApi = new AcuityApi(user.integrations.Acuity.accessToken);
 
 			let options = {
-				appointmentTypeID: parseInt(data.appointmentTypeId),
-				date: moment(parseInt(data.date, 16)).tz(user.integrations.Acuity.userDetails.timezone).add(1, 'days').format('YYYY-MM-DDTHH:mm:ss')
+				appointmentTypeID: parseInt(data.appointmentTypeId)
 			};
+
+			if (data.date) {
+				options.date = moment(parseInt(data.date, 16)).tz(user.integrations.Acuity.userDetails.timezone).format('YYYY-MM-DDTHH:mm:ss');
+			} else {
+				options.date = moment().tz(user.integrations.Acuity.userDetails.timezone).format('YYYY-MM-DDTHH:mm:ss')
+			}
 
 			let result = await acuityApi.getAvailability(options);
 			callback(Response.SUCCESS, result);
@@ -253,18 +257,18 @@ class AcuityLogic {
 
 			//remove the metadata
 			user.metadata.oldCustomers = null;
-			await self.DBManager.saveUser(user);
 
-			const replyFunction = zoiBot.getBotReplyFunction(user);
-			//send messages
-			async.series([
-				MyUtils.resolveMessage(replyFunction, facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + customers.length + " of your customers."), true),
-				MyUtils.resolveMessage(replyFunction, facebookResponse.getTextMessage("Trust me, they will be regulars soon enough."), false, ZoiConfig.delayTime),
-			], MyUtils.getErrorMsg());
+			//clear convo and send messages
+			const conversationLogic = new ConversationLogic(user, {});
+			await conversationLogic.clearConversation(false);
+			await conversationLogic.sendMessagesV2([
+				[facebookResponse.getTextMessage("Done! 😎 I sent the promotion to " + customers.length + " of your customers.")],
+				[facebookResponse.getTextMessage("Trust me, they will be regulars soon enough.")]
+			]);
 
 		} catch (err) {
 			callback(Response.ERROR);
-			MyLog.error("Error on promoteOldCustomers", err);
+			MyLog.error("Error on oldCustomersConvoManager", err);
 		}
 
 	}
@@ -321,7 +325,7 @@ class AcuityLogic {
 
 		} catch (err) {
 			callback(Response.ERROR);
-			MyLog.error("Error on promoteOldCustomers", err);
+			MyLog.error("Error on oldCustomersConvoManager", err);
 		}
 	}
 
@@ -388,7 +392,7 @@ class AcuityLogic {
 			let user = await self.DBManager.getUserById(userId);
 
 			//check if the user integrated with Acuity(in some case, the user deleted himself, but the webhook is still exist)
-			if (user.integrations.Acuity) {
+			if (user.isAcuityIntegrated) {
 
 				//if the user prompt new customers
 				if (user.promptNewCustomers !== false) {

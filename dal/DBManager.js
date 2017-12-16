@@ -10,7 +10,7 @@ const User = require('./models/UserModel');
 const Link = require('./models/LinkModel');
 const BlackList = require('./models/BlackListModel');
 const Input = require('./models/InputModel');
-const PromotionTypes = require('./models/PromotionTypeModel');
+const Promotion = require('./models/PromotionModel');
 
 class DBManager {
 
@@ -173,31 +173,15 @@ class DBManager {
 		});
 	}
 
-	/**
-	 * get promotion types
-	 * @param where
-	 */
-	getPromotionsTypes(where) {
-
-		return new Promise(function (resolve, reject) {
-			PromotionTypes.find(where, function (err, users) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(users);
-				}
-			});
-		});
-	}
 
 	/**
-	 * set promotion type
-	 * @param where
+	 * save input and intention
 	 */
-	addPromotionsType(promotionType) {
+	addInput(inputObj) {
 
 		return new Promise(function (resolve, reject) {
-			PromotionTypes.create(promotionType, function (err, doc) { // callback
+
+			Input.create(inputObj, function (err, doc) { // callback
 					if (err) {
 						reject(err);
 					} else {
@@ -208,15 +192,14 @@ class DBManager {
 		});
 	}
 
-
 	/**
-	 * save input and intention
+	 * save promotion
 	 */
-	addInput(inputObj) {
+	savePromotion(promotion) {
 
 		return new Promise(function (resolve, reject) {
 
-			Input.create(inputObj, function (err, doc) { // callback
+			Promotion.create(promotion, function (err, doc) { // callback
 					if (err) {
 						reject(err);
 					} else {

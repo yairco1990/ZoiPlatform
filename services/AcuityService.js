@@ -107,8 +107,8 @@ router.get('/getOldCustomers', function (req, res) {
 });
 
 //promote old customers
-router.post('/promoteOldCustomers', function (req, res) {
-	MyLog.log(PREFIX_LOG + "promoteOldCustomers. userId = " + req.query.userId);
+router.post('/oldCustomersConvoManager', function (req, res) {
+	MyLog.log(PREFIX_LOG + "oldCustomersConvoManager. userId = " + req.query.userId);
 	let acuityLogic = new AcuityLogic();
 	acuityLogic.promoteOldCustomers(zoiBot, req.query, function (status, data) {
 		res.status(status).send(data);

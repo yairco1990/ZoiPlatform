@@ -76,6 +76,7 @@ describe('AppointmentLogic Class', function () {
 	//test start promotion conversation
 	describe('promotionConvoManager function', function () {
 
+
 		it('on conversation starts - ask for send promotion', async function () {
 
 			const appointmentLogic = new AppointmentLogic(user);
@@ -95,13 +96,13 @@ describe('AppointmentLogic Class', function () {
 			user.conversationData = {lastQuestion: {id: 0}};
 			const appointmentLogic = new AppointmentLogic(user);
 
-			appointmentLogic.askForServiceOrText = sinon.stub();
+			appointmentLogic.askForService = sinon.stub();
 
 			appointmentLogic.sendMessages = fakeSendMessagesFunction(appointmentLogic);
 
 			await appointmentLogic.promotionConvoManager();
 
-			assert(appointmentLogic.askForServiceOrText.called);
+			assert(appointmentLogic.askForService.called);
 		});
 
 		it('ask for template', async function () {
@@ -187,7 +188,7 @@ describe('AppointmentLogic Class', function () {
 	});
 
 	//test 'ask for service name'
-	describe('askForServiceOrText function', function () {
+	describe('askForService function', function () {
 		it("check that the user said he wants promotion via email and he gets the services", async function () {
 
 			//set last question
@@ -201,7 +202,7 @@ describe('AppointmentLogic Class', function () {
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForServiceOrText();
+			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("userGotServicesList");
 			assert(appointmentLogic.sendMessages.called);
@@ -221,7 +222,7 @@ describe('AppointmentLogic Class', function () {
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForServiceOrText();
+			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("userAskedForPostText");
 			assert(appointmentLogic.sendMessages.called);
@@ -240,7 +241,7 @@ describe('AppointmentLogic Class', function () {
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForServiceOrText();
+			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("userQuitPromotionProcess");
 			assert(appointmentLogic.sendMessages.called);
@@ -260,7 +261,7 @@ describe('AppointmentLogic Class', function () {
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForServiceOrText();
+			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("userQuitPromotionProcess - finishOnBoarding");
 			assert(appointmentLogic.checkAndFinishOnBoarding.called);
@@ -275,7 +276,7 @@ describe('AppointmentLogic Class', function () {
 
 			mockCommonFunctions(appointmentLogic, SLOTS);
 
-			const result = await appointmentLogic.askForServiceOrText();
+			const result = await appointmentLogic.askForService();
 
 			expect(result).to.equals("sendPromotionsQuestionAgain");
 			assert(appointmentLogic.sendMessages.called);

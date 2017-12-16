@@ -23,7 +23,7 @@ let DefaultUser = {
 		"value": 30
 	},
 	category: "All",
-	lastMessageTime: moment().valueOf(),
+	lastMessageTime: new Date().valueOf()
 };
 
 module.exports = DefaultUser;

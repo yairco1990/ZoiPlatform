@@ -17,28 +17,6 @@ const DefaultUserModel = require('../../interfaces/DefaultModels/DefaultUser');
 
 const delayTime = ZoiConfig.delayTime;
 
-//QUESTIONS
-const welcomeQuestions = {
-	initUser: {
-		id: "initUser"
-	},
-	canWeProceed: {
-		id: 3
-	},
-	firstPromotion: {
-		id: 4
-	},
-	noProblem: {
-		id: 5
-	},
-	integrateWithAcuity: {
-		id: "integrateWithAcuity"
-	},
-	shareContent: {
-		id: "shareContentQuestion"
-	}
-};
-
 class WelcomeLogic extends ConversationLogic {
 
 	constructor(user, conversationData) {
@@ -58,15 +36,15 @@ class WelcomeLogic extends ConversationLogic {
 		switch (conversationData.intent) {
 			case "welcome get started":
 				this.botTyping();
-				return await self.welcomeConvo(senderId);
+				return await self.welcomeConvoManager(senderId);
 				break;
 			case "welcome acuity integrated":
 				this.botTyping();
-				return await self.proceedWelcomeConvo();
+				return await self.proceedWelcomeConvoManager();
 				break;
 			default:
 				this.botTyping();
-				return await self.welcomeConvo(senderId);
+				return await self.welcomeConvoManager(senderId);
 				break;
 		}
 	};
@@ -75,57 +53,27 @@ class WelcomeLogic extends ConversationLogic {
 	/**
 	 * welcome dialog - first dialog
 	 */
-	async welcomeConvo(senderId) {
+	async welcomeConvoManager(senderId) {
 
 		const self = this;
 		const {user, reply, conversationData} = self;
 
-		const lastQuestionId = this.getLastQuestionId();
-
 		try {
+
+			const nextState = this.getNextState();
 
 			//if the user not created yet or wants to be reset
 			if (!user || conversationData.input.toLowerCase() === "resetzoi") {
 				return await self.initNewUser(senderId);
-			} else if (lastQuestionId === welcomeQuestions.initUser.id) {
-				return await self.askUserForIntegration();
-			} else if (lastQuestionId === welcomeQuestions.shareContent.id) {
-				if (await this.isValidQR()) {
-					if (MyUtils.nestedValue(conversationData, "payload.id") === "shareContent") {
-						return await self.startShareContentConversation();
-					} else {
-						return await self.sayGoodbye();
-					}
-				}
+			} else if (nextState === "askForShareContent") {
+				return await self.askForShareContent();
+			} else if (nextState === "shareContent") {
+				return await self.startShareContentConversation();
 			}
 
 		} catch (err) {
 			MyLog.error(err);
 			(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I am on a break right now, please send me message later..Thank's! :)"), false))();
-		}
-	};
-
-	/**
-	 * proceed with welcome conversation - usually, after the user integrated with Acuity
-	 */
-	async proceedWelcomeConvo() {
-
-		const {user, conversationData} = this;
-
-		const lastQuestionId = this.getLastQuestionId();
-
-		try {
-			if (!user.conversationData) {
-				return await this.askForProceedAfterIntegration();
-			} else if (lastQuestionId === welcomeQuestions.canWeProceed.id) {
-				return await this.askForFirstPromotion();
-			} else if (lastQuestionId === welcomeQuestions.firstPromotion.id) {
-				return await this.onUserAnsweredOnFirstPromotion();
-			} else {//user said no problem or wrote something
-				return await this.askForShareZoi();
-			}
-		} catch (err) {
-			MyLog.error(err);
 		}
 	};
 
@@ -136,11 +84,9 @@ class WelcomeLogic extends ConversationLogic {
 	 */
 	async initNewUser(senderId) {
 
-		const self = this;
-		const {conversationData} = self;
+		const {conversationData} = this;
 
 		try {
-
 			//delete the user if exist
 			//await self.DBManager.deleteUser({pageUserId: senderId});
 
@@ -156,16 +102,17 @@ class WelcomeLogic extends ConversationLogic {
 
 			//check for integrated user
 			if (userFacebookId) {
-				newUser = await self.DBManager.getUserByFacebookId(userFacebookId, false);
-				newUser.pageUserId = senderId;
-			}
-
-			//if the user doesn't exist
-			if (!newUser) {
-				//create default user with default parameters
-				newUser = deepCopy(DefaultUserModel);
-				newUser._id = MyUtils.generateUUID();
-				newUser.pageUserId = senderId;
+				try {
+					newUser = await this.DBManager.getUserByFacebookId(userFacebookId, false);
+					newUser.pageUserId = senderId;
+					newUser.lastMessageTime = new Date().valueOf();
+				}
+				catch (err) {
+					//create default user with default parameters
+					newUser = deepCopy(DefaultUserModel);
+					newUser._id = MyUtils.generateUUID();
+					newUser.pageUserId = senderId;
+				}
 			}
 
 			//set user details
@@ -174,25 +121,19 @@ class WelcomeLogic extends ConversationLogic {
 			newUser.isOnBoarded = false;
 
 			//set user and conversation data to super class
-			self.setUser(newUser);
-			self.setConversationData(conversationData);
-
-			//KEEP IT HERE!
-			const {reply} = self;
+			this.setUser(newUser);
+			this.setConversationData(conversationData);
 
 			//set current question
-			self.setCurrentQuestion(welcomeQuestions.initUser);
+			this.setNextAnswerState("qr");
 
-			//save the user
-			await self.DBManager.saveUser(newUser);
-
-			await self.sendMessagesV2([
-				[facebookResponse.getTextMessage("Hi there my new boss! 😁"), true],
-				[facebookResponse.getTextMessage("My name is Zoi, your own AI marketer for your business."), true, delayTime],
-				[facebookResponse.getTextMessage("From now on, I'll be your marketer. I will send promotions to fill your openings and boost your activity in social media."), true, delayTime],
+			await this.sendMessagesV2([
+				[facebookResponse.getTextMessage("Hi there my new boss! 😁")],
+				[facebookResponse.getTextMessage("My name is Zoi, your own AI marketer for your business.")],
+				[facebookResponse.getTextMessage("From now on, I'll be your marketer. I will send promotions to fill your openings and boost your activity in social media.")],
 				[facebookResponse.getQRElement("Set me up will only take a minute, are you ready?", [
-					facebookResponse.getQRButton("text", "Yes, lets go!", {id: "yesLetsGo"})
-				]), false, delayTime],
+					facebookResponse.getQRButton("text", "Yes, lets go!", {nextState: "askForShareContent"})
+				])],
 			]);
 
 			return "initNewUserSuccess";
@@ -206,46 +147,56 @@ class WelcomeLogic extends ConversationLogic {
 	 * on user chose between "let's go" and "Not now" options
 	 * ask him for integration with Acuity
 	 */
-	async askUserForIntegration() {
+	async askForShareContent() {
 
 		const self = this;
-		const {user, reply, conversationData} = self;
 
-		//on "lets go" option
-		if (!conversationData.payload || conversationData.payload.id === "yesLetsGo") {
+		this.setNextAnswerState("qr");
 
-			this.setCurrentQuestion(welcomeQuestions.shareContent);
+		const qrQuestion = self.setLastQRResponse(facebookResponse.getQRElement("Awesome! Now, let's share some cool content on your facebook page!", [
+			facebookResponse.getQRButton('text', "Share content!", {nextState: "shareContent"}),
+			facebookResponse.getQRButton('text', "Not now", {nextState: "stopConvo"})
+		]));
 
-			const qrQuestion = self.setLastQRResponse(facebookResponse.getQRElement("Awesome! Now, let's share some cool content on your facebook page!", [
-				facebookResponse.getQRButton('text', "Share content!", {id: "shareContent"}),
-				facebookResponse.getQRButton('text', "Not now", {id: "dontShare"})
-			]));
+		//send video and integration
+		await self.sendMessagesV2([
+			[facebookResponse.getTextMessage("First, to learn how I'm about to boost the marketing of your business, watch a quick video:")],
+			[facebookResponse.getGenericTemplate([
+				facebookResponse.getGenericElement("Zoi's Video", "https://res.cloudinary.com/gotime-systems/image/upload/v1506522804/videoImage_v0hdzv.png", "", [
+					facebookResponse.getGenericButton("web_url", "Play", null, `${ZoiConfig.clientUrl}/welcome-video`, null)
+				])
+			])],
+			[qrQuestion, delayTime * 2]
+		]);
 
-			await this.saveUser();
-
-			//send video and integration
-			await self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("First, to learn how I'm about to boost the marketing of your business, watch a quick video:"), true, delayTime),
-				MyUtils.resolveMessage(reply, facebookResponse.getGenericTemplate([
-					facebookResponse.getGenericElement("Zoi's Video", "https://res.cloudinary.com/gotime-systems/image/upload/v1506522804/videoImage_v0hdzv.png", "", [
-						facebookResponse.getGenericButton("web_url", "Play", null, `${ZoiConfig.clientUrl}/welcome-video`, null)
-					])
-				]), false, delayTime),
-				MyUtils.resolveMessage(reply, qrQuestion, false, delayTime * 2)
-			]);
-
-			return "gotIntegrationButton";
-		}
-		//on "Not now" option
-		else {
-
-			await self.sendMessages([
-				MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("OK! see you later... :)"), false)
-			]);
-
-			return "refuseToIntegrate";
-		}
+		return "gotIntegrationButton";
 	}
+
+	/**
+	 * proceed with welcome conversation - usually, after the user integrated with Acuity
+	 */
+	async proceedWelcomeConvoManager() {
+
+		const {user} = this;
+
+		try {
+			const nextState = this.getNextState();
+
+			if (!user.conversationData) {
+				return await this.askForProceedAfterIntegration();
+			} else if (nextState === "askForFirstPromotion") {
+				return await this.askForFirstPromotion();
+			} else if (nextState === "startFirstPromotion") {
+				return await this.startFirstPromotion();
+			} else if (nextState === "skipFirstPromotion") {
+				return await this.skipFirstPromotion();
+			} else if (nextState === "returnNoProblem") {//user said no problem or wrote something
+				return await this.askForShareZoi();
+			}
+		} catch (err) {
+			MyLog.error(err);
+		}
+	};
 
 
 	/**
@@ -256,16 +207,10 @@ class WelcomeLogic extends ConversationLogic {
 		const self = this;
 		const {user} = self;
 
-		//set the position in the 'suggest article' convo
-		user.conversationData = {
-			lastQuestion: {
-				id: "suggestToPostArticle"
-			}
-		};
-
 		const generalLogic = new GeneralLogic(user, {
 			context: "GENERAL",
-			intent: "general suggest to post article"
+			intent: "general suggest to post article",
+			nextState: "suggestToPostArticle"
 		});
 		await generalLogic.processIntent();
 
@@ -276,19 +221,16 @@ class WelcomeLogic extends ConversationLogic {
 	 * ask for proceed after integration with Acuity
 	 */
 	async askForProceedAfterIntegration() {
-		const self = this;
-		const {user, reply, conversationData} = self;
 
-		self.setCurrentQuestion(welcomeQuestions.canWeProceed, "qr");
+		this.setNextAnswerState("qr");
 
-		//save the user
-		await self.DBManager.saveUser(user);
+		const qrQuestion = this.user.setLastQRResponse(facebookResponse.getQRElement("Awesome! Now I have access to your calendar 👏 Can we proceed to fill your openings?", [
+			facebookResponse.getQRButton('text', "Yes we can!", {nextState: "askForFirstPromotion"})
+		]));
 
 		//wait a little bit before continue with the conversation
-		await self.sendMessages([
-			MyUtils.resolveMessage(reply, facebookResponse.getQRElement("Awesome! Now I have access to your calendar 👏 Can we proceed to fill your openings?", [
-				facebookResponse.getQRButton('text', "Yes we can!", {id: 1})
-			]), false, ZoiConfig.times.firstIntegratedDelay)
+		await this.sendMessagesV2([
+			[qrQuestion, ZoiConfig.times.firstIntegratedDelay]
 		]);
 
 		return "userMadeAcuityIntegration";
@@ -299,25 +241,17 @@ class WelcomeLogic extends ConversationLogic {
 	 */
 	async askForFirstPromotion() {
 
-		const self = this;
-		const {user, reply, conversationData} = self;
-
-		self.setCurrentQuestion(welcomeQuestions.firstPromotion, "qr");
+		this.setNextAnswerState("qr");
 
 		//save the response
-		const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("Now that I'm able to access your Acuity account we can send our first promotion.",
-			[
-				facebookResponse.getQRButton('text', 'Let\'s make money', {id: 2}),
-				facebookResponse.getQRButton('text', 'Maybe tomorrow', {id: 1})
-			]
-		));
+		const lastQRResponse = this.setLastQRResponse(facebookResponse.getQRElement("Now that I'm able to access your Acuity account we can send our first promotion.", [
+			facebookResponse.getQRButton('text', "Let's make money", {nextState: "startFirstPromotion"}),
+			facebookResponse.getQRButton('text', 'Maybe tomorrow', {nextState: "skipFirstPromotion"})
+		]));
 
-		//save the user
-		await self.DBManager.saveUser(user);
-
-		await self.sendMessages([
-			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("So far, you are the best human I've ever worked with! 😉"), true, delayTime),
-			MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime),
+		await this.sendMessagesV2([
+			[facebookResponse.getTextMessage("So far, you are the best human I've ever worked with! 😉")],
+			[lastQRResponse],
 		]);
 
 		return "userAskedForFirstPromotion";
@@ -326,80 +260,63 @@ class WelcomeLogic extends ConversationLogic {
 	/**
 	 * ask the user if he wants to make first promotion
 	 */
-	async onUserAnsweredOnFirstPromotion() {
-		const self = this;
-		const {user, reply, conversationData} = self;
+	async skipFirstPromotion() {
 
-		//if chose tomorrow
-		if (!conversationData.payload || conversationData.payload.id === 1) {
+		this.setNextAnswerState("qr");
 
-			self.setCurrentQuestion(welcomeQuestions.noProblem);
+		//save the response
+		const lastQRResponse = this.setLastQRResponse(facebookResponse.getQRElement("We are going to bring a lot of customers to our business together! 💪", [
+			facebookResponse.getQRButton('text', "Thank's, Zoi.", {nextState: "returnNoProblem"}),
+		]));
 
-			//save the response
-			const lastQRResponse = self.setLastQRResponse(facebookResponse.getQRElement("We are going to bring a lot of customers to our business together! 💪",
-				[
-					facebookResponse.getQRButton('text', "Thank's, Zoi.", {id: 0}),
-				]
-			));
+		const messages = [];
 
-			await self.DBManager.saveUser(user);
-
-			const messages = [];
-
-			//check if the user quit the first step or finished it
-			if (conversationData.userFinishedFirstStep) {
-				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Good job boss 👍"), true, delayTime * 2));
-			} else {
-				messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Ok boss!"), true, delayTime));
-			}
-			// messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I'll ping you tomorrow with your morning brief"), true, delayTime));
-			messages.push(MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("Remember, You can always press the menu button below (☰) to see my preset actions and settings."), true, delayTime));
-			messages.push(MyUtils.resolveMessage(reply, lastQRResponse, false, delayTime));
-
-			//set user onboarded
-			await self.setUserOnBoarded();
-
-			await self.sendMessages(messages);
-
-			return "userRefuseToFirstPromotion";
+		//check if the user quit the first step or finished it
+		if (conversationData.userFinishedFirstStep) {
+			messages.push(facebookResponse.getTextMessage("Good job boss 👍"), delayTime * 2);
+		} else {
+			messages.push(facebookResponse.getTextMessage("Ok boss!"));
 		}
-		//if chose promotion
-		else {
-			//clean the user conversation
-			user.conversationData = null;
+		messages.push(facebookResponse.getTextMessage("Remember, You can always press the menu button below (☰) to see my preset actions and settings."));
+		messages.push(lastQRResponse);
 
-			//start send promotions dialog
-			const appointmentLogic = new AppointmentLogic(user, {
-				intent: "appointment send promotions",
-				context: "APPOINTMENT",
-				firstPromotion: true
-			});
-			await appointmentLogic.processIntent();
+		//set user onboarded
+		await this.setUserOnBoarded();
 
-			return "userAcceptFirstPromotion";
-		}
+		await this.sendMessagesV2(messages);
+
+		return "userRefuseToFirstPromotion";
 	}
 
 	/**
-	 * ask the user if he likes to share the new hiring of Zoi
+	 * start first promotion
+	 * @returns {Promise.<string>}
+	 */
+	async startFirstPromotion() {
+
+		//clean the user conversation
+		this.user.conversationData = null;
+
+		//start send promotions dialog
+		const appointmentLogic = new AppointmentLogic(user, {
+			intent: "appointment send promotions",
+			context: "APPOINTMENT",
+			firstPromotion: true
+		});
+		await appointmentLogic.processIntent();
+
+		return "userAcceptFirstPromotion";
+	}
+
+	/**
+	 * share the new hiring of Zoi
 	 */
 	async askForShareZoi() {
-		const self = this;
-		const {user, reply, conversationData} = self;
 
 		//clear the conversation
-		await self.clearConversation();
+		await this.clearConversation();
 
-		//create the share url
-		const shareUrl = `https://www.facebook.com/dialog/feed?app_id=${ZoiConfig.appId}&link=https%3A%2F%2Fzoi.ai&picture=https%3A%2F%2Fzoi.ai%2Fwp-content%2Fuploads%2F2015%2F12%2Fzoi-logo-white.png&name=I%20just%20hired%20Zoi%20AI&caption=%20&description=Share%20it%20too!&redirect_uri=http%3A%2F%2Fwww.facebook.com%2F`;
-
-		await self.sendMessages([
-			MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("No problem boss :)"), false),
-			// MyUtils.resolveMessage(reply, facebookResponse.getTextMessage("I will really appreciate if you will share my new hiring on facebook :)"), true, delayTime),
-			// MyUtils.resolveMessage(reply, facebookResponse.getButtonMessage("Share me:", [
-			// 	facebookResponse.getGenericButton("web_url", "Share Zoi", null, shareUrl, "tall", false)
-			// ]), false, delayTime)
-		]);
+		await this.sendMessagesV2("No problem boss :)");
 
 		return "userAskedForShareZoi";
 	}

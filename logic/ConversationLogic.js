@@ -8,6 +8,8 @@ const async = require('async');
 const zoiBot = require('../bot/ZoiBot');
 const CryptoJS = require('crypto-js');
 
+const delayTime = ZoiConfig.delayTime;
+
 class ConversationLogic {
 
 	/**
@@ -45,59 +47,14 @@ class ConversationLogic {
 	}
 
 	/**
-	 * check if the response is qr - if not, send message to the user.
-	 * @returns {Promise.<boolean>}
-	 */
-	async isValidQR() {
-		if (this.conversationData.payload) {
-			return true;
-		} else {
-			await this.sendLetsFinishWhatWeStarted();
-			return false;
-		}
-	}
-
-	/**
-	 * set current question to the user object
-	 * @param question
+	 * save next answer state -(payload, qr, webview or text)
 	 * @param nextAnswerType
-	 * @returns {*}
 	 */
-	setCurrentQuestion(question, nextAnswerType) {
+	setNextAnswerState(nextAnswerType) {
 		//save conversation to the user
 		this.user.conversationData = this.conversationData;
-		//save the service question
-		this.user.conversationData.lastQuestion = question;
-		if (nextAnswerType) {
-			//save next answer state
-			this.user.conversationData.nextAnswerState = nextAnswerType;
-		}
-		//return the selected question
-		return question;
-	}
-
-	/**
-	 * say goodbye message to the user
-	 * finish onboarding in case the user still didn't finish it
-	 */
-	async sayGoodbye() {
-		if (this.user.isOnBoarded) {
-			this.sendMessages([
-				MyUtils.resolveMessage(this.reply, FacebookResponse.getTextMessage("I'll be right here if you need me ☺"), false)
-			]);
-		} else {
-			await this.finishOnBoarding();
-		}
-	}
-
-	/**
-	 * say goodbye message to the user
-	 */
-	async sendLetsFinishWhatWeStarted() {
-		return await this.sendMessages([
-			MyUtils.resolveMessage(this.reply, FacebookResponse.getTextMessage("Let's finish what we started"), true),
-			MyUtils.resolveMessage(this.reply, user.conversationData.lastQRResponse, false, ZoiConfig.delayTime),
-		]);
+		//set next answer
+		this.user.conversationData.nextAnswerState = nextAnswerType;
 	}
 
 	/**
@@ -145,10 +102,39 @@ class ConversationLogic {
 		});
 	}
 
-	sendMessagesV2(messages) {
-		const newMessages = messages.map(message => {
-			return MyUtils.resolveMessage(this.reply, message[0], message[1], message[2]);
+	/**
+	 * send single message
+	 * @param text
+	 * @returns {Promise.<void>}
+	 */
+	async sendSingleMessage(text) {
+		await this.sendMessagesV2([[FacebookResponse.getTextMessage(text)]]);
+	}
+
+	/**
+	 * send messages - new version
+	 * @param messages
+	 * @returns {Promise.<void>}
+	 */
+	async sendMessagesV2(messages) {
+
+		//save the user before sending the messages
+		await this.saveUser();
+
+		//transfer to new messages format
+		const newMessages = messages.map((message, index) => {
+
+			//if this is the only message
+			let shouldTyping = index !== messages.length - 1;
+			let shouldDelayed = index !== 0;
+
+			if (message[1]) {
+				shouldDelayed = message[1];
+			}
+
+			return MyUtils.resolveMessage(this.reply, message[0], shouldTyping, shouldDelayed);
 		});
+
 		this.sendMessages(newMessages);
 	}
 
@@ -173,21 +159,123 @@ class ConversationLogic {
 	}
 
 	/**
-	 * clear user conversation
-	 * @param reply
-	 * @param sendLastMessage
+	 * check if the user is enable to make conversations related to facebook
+	 * @returns {*}
 	 */
-	async clearConversation(reply, sendLastMessage) {
+	isValidFacebookRequest(nextState = null) {
+
+		const {user} = this;
+
+		//if there is an integration with facebook
+		if (user.integrations.Facebook) {
+
+			//if there are pages integrated
+			if (MyUtils.nestedValue(user, "integrations.Facebook.pages.length")) {
+
+				//if there are page selected to post on
+				if (user.integrations.Facebook.pages.filter(page => page.isEnabled).length > 0) {
+					return true;
+				}
+				//if there are no pages chosen from the settings
+				else {
+					this.clearConversation(false);
+					this.askForSelectPageFromSettings();
+					return false;
+				}
+			}
+			//if there are no pages integrated
+			else {
+				this.clearConversation(false);
+				this.askForPageIntegration();
+				return false;
+			}
+		}
+		//if there is no integration with facebook
+		else {
+			this.clearConversation(false);
+			this.askForFacebookIntegration();
+			return false;
+		}
+	}
+
+	/**
+	 * ask to integrate with Facebook
+	 */
+	async askForFacebookIntegration() {
+
+		try {
+			const {user} = this;
+
+			await this.sendMessagesV2([
+				[FacebookResponse.getButtonMessage("To post on Facebook page, you must integrate with Facebook platform. Let's do it! 💪", [
+					FacebookResponse.getGenericButton("web_url", "My Integrations", null, `${ZoiConfig.clientUrl}/integrations?userId=${user._id}&skipExtension=true`, null, false)
+				]), false]
+			]);
+
+			return MyUtils.SUCCESS;
+		} catch (err) {
+			await this.clearConversation();
+			MyLog.error(err);
+			return MyUtils.ERROR;
+		}
+	}
+
+	/**
+	 * ask to choose facebook pages from settings
+	 */
+	async askForSelectPageFromSettings() {
+
+		try {
+			const {user} = this;
+
+			await this.sendMessagesV2([
+				[FacebookResponse.getButtonMessage("Which Facebook page do you want me to WOW? 😊", [
+					FacebookResponse.getGenericButton("web_url", "My Pages", null, ZoiConfig.clientUrl + "/facebook-pages?userId=" + user._id, "tall")
+				]), false]
+			]);
+
+			return MyUtils.SUCCESS;
+		} catch (err) {
+			await this.clearConversation();
+			MyLog.error("Failed on askForSelectPageFromSettings", err);
+			return MyUtils.ERROR;
+		}
+	}
+
+	/**
+	 * ask to integrate facebook pages from facebook
+	 */
+	async askForPageIntegration() {
+
+		try {
+
+			await this.sendMessagesV2([
+				[FacebookResponse.getTextMessage("To post on Facebook page, you must give me permissions for your pages. Don't worry, I promise that won't post anything without your permission! 😎"), true, delayTime],
+				[FacebookResponse.getTextMessage("You can do it on your Facebook settings. Choose 'Settings', then 'Apps', look for Zoi application and approve it to manage your pages."), false]
+			]);
+
+			return MyUtils.SUCCESS;
+		} catch (err) {
+			await this.clearConversation();
+			MyLog.error("Failed to ask for page integrations", err);
+			return MyUtils.ERROR;
+		}
+	}
+
+	/**
+	 * clear user conversation
+	 */
+	async clearConversation(saveUser = true) {
+
 		const self = this;
 		const user = self.user;
 
 		user.conversationData = null;
 		user.session = null;
+		user.nextState = null;
 
-		await self.DBManager.saveUser(user);
-
-		if (sendLastMessage) {
-			(MyUtils.resolveMessage(reply, FacebookResponse.getTextMessage("I'll be right here if you need me ☺"), false, ZoiConfig.delayTime))();
+		if (saveUser) {
+			await self.DBManager.saveUser(user);
 		}
 	};
 
@@ -260,14 +348,43 @@ class ConversationLogic {
 	}
 
 	/**
-	 * get last question id
+	 * get nextState if exist
 	 * @returns {*}
 	 */
-	getLastQuestionId() {
-		const {user} = this;
-		return user.conversationData && user.conversationData.lastQuestion ? user.conversationData.lastQuestion.id : null;
+	getNextState() {
+		const {conversationData, user} = this;
+		//check for nextState in the payload
+		if (MyUtils.isJson(conversationData.input)) {
+			const buttonPayload = JSON.parse(conversationData.input);
+			if (buttonPayload.nextState) {
+				return buttonPayload.nextState;
+			}
+		}
+		if (MyUtils.nestedValue(conversationData, "payload.nextState")) {
+			return MyUtils.nestedValue(conversationData, "payload.nextState");
+		}
+		if (conversationData.nextState) {
+			return conversationData.nextState;
+		}
+		if (user.nextState) {
+			return user.nextState;
+		}
 	}
 
+	/**
+	 * set user current state
+	 * @param state
+	 */
+	setCurrentState(state) {
+		if (this.user.conversationData) {
+			this.user.conversationData.currentState = state;
+		}
+	}
+
+	/**
+	 * increase the promotions times when user makes a promotion
+	 * @param user
+	 */
 	static setPromotionsTimesToUser(user) {
 		const actionTime = moment().tz(user.integrations.Acuity.userDetails.timezone).format("YYYY/MM");
 		if (user.profile[actionTime]) {
@@ -277,6 +394,26 @@ class ConversationLogic {
 				numOfPromotions: 1
 			}
 		}
+	}
+
+	/**
+	 * save promotion object, and associate it to the user
+	 * @param service
+	 * @param template
+	 * @param date
+	 * @returns {Promise.<void>}
+	 */
+	async savePromotionToUser(service, template, date) {
+
+	}
+
+	/**
+	 * say goodbye and clear convo
+	 */
+	async stopConvo() {
+		await this.clearConversation(false);
+		await this.sendSingleMessage("Ok boss! See you later :)");
+		return "cleared";
 	}
 }
 

@@ -124,15 +124,9 @@ class BackgroundLogic {
 							$ne: null
 						}
 					}, {
-						$or: [{
-							lastMessageTime: {
-								$lt: new Date().valueOf() - ZoiConfig.times.clearOldConversationRange
-							}
-						}, {
-							lastMessageTime: {
-								$eq: null
-							}
-						}]
+						lastMessageTime: {
+							$lt: new Date().valueOf() - ZoiConfig.times.clearOldConversationRange
+						}
 					}]
 				});
 
@@ -158,7 +152,7 @@ class BackgroundLogic {
 		//iterate the users
 		usersWithOldConvos.forEach(async (user) => {
 			const conversationLogic = new ConversationLogic(user);
-			await conversationLogic.clearConversation(user);
+			await conversationLogic.clearConversation();
 
 			const replyFunction = bot.getBotReplyFunction(user);
 

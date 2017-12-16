@@ -7,3 +7,5 @@
 /logs/*
 /public/node_modules/
 /public/.idea/
+/config.js
+/public/src/services/config.js

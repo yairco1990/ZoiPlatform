@@ -1,50 +1,56 @@
 const MyUtils = require('../../interfaces/utils');
 
+const SYSTEMS = {
+	ACUITY: "Acuity Scheduling",
+	GMAIL: "Gmail",
+	FACEBOOK: "Facebook"
+};
+
 const intentions = {
 	"general morning brief": {
 		$must: {
-			$and: ["Acuity Scheduling"]
+			$and: [SYSTEMS.ACUITY]
 		}
 	},
-	"general suggest to post article": {
-		$must: {
-			$and: ["Facebook"]
-		}
-	},
+	// "general suggest to post article": {
+	// 	$must: {
+	// 		$and: [SYSTEMS.FACEBOOK]
+	// 	}
+	// },
 	"appointment what is my schedule": {
 		$must: {
-			$and: ["Acuity Scheduling"]
+			$and: [SYSTEMS.ACUITY]
 		}
 	},
 	"appointment show my schedule": {
 		$must: {
-			$and: ["Acuity Scheduling"]
+			$and: [SYSTEMS.ACUITY]
 		}
 	},
 	"appointment send promotions": {
 		$must: {
-			$or: ["Acuity Scheduling", "Facebook"]
+			$or: [SYSTEMS.ACUITY, SYSTEMS.FACEBOOK]
 		}
 	},
 	"client old customers": {
 		$must: {
-			$and: ["Acuity Scheduling"]
+			$and: [SYSTEMS.ACUITY]
 		}
 	},
 	"client new customer join": {
 		$must: {
-			$and: ["Acuity Scheduling"]
+			$and: [SYSTEMS.ACUITY]
 		}
 	},
 	"generic unread emails": {
 		$must: {
-			$and: ["Gmail", "Acuity Scheduling"]
+			$and: [SYSTEMS.GMAIL, SYSTEMS.ACUITY]
 		}
 	},
 	"test": {
 		$must: {
-			$and: ["Gmail"],
-			$or: ["Acuity Scheduling", "Facebook"]
+			$and: [SYSTEMS.GMAIL],
+			$or: [SYSTEMS.ACUITY, SYSTEMS.FACEBOOK]
 		}
 	}
 };
@@ -121,13 +127,13 @@ class IntegrationHelper {
 	static getUserIntegrations(user) {
 		const integrations = [];
 		if (user.isAcuityIntegrated) {
-			integrations.push("Acuity Scheduling");
+			integrations.push(SYSTEMS.ACUITY);
 		}
 		if (user.isGmailIntegrated) {
-			integrations.push("Gmail");
+			integrations.push(SYSTEMS.GMAIL);
 		}
 		if (user.isFacebookIntegrated) {
-			integrations.push("Facebook");
+			integrations.push(SYSTEMS.FACEBOOK);
 		}
 		return integrations;
 	}

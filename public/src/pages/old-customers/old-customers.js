@@ -101,7 +101,7 @@ OldCustomersCtrl.prototype.sendButtonClicked = function (ev) {
 	});
 
 	vm.$http({
-		url: vm.zoiConfig.getServerUrl() + "/acuity/promoteOldCustomers",
+		url: vm.zoiConfig.getServerUrl() + "/acuity/oldCustomersConvoManager",
 		method: "POST",
 		params: {
 			userId: vm.$stateParams.userId,

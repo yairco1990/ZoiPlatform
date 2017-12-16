@@ -254,6 +254,10 @@ let Utils = {
 		return newArr;
 	},
 
+	getObjectById: function (id, arr) {
+		return arr.find((item) => item.id === id);
+	},
+
 	convertToAcuityDate: function (time) {
 		if (time) {
 			return moment(time).format('YYYY-MM-DDTHH:mm:ss');
@@ -391,6 +395,16 @@ let Utils = {
 			taken[x] = --len;
 		}
 		return result;
+	},
+
+	/**
+	 * get first n objects from array
+	 * @param arr
+	 * @param n
+	 * @returns {Array}
+	 */
+	getFirstNFromArray: function (arr, n) {
+		return arr.slice(0, n);
 	},
 
 	/**

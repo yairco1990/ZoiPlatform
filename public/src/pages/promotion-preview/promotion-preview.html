@@ -4,14 +4,13 @@
         <div class="box-area-wrapper">
 
             <div class="box-header">
-                Promotion Preview
+                {{vm.pageTitle}}
             </div>
             <div class="box-sub-header">
-                <b>This is what I'm going to post on your facebook page. Change the post title or the scheduling page
-                    link if you want to.</b>
+                <b>{{vm.subHeaderText}}</b>
             </div>
 
-            <div class="box-body" style="border-top: solid #ececec 1px;">
+            <div ng-show="vm.promotionType === 'facebook'" class="box-body" style="border-top: solid #ececec 1px;">
                 <div class="text-center box-sub-header" style="font-size: 16px !important;margin-top: 5px">
                     <div class="preview-wrapper">
                         <md-input-container class="md-block" style="margin-bottom: 0;">
@@ -31,15 +30,20 @@
                 </div>
             </div>
 
+            <div ng-show="vm.promotionType === 'email'">
+                <div ng-bind-html="vm.selectedEmailTemplate" class="email-html-wrapper">
+                </div>
+            </div>
+
             <div class="post-button">
-                <md-button class="md-raised md-primary no-margin" ng-click="vm.postIt($event, 'true')"
-                           style="width: 86%;">
-                    Post Promotion!
+                <md-button class="md-raised md-primary no-margin keep-convo-button"
+                           ng-click="vm.sendAction($event, 'true')">
+                    {{vm.approveText}}
                 </md-button>
 
-                <md-button class="md-raised md-warn no-margin" ng-click="vm.postIt($event, 'false')"
-                           style="width: 86%;margin-top: 10px !important;">
-                    Don't promote it
+                <md-button class="md-raised md-warn no-margin stop-convo-button"
+                           ng-click="vm.sendAction($event, 'false')">
+                    {{vm.rejectText}}
                 </md-button>
             </div>
 

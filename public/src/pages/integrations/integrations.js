@@ -86,7 +86,7 @@ integrationsCtrl.prototype.onFacebookClicked = function () {
 				vm.isFacebookAssociated = true;
 
 				vm.$timeout(function () {
-					vm.$state.go('facebook-pages', {userId: vm.zoiUser._id});
+					vm.$state.go('facebook-pages', {userId: vm.zoiUser._id, skipExtension: true});
 				}, 500);
 			}).catch(function (err) {
 				MyUtils.removeLoader();

@@ -53,6 +53,10 @@ class EmailLib {
 			emails.forEach(function (email) {
 				//@email.com domain is saved for Zoi testing
 				if (email.address && !email.address.includes("@email.com")) {
+					//if this is not production and it's not yair email - don't send it
+					if (!ZoiConfig.isProduction && email.address !== "yairco1990@gmail.com") {
+						return;
+					}
 					// Give SES the details and let it construct the message for you.
 					client.sendEmail({
 						to: email.address,

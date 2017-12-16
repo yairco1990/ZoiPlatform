@@ -30,6 +30,7 @@ const Environments = {
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_53/v1505858944/Scene_2_bmlllw.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
+		DEFAULT_ERROR_TEXT: "Something went wrong, Please try later.",
 		ACUITY_OAUTH: {
 			"clientId": "zcKdLO4OnUUIpIUV",
 			"clientSecret": "j9uGAXtn7n7kJ3lboR4NPPZHwNDptAotmdzOq5US",
@@ -65,7 +66,7 @@ const Environments = {
 		appId: "358701207893441",
 		appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "https://zoi.eu.ngrok.io",
-		shortnerUrl: "https://zoi.eu.ngrok.io",
+		shortnerUrl: "https://zoi.eu.ngrok.io/s",
 		clientUrl: "https://zoi.eu.ngrok.io/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
@@ -73,6 +74,7 @@ const Environments = {
 		GOOGLE_AUTH_REDIRECT: "http://localhost:3000/gmail/oauthcallback",
 		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_47/v1505858944/Scene_2_bmlllw.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
+		DEFAULT_ERROR_TEXT: "Something went wrong, Please try later.",
 		ACUITY_OAUTH: {
 			"clientId": "zcKdLO4OnUUIpIUV",
 			"clientSecret": "j9uGAXtn7n7kJ3lboR4NPPZHwNDptAotmdzOq5US",
@@ -81,10 +83,10 @@ const Environments = {
 		adminToken: "zoiIsTheBestInTheWorld",
 		isProduction: false,
 		delayTime: 1,
-		generalPromotionDeviation: 2,
-		writeDebug: true,
-		writeErrors: true,
-		writeInfo: true,
+		generalPromotionDeviation: 1,
+		writeDebug: false,
+		writeErrors: false,
+		writeInfo: false,
 		times: {
 			oldCustomersIntervalTime: ONE_MINUTE * 2,
 			morningBriefIntervalTime: ONE_MINUTE * 2,
@@ -108,6 +110,7 @@ const Environments = {
 		appId: "358701207893441",
 		appSecret: "364a4ac6971784586eb91066e04d0c80",
 		serverUrl: "https://dev.zoiai.com",
+		shortnerUrl: "https://dev.zoiai/s",
 		clientUrl: "https://dev.zoiai.com/p/#",
 		mongoUrl: "mongodb://localhost:27017/zoidev_db",
 		NLP_URL: "http://13.82.50.249:5000",
@@ -115,6 +118,7 @@ const Environments = {
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_47/v1505858944/Scene_2_bmlllw.mp4",
 		BOT_DETAILS: DEV_BOT_DETAILS,
+		DEFAULT_ERROR_TEXT: "Something went wrong, Please try later.",
 		ACUITY_OAUTH: {
 			"clientId": "zcKdLO4OnUUIpIUV",
 			"clientSecret": "j9uGAXtn7n7kJ3lboR4NPPZHwNDptAotmdzOq5US",
@@ -159,6 +163,7 @@ const Environments = {
 		GOOGLE_AUTH_REDIRECT: "https://zoiai.com:3000/gmail/oauthcallback",
 		ON_BOARDING_VIDEO_URL: "http://res.cloudinary.com/gotime-systems/video/upload/q_47/v1505858944/Scene_2_bmlllw.mp4",
 		BOT_DETAILS: PRODUCTION_BOT_DETAILS,
+		DEFAULT_ERROR_TEXT: "Something went wrong, Please try later.",
 		ACUITY_OAUTH: {
 			"clientId": "zyD9dntj6EnOQ0tH",
 			"clientSecret": "mezlVskAfjoAJSy8iAGhh3FYOW3MvSEASBnlUGQE",
@@ -194,6 +199,6 @@ const Environments = {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-const selectedEnvironment = Environments.PRODUCTION;
+const selectedEnvironment = Environments.NGROK;
 module.exports = selectedEnvironment;
 ///////////////////////////////////////////////////////////////////////////////

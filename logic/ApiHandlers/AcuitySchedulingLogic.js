@@ -65,6 +65,29 @@ class AcuitySchedulingLogic {
 		});
 	}
 
+	getAvailabilityDates(options) {
+		const self = this;
+
+		return new Promise((resolve, reject) => {
+
+			self.acuity.request(MyUtils.addParamsToUrl('availability/dates', options), function (err, res, body) {
+
+				if (err || body.error) {
+					reject(err || body.error);
+					return;
+				}
+
+				//add appointment type to the result
+				const finalResult = {
+					dates: body,
+					appointmentTypeId: options.appointmentTypeID
+				};
+
+				resolve(finalResult);
+			});
+		});
+	}
+
 	getAppointments(options, endpoint) {
 		const self = this;
 
